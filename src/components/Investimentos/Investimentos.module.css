@@ -1,0 +1,129 @@
+/* components/Investimentos/Investimentos.module.css */
+.investimentos {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.investimentos h2 {
+  color: #2c3e50;
+  margin-bottom: 30px;
+  font-size: 28px;
+}
+
+.investimentosContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.investimentosForm {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  height: fit-content;
+}
+
+.investimentosForm h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.investimentosList {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.investimentosList h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.resumoInvestimentos {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #27ae60;
+}
+
+.resumoInvestimentos p {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.investimentosTable {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.investimentoItem {
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #27ae60;
+}
+
+.investimentoInfo {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.investimentoNome {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.investimentoTipo {
+  font-size: 11px;
+  background: #e8f6f3;
+  color: #27ae60;
+  padding: 4px 8px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.investimentoData {
+  color: #7f8c8d;
+}
+
+.investimentoValor {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.investimentoAtual {
+  font-weight: 600;
+  color: #3498db;
+}
+
+.investimentoLucro {
+  font-weight: 600;
+}
+
+@media (max-width: 1200px) {
+  .investimentoInfo {
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
+}
+
+@media (max-width: 968px) {
+  .investimentosContent {
+    grid-template-columns: 1fr;
+  }
+}

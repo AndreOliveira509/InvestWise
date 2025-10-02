@@ -1,0 +1,68 @@
+/* components/Metas/Metas.module.css */
+.metas {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.metas h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.metaAtual {
+  background: #e8f6f3;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #27ae60;
+}
+
+.metaAtual h4 {
+  color: #27ae60;
+  margin-bottom: 10px;
+}
+
+.metaForm {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.dicasMetas {
+  background: #e3f2fd;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #3498db;
+}
+
+.dicasMetas h4 {
+  color: #3498db;
+  margin-bottom: 15px;
+}
+
+.dicasMetas ul {
+  list-style: none;
+}
+
+.dicasMetas li {
+  padding: 8px 0;
+  border-bottom: 1px solid #bbdefb;
+  position: relative;
+  padding-left: 20px;
+}
+
+.dicasMetas li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #3498db;
+  font-weight: bold;
+}
+
+.dicasMetas li:last-child {
+  border-bottom: none;
+}
