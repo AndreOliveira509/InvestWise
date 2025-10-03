@@ -1,159 +1,37 @@
-/* App.css */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f5f6fa;
-  color: #2c3e50;
-  line-height: 1.6;
-}
-
-.App {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.app-body {
-  display: flex;
-  flex: 1;
-}
-
-.main-content {
-  flex: 1;
-  padding: 20px;
-  margin-left: 250px;
-  background-color: #f8f9fa;
-  min-height: calc(100vh - 70px);
-}
-
-/* Estilos gerais para formulários */
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-.form-group input,
-.form-group select {
-  width: 100%;
-  padding: 10px;
-  border: 2px solid #e1e8ed;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: border-color 0.3s ease;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: #3498db;
-}
-
-/* Botões */
-.btn-primary {
-  background: linear-gradient(135deg, #3498db, #2980b9);
-  color: white;
-  border: none;
+/* src/components/Button/Button.module.css */
+.button {
   padding: 12px 24px;
+  border: none;
   border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.btn-primary:hover {
-  background: linear-gradient(135deg, #2980b9, #3498db);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
-}
-
-.btn-secondary {
-  background: #95a5a6;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
   transition: all 0.3s ease;
-}
-
-.btn-secondary:hover {
-  background: #7f8c8d;
-}
-
-.btn-remover {
-  background: #e74c3c;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  transition: all 0.3s ease;
-}
-
-.btn-remover:hover {
-  background: #c0392b;
-}
-
-/* Cards e containers */
-.resumo-card {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  background: var(--primary-color);
+  color: var(--secondary-color);
+  text-decoration: none;
+  display: inline-block;
   text-align: center;
-  border-left: 4px solid #3498db;
 }
 
-.resumo-label {
-  display: block;
-  font-size: 14px;
-  color: #7f8c8d;
-  margin-bottom: 8px;
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+  background: #ffed4e;
 }
 
-.resumo-valor {
-  font-size: 24px;
-  font-weight: bold;
+.button:active {
+  transform: translateY(0);
 }
 
-.positivo {
-  color: #27ae60;
+.secondary {
+  background: transparent;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
 }
 
-.negativo {
-  color: #e74c3c;
-}
-
-.investimento {
-  color: #3498db;
-}
-
-.meta {
-  color: #9b59b6;
-}
-
-/* Layout responsivo */
-@media (max-width: 768px) {
-  .main-content {
-    margin-left: 0;
-    padding: 15px;
-  }
-  
-  .app-body {
-    flex-direction: column;
-  }
+.secondary:hover {
+  background: var(--primary-color);
+  color: var(--secondary-color);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
 }

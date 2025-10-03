@@ -1,0 +1,30 @@
+/* components/Button/Button.module.css */
+.button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.primary {
+  background: var(--primary-color);
+  color: white;
+}
+
+.primary:hover {
+  background: var(--secondary-color);
+}
+
+.secondary {
+  background: transparent;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+}
+
+.secondary:hover {
+  background: var(--primary-color);
+  color: white;
+}
