@@ -1,55 +1,32 @@
-/* components/Header/Header.module.css */
-.header {
-  background: linear-gradient(135deg, #2c3e50, #34495e);
-  color: white;
-  padding: 0 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+.main-header {
+  background: var(--background-color);
+  padding: 20px 0;
+  border-bottom: 1px solid #eee;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.8);
 }
 
-.headerContent {
+.main-header .container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 70px;
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
-.header h1 {
+.logo {
   font-size: 24px;
   font-weight: 700;
-  background: linear-gradient(45deg, #3498db, #9b59b6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--secondary-color);
 }
-
-.userInfo {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+/* ... (estilos anteriores) ... */
+.main-header {
+  /* ... */
+  transition: all var(--transition-speed) ease;
 }
-
-.saldo {
-  background: rgba(255,255,255,0.1);
-  padding: 8px 16px;
-  border-radius: 20px;
+.main-header.scrolled {
+  box-shadow: var(--shadow-light);
+  background-color: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
-}
-
-@media (max-width: 768px) {
-  .headerContent {
-    flex-direction: column;
-    height: auto;
-    padding: 15px 0;
-    gap: 10px;
-  }
-  
-  .userInfo {
-    flex-direction: column;
-    gap: 10px;
-  }
 }

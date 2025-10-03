@@ -1,68 +1,96 @@
+/* src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  /* Paleta de Cores */
+  --primary-color: #FFC107; /* Amarelo um pouco mais vibrante */
+  --secondary-color: #1a1a1a; /* Preto suave */
+  --background-color: #FFFFFF;
+  --surface-color: #f8f9fa; /* Cor para seções com fundo diferente */
+  
+  /* Tipografia */
+  --text-primary: #212529;
+  --text-secondary: #5a5a5a;
+  --font-main: 'Poppins', sans-serif;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* Outros */
+  --container-width: 1140px;
+  --border-radius: 12px;
+  --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.06);
+  --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.1);
+  --transition-speed: 0.3s;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
-a:hover {
-  color: #535bf2;
+
+html {
+  scroll-behavior: smooth; /* Rolagem suave entre as seções */
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  font-family: var(--font-main);
+  background-color: var(--background-color);
+  color: var(--text-primary);
+  line-height: 1.7;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+section {
+  padding: 100px 0; /* Espaçamento padrão para todas as seções */
+}
+
+.section-title {
+  font-size: 42px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--secondary-color);
+}
+
+.section-subtitle {
+  font-size: 18px;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 60px auto;
+  color: var(--text-secondary);
+}
+
+.btn {
+  display: inline-block;
+  background: var(--primary-color);
+  color: var(--secondary-color);
+  padding: 14px 35px;
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 16px;
+  border: 2px solid transparent;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  transition: all var(--transition-speed) ease;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.btn:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-medium);
+}
+
+/* Classe para animação de fade-in */
+.fade-in-section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
