@@ -1,14 +1,15 @@
-/* src/pages/Login/Login.module.css */
-.loginPage {
+/* src/pages/Register/Register.module.css */
+.registerPage {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  background: var(--background-color);
   animation: fadeIn 0.8s ease-in-out;
 }
 
-.loginContainer {
+.registerContainer {
   background: white;
   padding: 40px;
   border-radius: 20px;
@@ -19,7 +20,7 @@
   transform-origin: center;
 }
 
-.loginHeader {
+.registerHeader {
   text-align: center;
   margin-bottom: 40px;
   animation: fadeIn 0.8s ease-in-out 0.2s both;
@@ -33,20 +34,20 @@
   animation: bounceIn 1s ease-out;
 }
 
-.loginHeader h1 {
+.registerHeader h1 {
   font-size: 2rem;
   margin-bottom: 10px;
   color: var(--primary-color);
   animation: slideInFromLeft 0.6s ease-out 0.3s both;
 }
 
-.loginHeader p {
+.registerHeader p {
   color: var(--text-secondary);
   font-size: 1.1rem;
   animation: slideInFromRight 0.6s ease-out 0.4s both;
 }
 
-.loginForm {
+.registerForm {
   display: flex;
   flex-direction: column;
   gap: 25px;
@@ -62,6 +63,7 @@
 
 .inputGroup:nth-child(1) { animation-delay: 0.6s; }
 .inputGroup:nth-child(2) { animation-delay: 0.7s; }
+.inputGroup:nth-child(3) { animation-delay: 0.8s; }
 
 .inputGroup label {
   display: flex;
@@ -91,6 +93,7 @@
   font-size: 1rem;
   transition: all 0.3s ease;
   background: var(--background-color);
+  box-sizing: border-box;
   transform: translateX(0);
 }
 
@@ -115,6 +118,12 @@
   color: var(--text-secondary);
   cursor: pointer;
   font-size: 1.1rem;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.3s ease;
 }
 
@@ -123,36 +132,37 @@
   color: var(--primary-color);
 }
 
-.formOptions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.9rem;
-  animation: fadeInUp 0.6s ease-out 0.8s both;
+.terms {
+  margin: 10px 0;
+  animation: fadeInUp 0.6s ease-out 0.9s both;
 }
 
-.rememberMe {
+.termsLabel {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
   cursor: pointer;
+  line-height: 1.4;
   transition: all 0.3s ease;
 }
 
-.rememberMe:hover {
+.termsLabel:hover {
   transform: translateX(5px);
 }
 
-.rememberMe input {
-  margin: 0;
+.termsLabel input {
+  margin-top: 2px;
+  width: auto;
   transition: all 0.3s ease;
 }
 
-.rememberMe input:checked {
+.termsLabel input:checked {
   transform: scale(1.1);
 }
 
-.forgotPassword {
+.termsLink {
   color: var(--primary-color);
   text-decoration: none;
   font-weight: 500;
@@ -160,7 +170,7 @@
   position: relative;
 }
 
-.forgotPassword::after {
+.termsLink::after {
   content: '';
   position: absolute;
   width: 0;
@@ -171,16 +181,16 @@
   transition: width 0.3s ease;
 }
 
-.forgotPassword:hover {
+.termsLink:hover {
   text-decoration: none;
   transform: translateY(-2px);
 }
 
-.forgotPassword:hover::after {
+.termsLink:hover::after {
   width: 100%;
 }
 
-.loginButton {
+.registerButton {
   width: 100%;
   padding: 15px;
   font-size: 1.1rem;
@@ -195,35 +205,37 @@
   animation: pulse 2s infinite;
 }
 
-.loginButton:hover {
+.registerButton:hover {
   background: var(--secondary-color);
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   animation: none;
 }
 
-.loginButton:active {
+.registerButton:active {
   transform: translateY(0);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.loginFooter {
+.registerFooter {
   text-align: center;
   margin-top: 30px;
   padding-top: 20px;
   border-top: 1px solid var(--border-color);
-  animation: fadeIn 0.8s ease-in-out 0.9s both;
+  color: var(--text-secondary);
+  animation: fadeIn 0.8s ease-in-out 1s both;
 }
 
-.signupLink {
+.loginLink {
   color: var(--primary-color);
   font-weight: 600;
   text-decoration: none;
+  margin-left: 5px;
   transition: all 0.3s ease;
   position: relative;
 }
 
-.signupLink::after {
+.loginLink::after {
   content: '';
   position: absolute;
   width: 0;
@@ -234,12 +246,12 @@
   transition: width 0.3s ease;
 }
 
-.signupLink:hover {
+.loginLink:hover {
   text-decoration: none;
   transform: translateY(-2px);
 }
 
-.signupLink:hover::after {
+.loginLink:hover::after {
   width: 100%;
 }
 
@@ -251,10 +263,41 @@
   text-align: center;
   font-size: 0.9rem;
   color: var(--text-secondary);
-  animation: fadeInUp 0.6s ease-out 1s both;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  animation: fadeInUp 0.6s ease-out 1.1s both;
 }
 
-/* Animações Keyframes (as mesmas do Register) */
+.demoInfo strong {
+  color: var(--primary-color);
+}
+
+.errorMessage {
+  color: #e74c3c;
+  font-size: 0.9rem;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  animation: shake 0.5s ease-in-out;
+}
+
+.successMessage {
+  color: #27ae60;
+  font-size: 0.9rem;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  animation: bounceIn 0.6s ease-out;
+}
+
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+  animation: pulse 1.5s infinite;
+}
+
+/* Animações Keyframes */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -338,15 +381,56 @@
   }
 }
 
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
 @media (max-width: 480px) {
-  .loginContainer {
+  .registerContainer {
     padding: 30px 20px;
     animation: slideUp 0.5s ease-out;
   }
   
-  .formOptions {
-    flex-direction: column;
-    gap: 15px;
-    align-items: flex-start;
+  .registerHeader h1 {
+    font-size: 1.75rem;
+  }
+  
+  .registerHeader p {
+    font-size: 1rem;
+  }
+  
+  .inputGroup input {
+    padding: 12px;
+  }
+  
+  .registerButton {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .registerContainer {
+    padding: 20px 15px;
+  }
+  
+  .registerHeader {
+    margin-bottom: 30px;
+  }
+  
+  .logo {
+    font-size: 1.75rem;
+    margin-bottom: 15px;
+  }
+  
+  .registerHeader h1 {
+    font-size: 1.5rem;
   }
 }
