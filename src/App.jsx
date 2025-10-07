@@ -1,8 +1,7 @@
-// src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LandingPage from './pages/LandingPage/LandingPage'; // Página inicial
-import Home from './pages/Home/Home'; // Página home simples
+import LandingPage from './pages/LandingPage/LandingPage'; // Corrigido
+import Home from './pages/Home/Home'; // Corrigido
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import './App.css';
@@ -16,8 +15,8 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/" element={<LandingPage />} /> {/* Página inicial */}
-          <Route path="/home" element={<Home />} /> {/* Página home simples */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/simulation" element={<Simulation />} />
