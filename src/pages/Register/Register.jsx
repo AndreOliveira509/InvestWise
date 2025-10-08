@@ -31,10 +31,10 @@ const Register = () => {
       return;
     }
 
-    // Simulação de cadastro - em desenvolvimento
+    // Simulação de cadastro - navega direto para home
     console.log('Register attempt:', formData);
-    alert('Cadastro realizado com sucesso! Redirecionando para Home...');
-    navigate('/');
+    localStorage.setItem('isAuthenticated', 'true');
+    navigate('/home');
   };
 
   return (

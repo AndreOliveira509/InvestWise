@@ -22,10 +22,10 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulação de login - em desenvolvimento
+    // Navega direto para home sem verificação
     console.log('Login attempt:', formData);
-    alert('Funcionalidade em desenvolvimento! Redirecionando para Home...');
-    navigate('/');
+    localStorage.setItem('isAuthenticated', 'true');
+    navigate('/home');
   };
 
   return (

@@ -1,3 +1,78 @@
+/* pages/Home/Home.module.css */
+.home {
+  min-height: 100vh;
+  background: var(--background-color);
+}
+
+.mainContent {
+  margin-left: 80px;
+  transition: margin-left 0.3s ease;
+  min-height: 100vh;
+}
+
+.mainContent.sidebarOpen {
+  margin-left: 280px;
+}
+
+.mainContent.sidebarClosed {
+  margin-left: 80px;
+}
+
+/* Top Bar */
+.topBar {
+  background: white;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topBarContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.menuButton {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.menuButton:hover {
+  background: var(--surface-color);
+}
+
+.userActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logoutButton {
+  background: none;
+  border: 1px solid var(--border-color);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--text-primary);
+}
+
+.logoutButton:hover {
+  background: var(--surface-color);
+  border-color: var(--primary-color);
+}
+
+
 .home {
   min-height: 100vh;
   background: var(--background-color);
@@ -75,6 +150,12 @@
 /* Main Content */
 .main {
   padding: 2rem 0;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
 }
 
 /* Dashboard */
