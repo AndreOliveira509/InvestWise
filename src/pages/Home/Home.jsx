@@ -1,5 +1,5 @@
 // src/pages/Home/Home.js
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { 
   FaMoneyBillWave, 
@@ -15,7 +15,9 @@ import {
   FaArrowUp,
   FaArrowDown,
   FaUser,
-  FaSignOutAlt
+  FaSignOutAlt,
+  FaSearch,
+  FaFilter
 } from "react-icons/fa";
 import { MdSavings, MdTrendingUp } from "react-icons/md";
 import styles from "./Home.module.css";
@@ -25,17 +27,24 @@ import BudgetProgress from '../../components/BudgetProgress/BudgetProgress';
 
 const Home = () => {
   const navigate = useNavigate();
+  
+  // Estados para controle da sidebar e dados
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [expenses, setExpenses] = useState([]);
-  const [budget, setBudget] = useState(3000);
+  const [expenses, setExpenses] = useState([]); // Array de despesas
+  const [budget, setBudget] = useState(3000); // Orçamento mensal
+  const [searchTerm, setSearchTerm] = useState(''); // Termo de busca
+  const [filterCategory, setFilterCategory] = useState('all'); // Filtro por categoria
+  const [sortBy, setSortBy] = useState('date'); // Ordenação
+  
+  // Estado para novo gasto
   const [newExpense, setNewExpense] = useState({
     description: '',
     amount: '',
     category: 'alimentacao',
-    date: new Date().toISOString().split('T')[0]
+    date: new Date().toISOString().split('T')[0] // Data atual como padrão
   });
 
-  // Categorias de gastos com cores da identidade visual
+  // Definição das categorias de gastos com cores e ícones
   const categories = [
     { id: 'alimentacao', name: 'Alimentação', color: '#FFC107', icon: '🍽️' },
     { id: 'transporte', name: 'Transporte', color: '#FFA000', icon: '🚗' },
@@ -46,31 +55,70 @@ const Home = () => {
     { id: 'outros', name: 'Outros', color: '#FFF59D', icon: '📦' }
   ];
 
-  // Calcular totais
+  // Efeito para carregar dados do localStorage ao montar o componente
+  useEffect(() => {
+    const savedExpenses = localStorage.getItem('expenses');
+    const savedBudget = localStorage.getItem('budget');
+    
+    if (savedExpenses) setExpenses(JSON.parse(savedExpenses));
+    if (savedBudget) setBudget(parseFloat(savedBudget));
+  }, []);
+
+  // Efeito para salvar dados no localStorage quando expenses ou budget mudam
+  useEffect(() => {
+    localStorage.setItem('expenses', JSON.stringify(expenses));
+    localStorage.setItem('budget', JSON.stringify(budget));
+  }, [expenses, budget]);
+
+  // Filtragem e ordenação das despesas
+  const filteredExpenses = expenses
+    .filter(expense => {
+      const matchesSearch = expense.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = filterCategory === 'all' || expense.category === filterCategory;
+      return matchesSearch && matchesCategory;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'date':
+          return new Date(b.date) - new Date(a.date); // Mais recentes primeiro
+        case 'amount':
+          return b.amount - a.amount; // Maiores valores primeiro
+        case 'description':
+          return a.description.localeCompare(b.description); // Ordem alfabética
+        default:
+          return 0;
+      }
+    });
+
+  // Cálculos de totais e percentuais
   const totalExpenses = expenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
   const remainingBudget = budget - totalExpenses;
   const budgetPercentage = (totalExpenses / budget) * 100;
 
-  // Gastos por categoria
+  // Agrupamento de gastos por categoria
   const expensesByCategory = categories.map(category => ({
     ...category,
     total: expenses
       .filter(expense => expense.category === category.id)
       .reduce((sum, expense) => sum + parseFloat(expense.amount), 0)
-  })).filter(cat => cat.total > 0);
+  })).filter(cat => cat.total > 0); // Filtra apenas categorias com gastos
 
-  // Adicionar novo gasto
+  // Função para adicionar novo gasto
   const handleAddExpense = (e) => {
     e.preventDefault();
+    // Validação de campos obrigatórios
     if (!newExpense.description || !newExpense.amount) return;
 
     const expense = {
-      id: Date.now(),
+      id: Date.now(), // ID único baseado no timestamp
       ...newExpense,
       amount: parseFloat(newExpense.amount)
     };
 
-    setExpenses([...expenses, expense]);
+    // Adiciona nova despesa no início do array
+    setExpenses([expense, ...expenses]);
+    
+    // Reseta o formulário
     setNewExpense({
       description: '',
       amount: '',
@@ -79,15 +127,31 @@ const Home = () => {
     });
   };
 
-  // Remover gasto
+  // Função para remover gasto
   const handleRemoveExpense = (id) => {
     setExpenses(expenses.filter(expense => expense.id !== id));
   };
 
-  // Verificar alertas
+  // Função para editar orçamento
+  const handleBudgetEdit = () => {
+    const newBudget = prompt('Digite o novo valor do orçamento:', budget);
+    if (newBudget && !isNaN(newBudget)) {
+      setBudget(parseFloat(newBudget));
+    }
+  };
+
+  // Função para limpar filtros
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setFilterCategory('all');
+    setSortBy('date');
+  };
+
+  // Função para gerar alertas baseados no orçamento
   const getBudgetAlerts = () => {
     const alerts = [];
     
+    // Alerta de orçamento ultrapassado
     if (budgetPercentage >= 100) {
       alerts.push({
         type: 'error',
@@ -95,6 +159,7 @@ const Home = () => {
         icon: <FaExclamationTriangle />
       });
     } else if (budgetPercentage >= 80) {
+      // Alerta de orçamento próximo do limite
       alerts.push({
         type: 'warning',
         message: 'Cuidado! Você já gastou mais de 80% do seu orçamento.',
@@ -102,11 +167,12 @@ const Home = () => {
       });
     }
 
-    // Verificar categoria com maior gasto
+    // Verifica categoria com maior gasto
     const maxCategory = expensesByCategory.reduce((max, cat) => 
       cat.total > max.total ? cat : max, { total: 0 }
     );
     
+    // Alerta se alguma categoria está consumindo mais de 40% do orçamento
     if (maxCategory.total > budget * 0.4) {
       alerts.push({
         type: 'info',
@@ -120,42 +186,49 @@ const Home = () => {
 
   const alerts = getBudgetAlerts();
 
-  // Estatísticas rápidas
+  // Cálculo de estatísticas rápidas
+  const todayExpenses = expenses
+    .filter(exp => exp.date === new Date().toISOString().split('T')[0])
+    .reduce((sum, exp) => sum + exp.amount, 0);
+
+  // Dados para as estatísticas rápidas
   const quickStats = [
     {
       label: 'Gasto Hoje',
-      value: 'R$ 85,00',
-      change: '+12%',
-      trend: 'up',
-      icon: <FaArrowUp />
+      value: `R$ ${todayExpenses.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+      change: todayExpenses > 0 ? '+12%' : '0%',
+      trend: todayExpenses > 0 ? 'up' : 'neutral',
+      icon: todayExpenses > 0 ? <FaArrowUp /> : '→'
     },
     {
       label: 'Economia Mensal',
-      value: 'R$ 450,00',
-      change: '+8%',
-      trend: 'up',
-      icon: <FaArrowUp />
+      value: `R$ ${Math.max(0, remainingBudget).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+      change: remainingBudget >= 0 ? '+8%' : '-15%',
+      trend: remainingBudget >= 0 ? 'up' : 'down',
+      icon: remainingBudget >= 0 ? <FaArrowUp /> : <FaArrowDown />
     },
     {
       label: 'Meta do Mês',
-      value: '75%',
-      change: '-5%',
-      trend: 'down',
-      icon: <FaArrowDown />
+      value: `${Math.min(100, budgetPercentage).toFixed(0)}%`,
+      change: budgetPercentage <= 80 ? '+5%' : '-12%',
+      trend: budgetPercentage <= 80 ? 'up' : 'down',
+      icon: budgetPercentage <= 80 ? <FaArrowUp /> : <FaArrowDown />
     }
   ];
 
   return (
     <div className={styles.home}>
+      {/* Sidebar com controle de estado */}
       <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
       
-      {/* Main Content */}
+      {/* Conteúdo Principal */}
       <div className={`${styles.mainContent} ${isSidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
         
         {/* Top Bar Minimalista */}
         <header className={styles.topBar}>
           <div className={styles.topBarContent}>
             <div className={styles.breadcrumb}>
+              {/* Botão de menu para abrir/fechar a sidebar */}
               <button 
                 className={styles.menuButton}
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -165,6 +238,7 @@ const Home = () => {
               <span className={styles.pageTitle}>Dashboard</span>
             </div>
             <div className={styles.userActions}>
+              {/* Estatísticas Rápidas */}
               <div className={styles.quickStats}>
                 {quickStats.map((stat, index) => (
                   <div key={index} className={styles.quickStat}>
@@ -178,6 +252,8 @@ const Home = () => {
                   </div>
                 ))}
               </div>
+              
+              {/* Informações do Usuário */}
               <div className={styles.userInfo}>
                 <div className={styles.userAvatar}>
                   <FaUser />
@@ -187,6 +263,8 @@ const Home = () => {
                   <span className={styles.userPlan}>Premium</span>
                 </div>
               </div>
+              
+              {/* Botão de Logout */}
               <button 
                 className={styles.logoutButton}
                 onClick={() => {
@@ -201,11 +279,11 @@ const Home = () => {
           </div>
         </header>
 
-        {/* Dashboard Content */}
+        {/* Conteúdo do Dashboard */}
         <main className={styles.main}>
           <div className={styles.container}>
             
-            {/* Resumo Financeiro */}
+            {/* Seção de Resumo Financeiro */}
             <section className={styles.dashboard}>
               <div className={styles.sectionHeader}>
                 <h1 className={styles.dashboardTitle}>
@@ -214,6 +292,7 @@ const Home = () => {
                 </h1>
                 <div className={styles.dateInfo}>
                   <FaCalendar className={styles.dateIcon} />
+                  {/* Data atual formatada */}
                   {new Date().toLocaleDateString('pt-BR', { 
                     weekday: 'long', 
                     year: 'numeric', 
@@ -223,8 +302,10 @@ const Home = () => {
                 </div>
               </div>
               
+              {/* Cards de Resumo */}
               <div className={styles.summaryCards}>
-                <div className={styles.summaryCard}>
+                {/* Card de Orçamento Mensal (clicável para editar) */}
+                <div className={styles.summaryCard} onClick={handleBudgetEdit} style={{cursor: 'pointer'}}>
                   <div className={styles.cardHeader}>
                     <div className={styles.cardIconContainer}>
                       <FaMoneyBillWave className={styles.cardIcon} />
@@ -234,9 +315,10 @@ const Home = () => {
                       <div className={styles.cardAmount}>R$ {budget.toLocaleString('pt-BR')}</div>
                     </div>
                   </div>
-                  <div className={styles.cardSubtitle}>Limite definido para este mês</div>
+                  <div className={styles.cardSubtitle}>Clique para editar</div>
                 </div>
 
+                {/* Card de Total Gasto */}
                 <div className={styles.summaryCard}>
                   <div className={styles.cardHeader}>
                     <div className={styles.cardIconContainer}>
@@ -252,6 +334,7 @@ const Home = () => {
                   </div>
                 </div>
 
+                {/* Card de Saldo Restante */}
                 <div className={`${styles.summaryCard} ${
                   remainingBudget >= 0 ? styles.positive : styles.negative
                 }`}>
@@ -271,6 +354,7 @@ const Home = () => {
                   </div>
                 </div>
 
+                {/* Card de Economia do Mês */}
                 <div className={styles.summaryCard}>
                   <div className={styles.cardHeader}>
                     <div className={styles.cardIconContainer}>
@@ -278,10 +362,12 @@ const Home = () => {
                     </div>
                     <div>
                       <h3>Economia do Mês</h3>
-                      <div className={styles.cardAmount}>R$ 450,00</div>
+                      <div className={styles.cardAmount}>R$ {Math.max(0, remainingBudget).toLocaleString('pt-BR')}</div>
                     </div>
                   </div>
-                  <div className={styles.cardSubtitle}>+8% em relação ao mês anterior</div>
+                  <div className={styles.cardSubtitle}>
+                    {remainingBudget >= 0 ? 'Saldo positivo' : 'Saldo negativo'}
+                  </div>
                 </div>
               </div>
 
@@ -294,7 +380,7 @@ const Home = () => {
                 />
               </div>
 
-              {/* Alertas */}
+              {/* Seção de Alertas */}
               {alerts.length > 0 && (
                 <div className={styles.alerts}>
                   {alerts.map((alert, index) => (
@@ -307,7 +393,7 @@ const Home = () => {
               )}
             </section>
 
-            {/* Gráficos e Visualizações */}
+            {/* Seção de Gráficos e Visualizações */}
             <section className={styles.charts}>
               <div className={styles.sectionHeader}>
                 <h2>Análise de Gastos</h2>
@@ -319,7 +405,11 @@ const Home = () => {
                     <h3>Distribuição por Categoria</h3>
                     <span className={styles.chartPeriod}>Este mês</span>
                   </div>
-                  <ExpenseChart expensesByCategory={expensesByCategory} />
+                  {/* Componente do gráfico atualizado */}
+                  <ExpenseChart 
+                    expensesByCategory={expensesByCategory} 
+                    hasData={expensesByCategory.length > 0}
+                  />
                 </div>
                 
                 <div className={styles.chartCard}>
@@ -328,36 +418,43 @@ const Home = () => {
                     <span className={styles.chartPeriod}>Maiores gastos</span>
                   </div>
                   <div className={styles.categoriesList}>
-                    {expensesByCategory
-                      .sort((a, b) => b.total - a.total)
-                      .slice(0, 5)
-                      .map((category, index) => (
-                        <div key={category.id} className={styles.categoryItem}>
-                          <div className={styles.categoryInfo}>
-                            <span 
-                              className={styles.categoryColor}
-                              style={{ backgroundColor: category.color }}
-                            ></span>
-                            <span className={styles.categoryName}>
-                              {category.icon} {category.name}
-                            </span>
+                    {expensesByCategory.length > 0 ? (
+                      expensesByCategory
+                        .sort((a, b) => b.total - a.total)
+                        .slice(0, 5)
+                        .map((category, index) => (
+                          <div key={category.id} className={styles.categoryItem}>
+                            <div className={styles.categoryInfo}>
+                              <span 
+                                className={styles.categoryColor}
+                                style={{ backgroundColor: category.color }}
+                              ></span>
+                              <span className={styles.categoryName}>
+                                {category.icon} {category.name}
+                              </span>
+                            </div>
+                            <div className={styles.categoryAmount}>
+                              R$ {category.total.toLocaleString('pt-BR')}
+                            </div>
                           </div>
-                          <div className={styles.categoryAmount}>
-                            R$ {category.total.toLocaleString('pt-BR')}
-                          </div>
-                        </div>
-                      ))
-                    }
+                        ))
+                    ) : (
+                      <div className={styles.emptyState}>
+                        <MdSavings className={styles.emptyIcon} />
+                        <p>Nenhum gasto registrado</p>
+                        <small>Adicione gastos para ver as categorias</small>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             </section>
 
-            {/* Adicionar Gastos e Lista */}
+            {/* Seção de Adicionar Gastos e Lista */}
             <div className={styles.expenseSection}>
               <div className={styles.expenseGrid}>
                 
-                {/* Adicionar Gastos */}
+                {/* Formulário para Adicionar Gastos */}
                 <section className={styles.addExpense}>
                   <div className={styles.sectionHeader}>
                     <h2>Adicionar Novo Gasto</h2>
@@ -433,23 +530,108 @@ const Home = () => {
                   </form>
                 </section>
 
-                {/* Lista de Gastos */}
+                {/* Lista de Gastos com Filtros */}
                 <section className={styles.expensesList}>
                   <div className={styles.sectionHeader}>
-                    <h2>Gastos Recentes</h2>
-                    <p>Últimas despesas registradas</p>
+                    <div className={styles.expensesHeader}>
+                      <div>
+                        <h2>Gastos Recentes</h2>
+                        <p>Últimas despesas registradas</p>
+                      </div>
+                      {/* Controles de Filtro e Ordenação */}
+                      <div className={styles.filterControls}>
+                        {/* Campo de Busca */}
+                        <div className={styles.searchBox}>
+                          <FaSearch className={styles.searchIcon} />
+                          <input
+                            type="text"
+                            placeholder="Buscar gastos..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className={styles.searchInput}
+                          />
+                          {searchTerm && (
+                            <button 
+                              className={styles.clearButton}
+                              onClick={() => setSearchTerm('')}
+                            >
+                              ×
+                            </button>
+                          )}
+                        </div>
+                        
+                        {/* Filtro por Categoria */}
+                        <div className={styles.filterGroup}>
+                          <FaFilter className={styles.filterIcon} />
+                          <select
+                            value={filterCategory}
+                            onChange={(e) => setFilterCategory(e.target.value)}
+                            className={styles.filterSelect}
+                          >
+                            <option value="all">Todas categorias</option>
+                            {categories.map(cat => (
+                              <option key={cat.id} value={cat.id}>
+                                {cat.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* Ordenação */}
+                        <select
+                          value={sortBy}
+                          onChange={(e) => setSortBy(e.target.value)}
+                          className={styles.sortSelect}
+                        >
+                          <option value="date">Ordenar por data</option>
+                          <option value="amount">Ordenar por valor</option>
+                          <option value="description">Ordenar por nome</option>
+                        </select>
+
+                        {/* Botão para limpar filtros (só aparece quando há filtros ativos) */}
+                        {(searchTerm || filterCategory !== 'all') && (
+                          <button 
+                            className={styles.clearFiltersButton}
+                            onClick={handleClearFilters}
+                          >
+                            Limpar
+                          </button>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  {expenses.length === 0 ? (
+
+                  {/* Lista de Gastos ou Estado Vazio */}
+                  {filteredExpenses.length === 0 ? (
                     <div className={styles.emptyState}>
                       <MdSavings className={styles.emptyIcon} />
-                      <p>Nenhum gasto registrado ainda.</p>
-                      <small>Adicione seu primeiro gasto usando o formulário ao lado.</small>
+                      <p>
+                        {expenses.length === 0 
+                          ? 'Nenhum gasto registrado ainda.' 
+                          : 'Nenhum gasto encontrado com os filtros atuais.'
+                        }
+                      </p>
+                      <small>
+                        {expenses.length === 0 
+                          ? 'Adicione seu primeiro gasto usando o formulário ao lado.' 
+                          : 'Tente ajustar os filtros de busca.'
+                        }
+                      </small>
                     </div>
                   ) : (
                     <div className={styles.expensesTable}>
-                      {expenses
-                        .sort((a, b) => new Date(b.date) - new Date(a.date))
-                        .slice(0, 6)
+                      {/* Resumo dos resultados filtrados */}
+                      <div className={styles.expensesSummary}>
+                        Mostrando {filteredExpenses.length} de {expenses.length} gastos
+                        {(searchTerm || filterCategory !== 'all') && (
+                          <span className={styles.activeFilters}>
+                            • Filtros ativos
+                          </span>
+                        )}
+                      </div>
+                      {/* Lista dos 8 primeiros gastos filtrados */}
+                      {filteredExpenses
+                        .slice(0, 8)
                         .map(expense => {
                           const category = categories.find(cat => cat.id === expense.category);
                           return (
@@ -493,13 +675,14 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Análise Detalhada */}
+            {/* Seção de Análise Detalhada */}
             <section className={styles.analysis}>
               <div className={styles.sectionHeader}>
                 <h2>Análise Detalhada</h2>
                 <p>Métricas importantes para seu controle financeiro</p>
               </div>
               <div className={styles.analysisGrid}>
+                {/* Card de Média de Gastos Diários */}
                 <div className={styles.analysisCard}>
                   <div className={styles.analysisIcon}>
                     <FaChartLine />
@@ -511,6 +694,7 @@ const Home = () => {
                   <small>Baseado em 30 dias</small>
                 </div>
 
+                {/* Card de Dias Restantes */}
                 <div className={styles.analysisCard}>
                   <div className={styles.analysisIcon}>
                     <FaCalendar />
@@ -522,6 +706,7 @@ const Home = () => {
                   <small>Dias para controlar gastos</small>
                 </div>
 
+                {/* Card de Gasto por Dia Restante */}
                 <div className={styles.analysisCard}>
                   <div className={styles.analysisIcon}>
                     <FaPiggyBank />
@@ -533,6 +718,7 @@ const Home = () => {
                   <small>Para manter o orçamento</small>
                 </div>
 
+                {/* Card de Projeção do Mês */}
                 <div className={styles.analysisCard}>
                   <div className={styles.analysisIcon}>
                     <MdTrendingUp />

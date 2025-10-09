@@ -370,6 +370,11 @@
   box-shadow: var(--shadow-light);
   cursor: pointer;
   overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.faqItem:hover {
+  box-shadow: var(--shadow-medium);
 }
 
 .faqQuestion {
