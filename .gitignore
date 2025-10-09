@@ -1,24 +1,64 @@
+# ================= #
+#  Arquivos Gerais
+# ================= #
 # Logs
 logs
 *.log
 npm-debug.log*
+pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# OS & Editor-specific
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# ================= #
+#  FRONTEND (React)
+# ================= #
+# Dependências do Frontend
+/node_modules/
+
+# Build do Frontend (Vite)
+/dist/
+/dist-ssr/
 *.local
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# =================== #
+#  BACKEND (NestJS)
+# =================== #
+# Dependências do Backend
+/api/node_modules/
+
+# Build do Backend
+/api/dist/
+/api/build/
+
+# Arquivos de ambiente do Backend
+/api/.env
+/api/.env.development.local
+/api/.env.test.local
+/api/.env.production.local
+/api/.env.local
+
+# Testes e Coverage do Backend
+/api/coverage/
+/api/.nyc_output/
+
+# Cache e dados de runtime
+/api/.temp/
+/api/.tmp/
+/api/pids/
+/api/*.pid
+/api/*.seed
+/api/*.pid.lock
+/api/report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Pasta gerada pelo Prisma
+/generated/prisma/
