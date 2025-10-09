@@ -1,0 +1,227 @@
+/* components/Sidebar/Sidebar.module.css */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 80px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+  border-right: 1px solid #e9ecef;
+}
+
+.sidebar.open {
+  width: 280px;
+}
+
+.topContainer {
+  padding: 1.5rem 1rem;
+}
+
+.flexContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.sidebarBtn {
+  background: var(--primary-color);
+  border: none;
+  color: var(--secondary-color);
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+}
+
+.sidebarBtn:hover {
+  background: #ffca28;
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+}
+
+.arrowIcon {
+  font-size: 1.25rem;
+  transition: transform 0.3s ease;
+  color: var(--secondary-color);
+}
+
+.arrowIcon.rotated {
+  transform: rotate(180deg);
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: 1rem;
+}
+
+.logoIcon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--primary-color), #ffed4e);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--secondary-color);
+  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+}
+
+.logoText {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+  white-space: nowrap;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.menuItem::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: var(--accent-color);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.menuItem:hover {
+  background: rgba(255, 193, 7, 0.1);
+  color: var(--text-primary);
+  transform: translateX(5px);
+}
+
+.menuItem:hover::before {
+  transform: scaleY(1);
+}
+
+.menuItem.active {
+  background: rgba(255, 193, 7, 0.15);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.menuItem.active::before {
+  transform: scaleY(1);
+}
+
+.menuIcon {
+  font-size: 1.25rem;
+  width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+}
+
+.menuLabel {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Footer da Sidebar */
+.sidebarFooter {
+  padding: 1.5rem 1rem;
+  border-top: 1px solid #e9ecef;
+  background: rgba(248, 249, 250, 0.8);
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--primary-color), #ffed4e);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--secondary-color);
+  font-size: 1rem;
+  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.userName {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.userStatus {
+  color: var(--primary-color);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 70px;
+  }
+
+  .sidebar.open {
+    width: 260px;
+  }
+
+  .topContainer {
+    padding: 1rem 0.75rem;
+  }
+  
+  .sidebarBtn {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .logoIcon {
+    width: 35px;
+    height: 35px;
+    font-size: 1.25rem;
+  }
+  
+  .logoText {
+    font-size: 1.3rem;
+  }
+}

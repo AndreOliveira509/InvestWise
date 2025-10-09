@@ -1,0 +1,626 @@
+/* src/pages/Profile/Profile.module.css */
+.profile {
+  min-height: 100vh;
+  background: var(--background-color);
+}
+
+.mainContent {
+  margin-left: 80px;
+  transition: margin-left 0.3s ease;
+  min-height: 100vh;
+}
+
+.mainContent.sidebarOpen {
+  margin-left: 280px;
+}
+
+.mainContent.sidebarClosed {
+  margin-left: 80px;
+}
+
+/* Top Bar */
+.topBar {
+  background: white;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topBarContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.menuButton {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.menuButton:hover {
+  background: var(--surface-color);
+}
+
+.userActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logoutButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: 1px solid var(--border-color);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.logoutButton:hover {
+  background: var(--surface-color);
+  border-color: var(--primary-color);
+}
+
+/* Main Content */
+.main {
+  padding: 2rem 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Profile Header */
+.profileHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.avatarSection {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.avatarContainer {
+  position: relative;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, var(--primary-color), #ffed4e);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: var(--secondary-color);
+  border: 4px solid white;
+  box-shadow: var(--shadow-medium);
+}
+
+.avatarEdit {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 36px;
+  height: 36px;
+  background: var(--primary-color);
+  border: 3px solid white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--secondary-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.avatarEdit:hover {
+  transform: scale(1.1);
+}
+
+.userInfo {
+  flex: 1;
+}
+
+.userName {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.userEmail {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.userStats {
+  display: flex;
+  gap: 2rem;
+}
+
+.stat {
+  text-align: center;
+}
+
+.statNumber {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 0.25rem;
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.headerActions {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.editButton, .cancelButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.editButton {
+  background: var(--primary-color);
+  color: var(--secondary-color);
+}
+
+.editButton:hover {
+  background: #ffca28;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
+
+.editButton.save {
+  background: #10B981;
+  color: white;
+}
+
+.cancelButton {
+  background: #6B7280;
+  color: white;
+}
+
+.cancelButton:hover {
+  background: #4B5563;
+}
+
+/* Tabs Section */
+.tabsSection {
+  margin-bottom: 2rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.tab:hover {
+  color: var(--primary-color);
+  background: var(--surface-color);
+}
+
+.tab.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+  background: var(--surface-color);
+}
+
+.tabIcon {
+  font-size: 1.1rem;
+}
+
+/* Tab Content */
+.tabContent {
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow-light);
+  overflow: hidden;
+}
+
+.tabContent > div {
+  padding: 2rem;
+}
+
+.tabContent h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Personal Info */
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.infoGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.infoGroup label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.inputIcon {
+  color: var(--primary-color);
+}
+
+.infoValue {
+  padding: 0.75rem;
+  background: var(--surface-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.input {
+  padding: 0.75rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  background: white;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+/* Preferences */
+.preferencesGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.preferenceItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: var(--surface-color);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.preferenceInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.preferenceIcon {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+}
+
+.preferenceInfo h4 {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.preferenceInfo p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* Toggle Switch */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+/* Select */
+.select {
+  padding: 0.75rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  background: white;
+  cursor: pointer;
+  min-width: 150px;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+/* Security */
+.securityGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.securityItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: var(--surface-color);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.securityInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.securityIcon {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+}
+
+.securityCard {
+  padding: 1.5rem;
+  background: var(--surface-color);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.securityCard h4 {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.activityItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.activityDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.activityDetails strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.activityDetails span {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.activityStatus span {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.statusSuccess {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.statusNeutral {
+  background: #E5E7EB;
+  color: #374151;
+}
+
+.securityActions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.securityButton {
+  padding: 0.75rem 1.5rem;
+  background: white;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.securityButton:hover {
+  border-color: var(--primary-color);
+  background: var(--surface-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .mainContent.sidebarOpen,
+  .mainContent.sidebarClosed {
+    margin-left: 0;
+  }
+
+  .profileHeader {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .avatarSection {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+
+  .userStats {
+    justify-content: center;
+  }
+
+  .headerActions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .tabs {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .tab {
+    justify-content: center;
+  }
+
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .preferenceItem,
+  .securityItem {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .securityActions {
+    flex-direction: column;
+  }
+
+  .securityButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 1rem;
+  }
+
+  .userName {
+    font-size: 2rem;
+  }
+
+  .userStats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .tabContent > div {
+    padding: 1.5rem;
+  }
+}
