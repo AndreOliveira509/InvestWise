@@ -4,11 +4,17 @@ import { useNavigate, Link } from 'react-router-dom';
 import { FaEye, FaEyeSlash, FaUser, FaLock, FaEnvelope } from 'react-icons/fa';
 import styles from './Register.module.css';
 import Button from '../../components/Button/Button';
+import axios from 'axios';
 
 const Register = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  // Adiciona estados para loading e erros da API
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -23,19 +29,40 @@ const Register = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     
     if (formData.password !== formData.confirmPassword) {
       alert('As senhas não coincidem!');
-      return;
+      return; 
     }
 
-    // Simulação de cadastro - navega direto para home
-    console.log('Register attempt:', formData);
-    localStorage.setItem('isAuthenticated', 'true');
-    navigate('/home');
-  };
+    setLoading(true);
+
+    try {
+      // Faz a requisição POST para o endpoint do backend
+      const response = await axios.post('http://localhost:3001/auth/cadastro', {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password
+      });
+    
+    // Se a requisição for bem-sucedida, navega para a tela de login com uma mensagem
+    console.log('Usuário cadastrado:', response.data);
+    navigate('/login?sucess=Cadastro realizado com sucesso! Faça login.');
+  } catch (apiError) {
+    // Se a API retornar um erro, exibe a mensagem
+    if (apiError.response && apiError.response.data) {
+      const message = apiError.response.data.message
+      setError(Array.isArray(message) ? message.join(',') : message);
+    } else {
+      setError('Erro ao conectar com o servidor. Tente novamente mais tarde.');
+    }
+  } finally {
+    setLoading(false)
+  }
+};
 
   return (
     <div className={styles.registerPage}>
@@ -45,6 +72,8 @@ const Register = () => {
           <h1>Crie sua conta</h1>
           <p>Comece sua jornada financeira agora</p>
         </div>
+
+        {error && <p className={styles.errorMessage}>{error}</p>}
 
         <form className={styles.registerForm} onSubmit={handleSubmit}>
           <div className={styles.inputGroup}>
