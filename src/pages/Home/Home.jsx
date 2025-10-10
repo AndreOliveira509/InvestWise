@@ -8,7 +8,6 @@ import {
   FaTrash,
   FaChartLine,
   FaPiggyBank,
-  FaBars,
   FaHome,
   FaChartPie,
   FaCalendar,
@@ -17,45 +16,54 @@ import {
   FaUser,
   FaSignOutAlt,
   FaSearch,
-  FaFilter
+  FaFilter,
+  FaDollarSign,
+  FaShoppingCart,
+  FaUsers,
+  FaEye
 } from "react-icons/fa";
 import { MdSavings, MdTrendingUp } from "react-icons/md";
 import styles from "./Home.module.css";
 import Sidebar from '../../components/Sidebar/Sidebar';
-import ExpenseChart from '../../components/ExpenseChart/ExpenseChart';
-import BudgetProgress from '../../components/BudgetProgress/BudgetProgress';
+import PositiveAndNegativeBarChart from '../../components/PositiveAndNegativeBarChart/PositiveAndNegativeBarChart';
+import CustomActiveShapePieChart from '../../components/CustomActiveShapePieChart/CustomActiveShapePieChart';
+import SynchronizedLineChart from '../../components/SynchronizedLineChart/SynchronizedLineChart';
 
 const Home = () => {
   const navigate = useNavigate();
   
   // Estados para controle da sidebar e dados
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [expenses, setExpenses] = useState([]); // Array de despesas
-  const [budget, setBudget] = useState(3000); // Orçamento mensal
-  const [searchTerm, setSearchTerm] = useState(''); // Termo de busca
-  const [filterCategory, setFilterCategory] = useState('all'); // Filtro por categoria
-  const [sortBy, setSortBy] = useState('date'); // Ordenação
+  const [expenses, setExpenses] = useState([]);
+  const [budget, setBudget] = useState(3000);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState('all');
+  const [sortBy, setSortBy] = useState('date');
+  
+  // Estados para dados dinâmicos dos gráficos
+  const [weeklyPerformance, setWeeklyPerformance] = useState([]);
+  const [realTimeMetrics, setRealTimeMetrics] = useState([]);
   
   // Estado para novo gasto
   const [newExpense, setNewExpense] = useState({
     description: '',
     amount: '',
     category: 'alimentacao',
-    date: new Date().toISOString().split('T')[0] // Data atual como padrão
+    date: new Date().toISOString().split('T')[0]
   });
 
   // Definição das categorias de gastos com cores e ícones
   const categories = [
-    { id: 'alimentacao', name: 'Alimentação', color: '#FFC107', icon: '🍽️' },
-    { id: 'transporte', name: 'Transporte', color: '#FFA000', icon: '🚗' },
-    { id: 'moradia', name: 'Moradia', color: '#FF8F00', icon: '🏠' },
-    { id: 'lazer', name: 'Lazer', color: '#FF6F00', icon: '🎮' },
-    { id: 'saude', name: 'Saúde', color: '#FFD54F', icon: '🏥' },
-    { id: 'educacao', name: 'Educação', color: '#FFE082', icon: '📚' },
-    { id: 'outros', name: 'Outros', color: '#FFF59D', icon: '📦' }
+    { id: 'alimentacao', name: 'Alimentação', color: '#FF6B6B', icon: '🍽️' },
+    { id: 'transporte', name: 'Transporte', color: '#4ECDC4', icon: '🚗' },
+    { id: 'moradia', name: 'Moradia', color: '#45B7D1', icon: '🏠' },
+    { id: 'lazer', name: 'Lazer', color: '#FFA07A', icon: '🎮' },
+    { id: 'saude', name: 'Saúde', color: '#98D8C8', icon: '🏥' },
+    { id: 'educacao', name: 'Educação', color: '#F7DC6F', icon: '📚' },
+    { id: 'outros', name: 'Outros', color: '#BB8FCE', icon: '📦' }
   ];
 
-  // Efeito para carregar dados do localStorage ao montar o componente
+  // Efeito para carregar dados do localStorage
   useEffect(() => {
     const savedExpenses = localStorage.getItem('expenses');
     const savedBudget = localStorage.getItem('budget');
@@ -64,11 +72,64 @@ const Home = () => {
     if (savedBudget) setBudget(parseFloat(savedBudget));
   }, []);
 
-  // Efeito para salvar dados no localStorage quando expenses ou budget mudam
+  // Efeito para salvar dados no localStorage
   useEffect(() => {
     localStorage.setItem('expenses', JSON.stringify(expenses));
     localStorage.setItem('budget', JSON.stringify(budget));
   }, [expenses, budget]);
+
+  // Efeito para gerar dados dinâmicos dos gráficos
+  useEffect(() => {
+    // Gerar dados iniciais
+    generateWeeklyPerformance();
+    generateRealTimeMetrics();
+
+    // Atualizar dados em tempo real a cada 5 segundos
+    const interval = setInterval(() => {
+      updateRealTimeMetrics();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Função para gerar dados de desempenho semanal
+  const generateWeeklyPerformance = () => {
+    const days = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+    const performanceData = days.map(day => {
+      const lucro = Math.floor(Math.random() * 2000) + 1000;
+      const prejuizo = Math.random() > 0.7 ? Math.floor(Math.random() * 800) : 0;
+      return { name: day, lucro, prejuizo };
+    });
+    setWeeklyPerformance(performanceData);
+  };
+
+  // Função para gerar métricas em tempo real iniciais
+  const generateRealTimeMetrics = () => {
+    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul'];
+    const metricsData = months.map(month => {
+      const visitas = Math.floor(Math.random() * 5000) + 2000;
+      const conversoes = Math.floor(visitas * (Math.random() * 0.3 + 0.1));
+      return { name: month, visitas, conversoes };
+    });
+    setRealTimeMetrics(metricsData);
+  };
+
+  // Função para atualizar métricas em tempo real
+  const updateRealTimeMetrics = () => {
+    setRealTimeMetrics(prev => {
+      const newData = [...prev];
+      const lastIndex = newData.length - 1;
+      
+      // Atualizar apenas o último mês para simular dados em tempo real
+      newData[lastIndex] = {
+        ...newData[lastIndex],
+        visitas: Math.floor(Math.random() * 2000) + newData[lastIndex].visitas - 1000,
+        conversoes: Math.floor(Math.random() * 500) + newData[lastIndex].conversoes - 250
+      };
+      
+      return newData;
+    });
+  };
 
   // Filtragem e ordenação das despesas
   const filteredExpenses = expenses
@@ -80,11 +141,11 @@ const Home = () => {
     .sort((a, b) => {
       switch (sortBy) {
         case 'date':
-          return new Date(b.date) - new Date(a.date); // Mais recentes primeiro
+          return new Date(b.date) - new Date(a.date);
         case 'amount':
-          return b.amount - a.amount; // Maiores valores primeiro
+          return b.amount - a.amount;
         case 'description':
-          return a.description.localeCompare(b.description); // Ordem alfabética
+          return a.description.localeCompare(b.description);
         default:
           return 0;
       }
@@ -101,24 +162,48 @@ const Home = () => {
     total: expenses
       .filter(expense => expense.category === category.id)
       .reduce((sum, expense) => sum + parseFloat(expense.amount), 0)
-  })).filter(cat => cat.total > 0); // Filtra apenas categorias com gastos
+  })).filter(cat => cat.total > 0);
+
+  // Dados para os gráficos
+  const getChartData = () => {
+    // Dados para PositiveAndNegativeBarChart - Desempenho Semanal
+    const barChartData = weeklyPerformance;
+
+    // Dados para CustomActiveShapePieChart - Distribuição de Gastos
+    const pieChartData = expensesByCategory.length > 0 
+      ? expensesByCategory.map(cat => ({
+          name: cat.name,
+          value: cat.total,
+          color: cat.color
+        }))
+      : [
+          { name: 'Alimentação', value: 400, color: '#FF6B6B' },
+          { name: 'Transporte', value: 300, color: '#4ECDC4' },
+          { name: 'Moradia', value: 300, color: '#45B7D1' },
+          { name: 'Lazer', value: 200, color: '#FFA07A' },
+        ];
+
+    // Dados para SynchronizedLineChart - Métricas em Tempo Real
+    const lineChartData = realTimeMetrics;
+
+    return { barChartData, pieChartData, lineChartData };
+  };
+
+  const { barChartData, pieChartData, lineChartData } = getChartData();
 
   // Função para adicionar novo gasto
   const handleAddExpense = (e) => {
     e.preventDefault();
-    // Validação de campos obrigatórios
     if (!newExpense.description || !newExpense.amount) return;
 
     const expense = {
-      id: Date.now(), // ID único baseado no timestamp
+      id: Date.now(),
       ...newExpense,
       amount: parseFloat(newExpense.amount)
     };
 
-    // Adiciona nova despesa no início do array
     setExpenses([expense, ...expenses]);
     
-    // Reseta o formulário
     setNewExpense({
       description: '',
       amount: '',
@@ -151,7 +236,6 @@ const Home = () => {
   const getBudgetAlerts = () => {
     const alerts = [];
     
-    // Alerta de orçamento ultrapassado
     if (budgetPercentage >= 100) {
       alerts.push({
         type: 'error',
@@ -159,7 +243,6 @@ const Home = () => {
         icon: <FaExclamationTriangle />
       });
     } else if (budgetPercentage >= 80) {
-      // Alerta de orçamento próximo do limite
       alerts.push({
         type: 'warning',
         message: 'Cuidado! Você já gastou mais de 80% do seu orçamento.',
@@ -167,12 +250,10 @@ const Home = () => {
       });
     }
 
-    // Verifica categoria com maior gasto
     const maxCategory = expensesByCategory.reduce((max, cat) => 
       cat.total > max.total ? cat : max, { total: 0 }
     );
     
-    // Alerta se alguma categoria está consumindo mais de 40% do orçamento
     if (maxCategory.total > budget * 0.4) {
       alerts.push({
         type: 'info',
@@ -191,7 +272,12 @@ const Home = () => {
     .filter(exp => exp.date === new Date().toISOString().split('T')[0])
     .reduce((sum, exp) => sum + exp.amount, 0);
 
-  // Dados para as estatísticas rápidas
+  // Estatísticas dinâmicas para os gráficos
+  const weeklyProfit = weeklyPerformance.reduce((sum, day) => sum + day.lucro - day.prejuizo, 0);
+  const totalVisits = realTimeMetrics.reduce((sum, month) => sum + month.visitas, 0);
+  const totalConversions = realTimeMetrics.reduce((sum, month) => sum + month.conversoes, 0);
+  const conversionRate = totalVisits > 0 ? (totalConversions / totalVisits * 100).toFixed(1) : 0;
+
   const quickStats = [
     {
       label: 'Gasto Hoje',
@@ -201,44 +287,34 @@ const Home = () => {
       icon: todayExpenses > 0 ? <FaArrowUp /> : '→'
     },
     {
-      label: 'Economia Mensal',
-      value: `R$ ${Math.max(0, remainingBudget).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-      change: remainingBudget >= 0 ? '+8%' : '-15%',
-      trend: remainingBudget >= 0 ? 'up' : 'down',
-      icon: remainingBudget >= 0 ? <FaArrowUp /> : <FaArrowDown />
+      label: 'Lucro Semanal',
+      value: `R$ ${weeklyProfit.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+      change: weeklyProfit > 0 ? '+8%' : '-5%',
+      trend: weeklyProfit > 0 ? 'up' : 'down',
+      icon: weeklyProfit > 0 ? <FaArrowUp /> : <FaArrowDown />
     },
     {
-      label: 'Meta do Mês',
-      value: `${Math.min(100, budgetPercentage).toFixed(0)}%`,
-      change: budgetPercentage <= 80 ? '+5%' : '-12%',
-      trend: budgetPercentage <= 80 ? 'up' : 'down',
-      icon: budgetPercentage <= 80 ? <FaArrowUp /> : <FaArrowDown />
+      label: 'Taxa de Conversão',
+      value: `${conversionRate}%`,
+      change: conversionRate > 15 ? '+3%' : '-2%',
+      trend: conversionRate > 15 ? 'up' : 'down',
+      icon: conversionRate > 15 ? <FaArrowUp /> : <FaArrowDown />
     }
   ];
 
   return (
     <div className={styles.home}>
-      {/* Sidebar com controle de estado */}
       <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
       
-      {/* Conteúdo Principal */}
       <div className={`${styles.mainContent} ${isSidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
         
-        {/* Top Bar Minimalista */}
+        {/* Top Bar - SEM botão hamburger */}
         <header className={styles.topBar}>
           <div className={styles.topBarContent}>
             <div className={styles.breadcrumb}>
-              {/* Botão de menu para abrir/fechar a sidebar */}
-              <button 
-                className={styles.menuButton}
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              >
-                <FaBars />
-              </button>
-              <span className={styles.pageTitle}>Dashboard</span>
+              <span className={styles.pageTitle}>Dashboard Financeiro</span>
             </div>
             <div className={styles.userActions}>
-              {/* Estatísticas Rápidas */}
               <div className={styles.quickStats}>
                 {quickStats.map((stat, index) => (
                   <div key={index} className={styles.quickStat}>
@@ -253,7 +329,6 @@ const Home = () => {
                 ))}
               </div>
               
-              {/* Informações do Usuário */}
               <div className={styles.userInfo}>
                 <div className={styles.userAvatar}>
                   <FaUser />
@@ -264,7 +339,6 @@ const Home = () => {
                 </div>
               </div>
               
-              {/* Botão de Logout */}
               <button 
                 className={styles.logoutButton}
                 onClick={() => {
@@ -279,7 +353,7 @@ const Home = () => {
           </div>
         </header>
 
-        {/* Conteúdo do Dashboard */}
+        {/* Conteúdo Principal */}
         <main className={styles.main}>
           <div className={styles.container}>
             
@@ -292,7 +366,6 @@ const Home = () => {
                 </h1>
                 <div className={styles.dateInfo}>
                   <FaCalendar className={styles.dateIcon} />
-                  {/* Data atual formatada */}
                   {new Date().toLocaleDateString('pt-BR', { 
                     weekday: 'long', 
                     year: 'numeric', 
@@ -304,7 +377,6 @@ const Home = () => {
               
               {/* Cards de Resumo */}
               <div className={styles.summaryCards}>
-                {/* Card de Orçamento Mensal (clicável para editar) */}
                 <div className={styles.summaryCard} onClick={handleBudgetEdit} style={{cursor: 'pointer'}}>
                   <div className={styles.cardHeader}>
                     <div className={styles.cardIconContainer}>
@@ -318,7 +390,6 @@ const Home = () => {
                   <div className={styles.cardSubtitle}>Clique para editar</div>
                 </div>
 
-                {/* Card de Total Gasto */}
                 <div className={styles.summaryCard}>
                   <div className={styles.cardHeader}>
                     <div className={styles.cardIconContainer}>
@@ -330,11 +401,10 @@ const Home = () => {
                     </div>
                   </div>
                   <div className={styles.cardSubtitle}>
-                    {budgetPercentage.toFixed(1)}% do orçamento utilizado
+                    {budgetPercentage.toFixed(1)}% do orçamento
                   </div>
                 </div>
 
-                {/* Card de Saldo Restante */}
                 <div className={`${styles.summaryCard} ${
                   remainingBudget >= 0 ? styles.positive : styles.negative
                 }`}>
@@ -354,33 +424,23 @@ const Home = () => {
                   </div>
                 </div>
 
-                {/* Card de Economia do Mês */}
                 <div className={styles.summaryCard}>
                   <div className={styles.cardHeader}>
                     <div className={styles.cardIconContainer}>
                       <MdTrendingUp className={styles.cardIcon} />
                     </div>
                     <div>
-                      <h3>Economia do Mês</h3>
-                      <div className={styles.cardAmount}>R$ {Math.max(0, remainingBudget).toLocaleString('pt-BR')}</div>
+                      <h3>Conversões Totais</h3>
+                      <div className={styles.cardAmount}>{totalConversions.toLocaleString('pt-BR')}</div>
                     </div>
                   </div>
                   <div className={styles.cardSubtitle}>
-                    {remainingBudget >= 0 ? 'Saldo positivo' : 'Saldo negativo'}
+                    {conversionRate}% de taxa de conversão
                   </div>
                 </div>
               </div>
 
-              {/* Barra de Progresso do Orçamento */}
-              <div className={styles.budgetProgress}>
-                <BudgetProgress 
-                  spent={totalExpenses}
-                  budget={budget}
-                  percentage={budgetPercentage}
-                />
-              </div>
-
-              {/* Seção de Alertas */}
+              {/* Alertas */}
               {alerts.length > 0 && (
                 <div className={styles.alerts}>
                   {alerts.map((alert, index) => (
@@ -393,64 +453,65 @@ const Home = () => {
               )}
             </section>
 
-            {/* Seção de Gráficos e Visualizações */}
-            <section className={styles.charts}>
+            {/* Seção de Gráficos Modernos - UM ABAIXO DO OUTRO */}
+            <section className={styles.chartsSection}>
               <div className={styles.sectionHeader}>
-                <h2>Análise de Gastos</h2>
-                <p>Visualize a distribuição dos seus gastos por categoria</p>
+                <h2>Análise Visual dos Dados</h2>
+                <p>Métricas dinâmicas em tempo real atualizadas automaticamente</p>
               </div>
+
               <div className={styles.chartsGrid}>
+                {/* Gráfico 1: Desempenho Semanal */}
                 <div className={styles.chartCard}>
                   <div className={styles.chartHeader}>
-                    <h3>Distribuição por Categoria</h3>
-                    <span className={styles.chartPeriod}>Este mês</span>
+                    <h3>
+                      <FaChartLine className={styles.chartIcon} />
+                      Desempenho Semanal
+                    </h3>
+                    <span className={styles.chartPeriod}>Esta semana</span>
                   </div>
-                  {/* Componente do gráfico atualizado */}
-                  <ExpenseChart 
-                    expensesByCategory={expensesByCategory} 
-                    hasData={expensesByCategory.length > 0}
-                  />
+                  <div className={styles.chartDescription}>
+                    Variação de lucros e prejuízos ao longo da semana atual
+                  </div>
+                  <PositiveAndNegativeBarChart data={barChartData} />
                 </div>
-                
+
+                {/* Gráfico 2: Distribuição de Gastos */}
                 <div className={styles.chartCard}>
                   <div className={styles.chartHeader}>
-                    <h3>Top Categorias</h3>
-                    <span className={styles.chartPeriod}>Maiores gastos</span>
+                    <h3>
+                      <FaChartPie className={styles.chartIcon} />
+                      Distribuição de Gastos
+                    </h3>
+                    <span className={styles.chartPeriod}>Por categoria</span>
                   </div>
-                  <div className={styles.categoriesList}>
-                    {expensesByCategory.length > 0 ? (
-                      expensesByCategory
-                        .sort((a, b) => b.total - a.total)
-                        .slice(0, 5)
-                        .map((category, index) => (
-                          <div key={category.id} className={styles.categoryItem}>
-                            <div className={styles.categoryInfo}>
-                              <span 
-                                className={styles.categoryColor}
-                                style={{ backgroundColor: category.color }}
-                              ></span>
-                              <span className={styles.categoryName}>
-                                {category.icon} {category.name}
-                              </span>
-                            </div>
-                            <div className={styles.categoryAmount}>
-                              R$ {category.total.toLocaleString('pt-BR')}
-                            </div>
-                          </div>
-                        ))
-                    ) : (
-                      <div className={styles.emptyState}>
-                        <MdSavings className={styles.emptyIcon} />
-                        <p>Nenhum gasto registrado</p>
-                        <small>Adicione gastos para ver as categorias</small>
-                      </div>
-                    )}
+                  <div className={styles.chartDescription}>
+                    Percentual de gastos por categoria mensal
                   </div>
+                  <CustomActiveShapePieChart data={pieChartData} />
+                </div>
+
+                {/* Gráfico 3: Métricas em Tempo Real */}
+                <div className={styles.chartCard}>
+                  <div className={styles.chartHeader}>
+                    <h3>
+                      <MdTrendingUp className={styles.chartIcon} />
+                      Métricas em Tempo Real
+                    </h3>
+                    <span className={styles.chartPeriod}>
+                      <span className={styles.liveDot}></span>
+                      Ao vivo
+                    </span>
+                  </div>
+                  <div className={styles.chartDescription}>
+                    Comparação entre visitas e conversões (atualiza a cada 5s)
+                  </div>
+                  <SynchronizedLineChart data={lineChartData} />
                 </div>
               </div>
             </section>
 
-            {/* Seção de Adicionar Gastos e Lista */}
+            {/* Seção de Gestão de Gastos */}
             <div className={styles.expenseSection}>
               <div className={styles.expenseGrid}>
                 
@@ -530,7 +591,7 @@ const Home = () => {
                   </form>
                 </section>
 
-                {/* Lista de Gastos com Filtros */}
+                {/* Lista de Gastos */}
                 <section className={styles.expensesList}>
                   <div className={styles.sectionHeader}>
                     <div className={styles.expensesHeader}>
@@ -538,9 +599,7 @@ const Home = () => {
                         <h2>Gastos Recentes</h2>
                         <p>Últimas despesas registradas</p>
                       </div>
-                      {/* Controles de Filtro e Ordenação */}
                       <div className={styles.filterControls}>
-                        {/* Campo de Busca */}
                         <div className={styles.searchBox}>
                           <FaSearch className={styles.searchIcon} />
                           <input
@@ -560,7 +619,6 @@ const Home = () => {
                           )}
                         </div>
                         
-                        {/* Filtro por Categoria */}
                         <div className={styles.filterGroup}>
                           <FaFilter className={styles.filterIcon} />
                           <select
@@ -577,7 +635,6 @@ const Home = () => {
                           </select>
                         </div>
 
-                        {/* Ordenação */}
                         <select
                           value={sortBy}
                           onChange={(e) => setSortBy(e.target.value)}
@@ -588,7 +645,6 @@ const Home = () => {
                           <option value="description">Ordenar por nome</option>
                         </select>
 
-                        {/* Botão para limpar filtros (só aparece quando há filtros ativos) */}
                         {(searchTerm || filterCategory !== 'all') && (
                           <button 
                             className={styles.clearFiltersButton}
@@ -601,7 +657,6 @@ const Home = () => {
                     </div>
                   </div>
 
-                  {/* Lista de Gastos ou Estado Vazio */}
                   {filteredExpenses.length === 0 ? (
                     <div className={styles.emptyState}>
                       <MdSavings className={styles.emptyIcon} />
@@ -620,7 +675,6 @@ const Home = () => {
                     </div>
                   ) : (
                     <div className={styles.expensesTable}>
-                      {/* Resumo dos resultados filtrados */}
                       <div className={styles.expensesSummary}>
                         Mostrando {filteredExpenses.length} de {expenses.length} gastos
                         {(searchTerm || filterCategory !== 'all') && (
@@ -629,7 +683,6 @@ const Home = () => {
                           </span>
                         )}
                       </div>
-                      {/* Lista dos 8 primeiros gastos filtrados */}
                       {filteredExpenses
                         .slice(0, 8)
                         .map(expense => {
@@ -674,63 +727,6 @@ const Home = () => {
 
               </div>
             </div>
-
-            {/* Seção de Análise Detalhada */}
-            <section className={styles.analysis}>
-              <div className={styles.sectionHeader}>
-                <h2>Análise Detalhada</h2>
-                <p>Métricas importantes para seu controle financeiro</p>
-              </div>
-              <div className={styles.analysisGrid}>
-                {/* Card de Média de Gastos Diários */}
-                <div className={styles.analysisCard}>
-                  <div className={styles.analysisIcon}>
-                    <FaChartLine />
-                  </div>
-                  <h4>Média de Gastos Diários</h4>
-                  <div className={styles.analysisValue}>
-                    R$ {(totalExpenses / 30).toFixed(2)}
-                  </div>
-                  <small>Baseado em 30 dias</small>
-                </div>
-
-                {/* Card de Dias Restantes */}
-                <div className={styles.analysisCard}>
-                  <div className={styles.analysisIcon}>
-                    <FaCalendar />
-                  </div>
-                  <h4>Dias Restantes no Mês</h4>
-                  <div className={styles.analysisValue}>
-                    {new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() - new Date().getDate()}
-                  </div>
-                  <small>Dias para controlar gastos</small>
-                </div>
-
-                {/* Card de Gasto por Dia Restante */}
-                <div className={styles.analysisCard}>
-                  <div className={styles.analysisIcon}>
-                    <FaPiggyBank />
-                  </div>
-                  <h4>Gasto por Dia Restante</h4>
-                  <div className={styles.analysisValue}>
-                    R$ {remainingBudget > 0 ? (remainingBudget / (30 - new Date().getDate())).toFixed(2) : '0.00'}
-                  </div>
-                  <small>Para manter o orçamento</small>
-                </div>
-
-                {/* Card de Projeção do Mês */}
-                <div className={styles.analysisCard}>
-                  <div className={styles.analysisIcon}>
-                    <MdTrendingUp />
-                  </div>
-                  <h4>Projeção do Mês</h4>
-                  <div className={styles.analysisValue}>
-                    R$ {(totalExpenses / new Date().getDate() * 30).toFixed(2)}
-                  </div>
-                  <small>Baseado no ritmo atual</small>
-                </div>
-              </div>
-            </section>
 
           </div>
         </main>

@@ -35,76 +35,50 @@
   color: #999;
 }
 
-/* Gráfico de barras */
-.barChart {
+/* Wrapper do gráfico de pizza */
+.pieChartWrapper {
+  height: 250px;
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  flex: 1;
+  align-items: center;
+  justify-content: center;
 }
 
-.barItem {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+/* Tooltip customizado */
+.customTooltip {
+  background: rgba(26, 26, 26, 0.95);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
 }
 
-.barLabel {
+.tooltipHeader {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  color: white;
+  font-weight: 600;
   font-size: 0.8rem;
-  color: #333;
+  margin-bottom: 0.5rem;
 }
 
-.categoryColor {
+.tooltipColor {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  flex-shrink: 0;
+  display: inline-block;
 }
 
-.categoryName {
-  flex: 1;
-  font-weight: 500;
+.tooltipContent {
+  color: #FFC107;
+  font-size: 0.8rem;
+  text-align: center;
 }
 
-.categoryAmount {
-  font-weight: 600;
-  color: #1a1a1a;
-  font-size: 0.75rem;
-}
-
-.barTrack {
-  width: 100%;
-  height: 8px;
-  background-color: #f0f0f0;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.barFill {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.5s ease-in-out;
-  position: relative;
-}
-
-.barFill::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, 
-    rgba(255,255,255,0.2) 0%, 
-    rgba(255,255,255,0.4) 50%, 
-    rgba(255,255,255,0.2) 100%);
-}
-
-/* Legenda */
-.chartLegend {
+/* Legenda customizada */
+.customLegend {
+  margin-top: 1rem;
   border-top: 1px solid #e0e0e0;
   padding-top: 1rem;
 }
@@ -114,19 +88,36 @@
   font-weight: 600;
   color: #333;
   margin-bottom: 0.75rem;
+  text-align: center;
 }
 
 .legendItems {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  max-height: 150px;
+  overflow-y: auto;
 }
 
 .legendItem {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: #f9f9f9;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.legendItem:hover {
+  background: #f0f0f0;
+}
+
+.legendItemMain {
+  display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.75rem;
+  flex: 1;
 }
 
 .legendColor {
@@ -137,28 +128,71 @@
 }
 
 .legendName {
+  font-size: 0.75rem;
+  color: #333;
+  font-weight: 500;
   flex: 1;
-  color: #666;
 }
 
-.legendPercentage {
+.legendDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+}
+
+.legendAmount {
+  font-size: 0.7rem;
   font-weight: 600;
   color: #1a1a1a;
 }
 
+.legendPercentage {
+  font-size: 0.65rem;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Scrollbar personalizada para a legenda */
+.legendItems::-webkit-scrollbar {
+  width: 4px;
+}
+
+.legendItems::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.legendItems::-webkit-scrollbar-thumb {
+  background: #FFC107;
+  border-radius: 2px;
+}
+
+.legendItems::-webkit-scrollbar-thumb:hover {
+  background: #FFA000;
+}
+
 /* Responsividade */
 @media (max-width: 768px) {
-  .chartContainer {
-    gap: 1rem;
+  .pieChartWrapper {
+    height: 200px;
   }
   
-  .barLabel {
-    font-size: 0.75rem;
+  .legendItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .legendDetails {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: space-between;
   }
   
   .legendItems {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
+    max-height: 120px;
   }
 }

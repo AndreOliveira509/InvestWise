@@ -7,7 +7,7 @@
 
 /* Layout do conteúdo principal com sidebar */
 .mainContent {
-  margin-left: 80px;
+  margin-left: 280px;
   transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   min-height: 100vh;
   background: #f8f9fa;
@@ -21,7 +21,7 @@
   margin-left: 80px;
 }
 
-/* Top Bar Minimalista */
+/* Top Bar - Atualizado sem menu hamburger */
 .topBar {
   background: #1a1a1a;
   border-bottom: 1px solid #333;
@@ -40,30 +40,10 @@
   max-width: 100%;
 }
 
-/* Breadcrumb e botão de menu */
 .breadcrumb {
   display: flex;
   align-items: center;
   gap: 1rem;
-}
-
-.menuButton {
-  background: rgba(255, 193, 7, 0.1);
-  border: none;
-  font-size: 1.25rem;
-  color: #FFC107;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.menuButton:hover {
-  background: rgba(255, 193, 7, 0.2);
-  color: #FFD54F;
 }
 
 .pageTitle {
@@ -72,14 +52,12 @@
   color: #FFC107;
 }
 
-/* Ações do usuário */
 .userActions {
   display: flex;
   align-items: center;
   gap: 2rem;
 }
 
-/* Estatísticas rápidas */
 .quickStats {
   display: flex;
   gap: 2rem;
@@ -130,7 +108,6 @@
   color: #9E9E9E;
 }
 
-/* Informações do usuário */
 .userInfo {
   display: flex;
   align-items: center;
@@ -170,7 +147,6 @@
   font-weight: 500;
 }
 
-/* Botão de logout */
 .logoutButton {
   display: flex;
   align-items: center;
@@ -191,7 +167,6 @@
   border-color: rgba(244, 67, 54, 0.3);
 }
 
-/* Conteúdo principal */
 .main {
   padding: 1.5rem 0;
 }
@@ -202,7 +177,6 @@
   padding: 0 2rem;
 }
 
-/* Cabeçalhos de seção */
 .sectionHeader {
   margin-bottom: 2rem;
 }
@@ -240,7 +214,6 @@
   color: #FFC107;
 }
 
-/* Seção do Dashboard */
 .dashboard {
   margin-bottom: 2rem;
 }
@@ -252,7 +225,6 @@
   margin-bottom: 1rem;
 }
 
-/* Grid de cards de resumo */
 .summaryCards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -271,7 +243,6 @@
   overflow: hidden;
 }
 
-/* Barra colorida no topo dos cards */
 .summaryCard::before {
   content: '';
   position: absolute;
@@ -295,7 +266,6 @@
   background: linear-gradient(90deg, #F44336, #da190b);
 }
 
-/* Cabeçalho dos cards */
 .cardHeader {
   display: flex;
   align-items: flex-start;
@@ -349,17 +319,6 @@
   font-weight: 500;
 }
 
-/* Barra de progresso do orçamento */
-.budgetProgress {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e0e0e0;
-  margin-bottom: 1.5rem;
-}
-
-/* Seção de alertas */
 .alerts {
   display: flex;
   flex-direction: column;
@@ -402,14 +361,14 @@
   font-weight: 500;
 }
 
-/* Seção de gráficos */
-.charts {
+/* Nova Seção de Gráficos Modernos */
+.chartsSection {
   margin-bottom: 2rem;
 }
 
 .chartsGrid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
 }
 
@@ -417,85 +376,69 @@
   background: white;
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e0e0e0;
-  min-height: 300px;
-  display: flex;
-  flex-direction: column;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.chartCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.chartCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  opacity: 0.8;
 }
 
 .chartHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  flex-shrink: 0;
 }
 
 .chartHeader h3 {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: #2d3748;
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chartIcon {
+  color: #667eea;
+  font-size: 1.2rem;
 }
 
 .chartPeriod {
   font-size: 0.8rem;
-  color: #666;
-  background: #f5f5f5;
+  color: #718096;
+  background: #f7fafc;
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
   font-weight: 500;
 }
 
-/* Lista de categorias */
-.categoriesList {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  flex: 1;
+/* Container para os gráficos */
+.chartContainer {
+  height: 300px;
+  width: 100%;
+  position: relative;
 }
 
-.categoryItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem;
-  background: #f9f9f9;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  border-left: 3px solid;
-}
-
-.categoryItem:hover {
-  background: #f0f0f0;
-  transform: translateX(4px);
-}
-
-.categoryInfo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.categoryColor {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.categoryName {
-  font-weight: 500;
-  color: #333;
-  font-size: 0.9rem;
-}
-
-.categoryAmount {
-  font-weight: 600;
-  color: #1a1a1a;
-  font-size: 0.9rem;
-}
-
-/* Seção de gastos */
+/* Seção de Gastos */
 .expenseSection {
   margin-bottom: 2rem;
 }
@@ -514,7 +457,6 @@
   border: 1px solid #e0e0e0;
 }
 
-/* Formulário de adicionar gastos */
 .expenseForm {
   display: flex;
   flex-direction: column;
@@ -578,7 +520,6 @@
   box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
 }
 
-/* Lista de gastos */
 .emptyState {
   text-align: center;
   padding: 3rem 2rem;
@@ -685,7 +626,6 @@
   background: #FFEBEE;
 }
 
-/* Controles de filtro */
 .expensesHeader {
   display: flex;
   justify-content: space-between;
@@ -791,7 +731,6 @@
   background: rgba(255, 193, 7, 0.2);
 }
 
-/* Resumo dos gastos filtrados */
 .expensesSummary {
   font-size: 0.8rem;
   color: #666;
@@ -809,82 +748,19 @@
   font-size: 0.75rem;
 }
 
-/* Seção de análise */
-.analysis {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e0e0e0;
-}
-
-.analysisGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-}
-
-.analysisCard {
-  text-align: center;
-  padding: 1.5rem 1rem;
-  background: #f9f9f9;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-  border-top: 3px solid #FFC107;
-}
-
-.analysisCard:hover {
-  background: #f0f0f0;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.analysisIcon {
-  width: 48px;
-  height: 48px;
-  background: #FFF9C4;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1rem;
-  color: #FFA000;
-  font-size: 1.25rem;
-}
-
-.analysisCard h4 {
-  color: #333;
-  font-size: 0.9rem;
-  margin-bottom: 0.75rem;
-  font-weight: 600;
-}
-
-.analysisValue {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin-bottom: 0.5rem;
-}
-
-.analysisCard small {
-  color: #666;
-  font-size: 0.8rem;
-}
-
 /* Design Responsivo */
 @media (max-width: 1024px) {
-  .chartsGrid {
+  .expenseGrid {
     grid-template-columns: 1fr;
   }
   
-  .expenseGrid {
-    grid-template-columns: 1fr;
+  .mainContent {
+    margin-left: 80px;
   }
 }
 
 @media (max-width: 768px) {
-  .mainContent.sidebarOpen,
-  .mainContent.sidebarClosed {
+  .mainContent {
     margin-left: 0;
   }
 
@@ -928,10 +804,6 @@
     grid-template-columns: 1fr;
   }
 
-  .analysisGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .expensesHeader {
     flex-direction: column;
     align-items: stretch;
@@ -939,6 +811,20 @@
   
   .filterControls {
     justify-content: flex-start;
+  }
+
+  .chartCard {
+    padding: 1rem;
+  }
+
+  .chartHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .chartContainer {
+    height: 250px;
   }
 }
 
@@ -949,10 +835,6 @@
 
   .userInfo {
     display: none;
-  }
-
-  .analysisGrid {
-    grid-template-columns: 1fr;
   }
 
   .expenseMeta {
@@ -993,4 +875,75 @@
   .searchBox {
     min-width: auto;
   }
+
+  .chartContainer {
+    height: 200px;
+  }
 }
+/* src/pages/Home/Home.module.css */
+/* (Mantenha todo o CSS anterior e adicione estas novas classes no final) */
+
+.chartDescription {
+  color: #666;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.liveDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #FF4757;
+  border-radius: 50%;
+  margin-right: 6px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7);
+  }
+  
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(255, 71, 87, 0);
+  }
+  
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 71, 87, 0);
+  }
+}
+
+/* Melhorias nos cards dos gráficos */
+.chartCard {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.chartCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.chartCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  opacity: 0.8;
+}
+
+/* Resto do CSS permanece igual ao anterior... */
