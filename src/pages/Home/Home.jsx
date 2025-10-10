@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   FaMoneyBillWave, FaTrash, FaPlus, FaHome, FaChartPie, FaCalendar,
-  FaUser, FaSignOutAlt, FaSearch, FaFilter
+  FaUser, FaSignOutAlt, FaSearch, FaFilter, FaCog, FaBookReader, FaPiggyBank
 } from 'react-icons/fa';
-import { MdSavings } from 'react-icons/md';
+import { RiRobot2Fill } from 'react-icons/ri';
+import { IoAnalytics } from 'react-icons/io5';
 import styles from './Home.module.css';
-import Sidebar from '../../components/Sidebar/Sidebar';
 /* Gráficos */
 import PositiveAndNegativeBarChart from '../../components/PositiveAndNegativeBarChart/PositiveAndNegativeBarChart';
 import CustomActiveShapePieChart from '../../components/CustomActiveShapePieChart/CustomActiveShapePieChart';
@@ -25,6 +25,7 @@ const categories = [
 
 export default function Home() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   /* ---------- ESTADOS ---------- */
   const [expenses, setExpenses] = useState([]);
@@ -38,6 +39,7 @@ export default function Home() {
     category: 'alimentacao',
     date: new Date().toISOString().split('T')[0]
   });
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   /* ---------- PERSISTÊNCIA ---------- */
   useEffect(() => {
@@ -120,138 +122,151 @@ export default function Home() {
     if (val && !isNaN(val)) setBudget(parseFloat(val));
   };
 
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    navigate('/');
+  };
+
+  const toggleUserMenu = () => {
+    setIsUserMenuOpen(!isUserMenuOpen);
+  };
+
   /* ---------- ALERTAS ---------- */
   const alerts = [];
   if (usedPercent >= 100) alerts.push({ type: 'error', msg: 'Orçamento ultrapassado!' });
   else if (usedPercent >= 80) alerts.push({ type: 'warning', msg: 'Mais de 80 % usados.' });
 
+  /* Menu items */
+  const menuItems = [
+    { path: "/home", icon: <FaHome />, label: "Dashboard" },
+    { path: "/simulation", icon: <IoAnalytics />, label: "Simulações" },
+    { path: "/aiquestions", icon: <RiRobot2Fill />, label: "IA Financeira" },
+    { path: "/methodology", icon: <FaBookReader />, label: "Metodologia" }
+  ];
+
+  const userMenuItems = [
+    { path: "/profile", icon: <FaUser />, label: "Meu Perfil" },
+    { path: "/settings", icon: <FaCog />, label: "Configurações" }
+  ];
+
   /* ---------- RENDER ---------- */
   return (
     <div className={styles.home}>
-      {/* SIDEBAR */}
-         <Sidebar isSidebarOpen={true} setIsSidebarOpen={() => {}} />
-
-      {/* CONTEÚDO */}
-      <div className={`${styles.mainContent} ${styles.sidebarOpen}`}>
-        {/* TOPBAR */}
-        <header className={styles.topBar}>
-          <div className={styles.topBarContent}>
-            <span className={styles.pageTitle}>Dashboard Financeira</span>
-            <div className={styles.userActions}>
-              <div className={styles.userInfo}>
-                <div className={styles.userAvatar}><FaUser /></div>
-                <div>
-                  <span className={styles.userName}>Usuário</span>
-                  <span className={styles.userPlan}>Premium</span>
-                </div>
-              </div>
-              <button className={styles.logoutButton} onClick={() => { localStorage.removeItem('isAuthenticated'); navigate('/'); }}>
-                <FaSignOutAlt /> Sair
-              </button>
+      {/* HEADER MODERNO */}
+      <header className={styles.header}>
+        <div className={styles.headerContent}>
+          {/* Logo */}
+          <div className={styles.logo} onClick={() => navigate('/home')}>
+            <div className={styles.logoIcon}>
+              <FaPiggyBank />
             </div>
+            <span className={styles.logoText}>InvestiWise</span>
           </div>
-        </header>
 
-        {/* MAIN */}
-        <main className={styles.main}>
+          {/* Menu de Navegação */}
+          <nav className={styles.nav}>
+            {menuItems.map((item) => (
+              <button
+                key={item.path}
+                className={`${styles.navItem} ${
+                  location.pathname === item.path ? styles.active : ''
+                }`}
+                onClick={() => handleNavigation(item.path)}
+              >
+                <span className={styles.navIcon}>{item.icon}</span>
+                <span className={styles.navLabel}>{item.label}</span>
+              </button>
+            ))}
+          </nav>
 
-            {/* GASTOS */}
-            <section className={styles.expenseSection}>
-          <div className={styles.expenseWrapper}>
-            {/* Formulário moderno (sem input de data) */}
-            <div className={styles.formCard}>
-              <h2>Adicionar Gasto</h2>
-              <form onSubmit={handleAdd} className={styles.modernForm}>
-                <input
-                  value={form.description}
-                  onChange={e => setForm({ ...form, description: e.target.value })}
-                  placeholder="Ex: Almoço, Uber, Netflix"
-                  required
-                />
-                <input
-                  type="number"
-                  step="0.01"
-                  value={form.amount}
-                  onChange={e => setForm({ ...form, amount: e.target.value })}
-                  placeholder="R$ 0,00"
-                  required
-                />
-                <select
-                  value={form.category}
-                  onChange={e => setForm({ ...form, category: e.target.value })}
-                >
-                  {categories.map(c => (
-                    <option key={c.id} value={c.id}>
-                      {c.icon} {c.name}
-                    </option>
-                  ))}
-                </select>
-                <button type="submit" className={styles.submitBtn}>
-                  <FaPlus /> Adicionar
-                </button>
-              </form>
+          {/* User Actions */}
+          <div className={styles.userSection}>
+            <div className={styles.userInfo} onClick={toggleUserMenu}>
+              <div className={styles.userAvatar}>
+                <FaUser />
+              </div>
+              <div className={styles.userDetails}>
+                <span className={styles.userName}>Usuário</span>
+                <span className={styles.userPlan}>Premium</span>
+              </div>
             </div>
 
-            {/* Lista estilosa */}
-            {/* <div className={styles.listCardModern}>
-              <div className={styles.listHeaderModern}>
-                <h2>Gastos Recentes</h2>
-                <div className={styles.chips}>
-                  <div className={styles.searchChip}>
-                    <FaSearch />
-                    <input
-                      value={search}
-                      onChange={e => setSearch(e.target.value)}
-                      placeholder="Buscar"
-                    />
-                  </div>
-                  <select value={filterCat} onChange={e => setFilterCat(e.target.value)}>
-                    <option value="all">Todas</option>
+            {/* User Menu Dropdown */}
+            {isUserMenuOpen && (
+              <div className={styles.userMenu}>
+                {userMenuItems.map((item) => (
+                  <button
+                    key={item.path}
+                    className={styles.userMenuItem}
+                    onClick={() => {
+                      handleNavigation(item.path);
+                      setIsUserMenuOpen(false);
+                    }}
+                  >
+                    <span className={styles.userMenuIcon}>{item.icon}</span>
+                    <span className={styles.userMenuLabel}>{item.label}</span>
+                  </button>
+                ))}
+                <button 
+                  className={`${styles.userMenuItem} ${styles.logoutItem}`}
+                  onClick={handleLogout}
+                >
+                  <span className={styles.userMenuIcon}><FaSignOutAlt /></span>
+                  <span className={styles.userMenuLabel}>Sair</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* CONTEÚDO PRINCIPAL */}
+      <div className={styles.mainContent}>
+        <main className={styles.main}>
+          {/* GASTOS */}
+          <section className={styles.expenseSection}>
+            <div className={styles.expenseWrapper}>
+              {/* Formulário moderno */}
+              <div className={styles.formCard}>
+                <h2>Adicionar Gasto</h2>
+                <form onSubmit={handleAdd} className={styles.modernForm}>
+                  <input
+                    value={form.description}
+                    onChange={e => setForm({ ...form, description: e.target.value })}
+                    placeholder="Ex: Almoço, Uber, Netflix"
+                    required
+                  />
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={form.amount}
+                    onChange={e => setForm({ ...form, amount: e.target.value })}
+                    placeholder="R$ 0,00"
+                    required
+                  />
+                  <select
+                    value={form.category}
+                    onChange={e => setForm({ ...form, category: e.target.value })}
+                  >
                     {categories.map(c => (
                       <option key={c.id} value={c.id}>
-                        {c.name}
+                        {c.icon} {c.name}
                       </option>
                     ))}
                   </select>
-                </div>
+                  <button type="submit" className={styles.submitBtn}>
+                    <FaPlus /> Adicionar
+                  </button>
+                </form>
               </div>
+            </div>
+          </section>
 
-              {filtered.length === 0 ? (
-                <div className={styles.emptyModern}>
-                  <MdSavings />
-                  <p>Sem gastos por aqui...</p>
-                </div>
-              ) : (
-                <ul className={styles.modernList}>
-                  {filtered.map(exp => {
-                    const cat = categories.find(c => c.id === exp.category);
-                    return (
-                      <li key={exp.id} className={styles.modernItem}>
-                        <div className={styles.itemLeft}>
-                          <div className={styles.itemColor} style={{ background: cat.color }}></div>
-                          <div>
-                            <div className={styles.itemTitle}>{exp.description}</div>
-                            <div className={styles.itemMeta}>
-                              {cat.icon} {cat.name} • {new Date(exp.date).toLocaleDateString('pt-BR')}
-                            </div>
-                          </div>
-                        </div>
-                        <div className={styles.itemRight}>
-                          <span className={styles.itemValue}>R$ {exp.amount.toLocaleString('pt-BR')}</span>
-                          <button onClick={() => handleRemove(exp.id)} className={styles.itemRemove}>
-                            <FaTrash />
-                          </button>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </div> */}
-          </div>
-        </section>
           <div className={styles.container}>
-
             {/* CARDS RESUMO */}
             <section className={styles.summarySection}>
               {/* Card 1 – Orçamento com barra */}
@@ -285,7 +300,7 @@ export default function Home() {
               </div>
 
               {/* Card 3 – Saldo restante */}
-              <div className={`${styles.summaryCard} ${remaining >= 0 ? 'positive' : 'negative'}`}>
+              <div className={`${styles.summaryCard} ${remaining >= 0 ? styles.positive : styles.negative}`}>
                 <div className={styles.cardLeft}>
                   <div className={styles.cardIcon}><FaMoneyBillWave /></div>
                   <div>
@@ -326,8 +341,7 @@ export default function Home() {
               </section>
             )}
 
-            {/* GRÁFICOS GRANDES */}
-         {/* GRÁFICOS */}
+            {/* GRÁFICOS */}
             <section className={styles.chartsSection}>
               <h2>Análise Visual</h2>
               <div className={styles.chartsGrid}>
@@ -336,7 +350,6 @@ export default function Home() {
                 <div className={styles.chartCard}><h3>Distribuição %</h3><CustomActiveShapePieChart data={pieData} /></div>
               </div>
             </section>
-
           </div>
         </main>
       </div>
