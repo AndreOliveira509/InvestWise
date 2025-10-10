@@ -1,36 +1,77 @@
-import { Pie } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend
-} from 'chart.js';
+// src/components/ExpenseChart/ExpenseChart.js
+import React from 'react';
+import styles from './ExpenseChart.module.css';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+const ExpenseChart = ({ expensesByCategory, hasData }) => {
+  // Se não há dados, mostra estado vazio
+  if (!hasData || expensesByCategory.length === 0) {
+    return (
+      <div className={styles.chartContainer}>
+        <div className={styles.chartEmptyState}>
+          <div className={styles.chartEmptyIcon}>📊</div>
+          <p>Nenhum dado para exibir</p>
+          <small>Adicione gastos para ver o gráfico</small>
+        </div>
+      </div>
+    );
+  }
 
-const ExpenseChart = ({ expensesByCategory }) => {
-  const data = {
-    labels: expensesByCategory.map(cat => cat.name),
-    datasets: [
-      {
-        data: expensesByCategory.map(cat => cat.total),
-        backgroundColor: expensesByCategory.map(cat => cat.color),
-        borderWidth: 2,
-        borderColor: '#fff'
-      }
-    ]
-  };
-
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'bottom'
-      }
-    }
-  };
-
-  return <Pie data={data} options={options} />;
+  // Encontra o valor máximo para calcular as porcentagens
+  const maxValue = Math.max(...expensesByCategory.map(item => item.total));
+  
+  return (
+    <div className={styles.chartContainer}>
+      <div className={styles.barChart}>
+        {expensesByCategory.map((category, index) => {
+          const percentage = (category.total / maxValue) * 100;
+          return (
+            <div key={category.id} className={styles.barItem}>
+              <div className={styles.barLabel}>
+                <span 
+                  className={styles.categoryColor}
+                  style={{ backgroundColor: category.color }}
+                ></span>
+                <span className={styles.categoryName}>
+                  {category.icon} {category.name}
+                </span>
+                <span className={styles.categoryAmount}>
+                  R$ {category.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                </span>
+              </div>
+              <div className={styles.barTrack}>
+                <div 
+                  className={styles.barFill}
+                  style={{ 
+                    width: `${percentage}%`,
+                    backgroundColor: category.color
+                  }}
+                ></div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      
+      {/* Legenda do gráfico */}
+      <div className={styles.chartLegend}>
+        <div className={styles.legendTitle}>Distribuição por Categoria</div>
+        <div className={styles.legendItems}>
+          {expensesByCategory.map(category => (
+            <div key={category.id} className={styles.legendItem}>
+              <span 
+                className={styles.legendColor}
+                style={{ backgroundColor: category.color }}
+              ></span>
+              <span className={styles.legendName}>{category.name}</span>
+              <span className={styles.legendPercentage}>
+                {((category.total / expensesByCategory.reduce((sum, cat) => sum + cat.total, 0)) * 100).toFixed(1)}%
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default ExpenseChart;

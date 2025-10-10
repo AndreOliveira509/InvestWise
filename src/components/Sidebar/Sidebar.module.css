@@ -5,15 +5,13 @@
   top: 0;
   height: 100vh;
   width: 80px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-  z-index: 1000;
+  background: var(--surface-color);
+  border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
-  border-right: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  overflow-x: hidden;
 }
 
 .sidebar.open {
@@ -21,40 +19,40 @@
 }
 
 .topContainer {
-  padding: 1.5rem 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
 }
 
 .flexContainer {
   display: flex;
   align-items: center;
+  padding: 0 1rem;
   margin-bottom: 2rem;
 }
 
 .sidebarBtn {
-  background: var(--primary-color);
+  background: none;
   border: none;
-  color: var(--secondary-color);
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  color: var(--text-light);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  transition: background-color 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
 }
 
 .sidebarBtn:hover {
-  background: #ffca28;
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .arrowIcon {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   transition: transform 0.3s ease;
-  color: var(--secondary-color);
+  color: var(--primary-color);
 }
 
 .arrowIcon.rotated {
@@ -66,25 +64,25 @@
   align-items: center;
   gap: 0.75rem;
   margin-left: 1rem;
+  padding: 0.5rem 0;
 }
 
 .logoIcon {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, var(--primary-color), #ffed4e);
-  border-radius: 10px;
+  width: 35px;
+  height: 35px;
+  border-radius: 8px;
+  background: var(--primary-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
   color: var(--secondary-color);
-  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+  font-size: 1.2rem;
 }
 
 .logoText {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: var(--secondary-color);
+  color: var(--text-light);
   white-space: nowrap;
 }
 
@@ -92,16 +90,17 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  padding: 0 1rem;
 }
 
 .menuItem {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  color: var(--text-secondary);
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
   text-decoration: none;
-  border-radius: 12px;
+  color: var(--text-light);
+  border-radius: var(--border-radius);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -114,15 +113,13 @@
   top: 0;
   height: 100%;
   width: 4px;
-  background: var(--accent-color);
+  background: var(--accent-color, var(--primary-color));
   transform: scaleY(0);
   transition: transform 0.3s ease;
 }
 
 .menuItem:hover {
-  background: rgba(255, 193, 7, 0.1);
-  color: var(--text-primary);
-  transform: translateX(5px);
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .menuItem:hover::before {
@@ -130,13 +127,15 @@
 }
 
 .menuItem.active {
-  background: rgba(255, 193, 7, 0.15);
-  color: var(--text-primary);
-  font-weight: 600;
+  background-color: rgba(255, 193, 7, 0.1);
 }
 
 .menuItem.active::before {
   transform: scaleY(1);
+}
+
+.menuItem.active .menuIcon {
+  color: var(--primary-color);
 }
 
 .menuIcon {
@@ -145,83 +144,246 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--primary-color);
+  transition: color 0.3s ease;
 }
 
 .menuLabel {
+  font-size: 0.9rem;
   font-weight: 500;
   white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+.menuItem.active .menuLabel {
+  color: var(--primary-color);
+  font-weight: 600;
 }
 
 /* Footer da Sidebar */
 .sidebarFooter {
-  padding: 1.5rem 1rem;
-  border-top: 1px solid #e9ecef;
-  background: rgba(248, 249, 250, 0.8);
+  margin-top: auto;
+  padding: 1rem;
+  border-top: 1px solid var(--border-color);
+  position: relative;
 }
 
 .userInfo {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.userInfo:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.userInfo::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid var(--text-secondary);
+  transition: transform 0.3s ease;
+}
+
+.userInfo.menuOpen::after {
+  transform: translateY(-50%) rotate(180deg);
 }
 
 .userAvatar {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, var(--primary-color), #ffed4e);
   border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color), #ffed4e);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--secondary-color);
   font-size: 1rem;
-  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+  flex-shrink: 0;
 }
 
 .userDetails {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-width: 0;
 }
 
 .userName {
-  color: var(--text-primary);
   font-weight: 600;
+  color: var(--text-light);
   font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .userStatus {
-  color: var(--primary-color);
   font-size: 0.75rem;
+  color: var(--primary-color);
   font-weight: 500;
 }
 
-/* Responsive */
+/* Menu Dropdown do Usuário */
+.userMenu {
+  position: absolute;
+  bottom: 100%;
+  left: 0.5rem;
+  right: 0.5rem;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  margin-bottom: 0.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.userMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: var(--text-light);
+  transition: all 0.3s ease;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--surface-color);
+}
+
+.userMenuItem:last-child {
+  border-bottom: none;
+}
+
+.userMenuItem:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.userMenuIcon {
+  font-size: 0.9rem;
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.userMenuLabel {
+  font-size: 0.85rem;
+  font-weight: 500;
+  flex: 1;
+}
+
+/* Estilo específico para o item "Sair" */
+.userMenuItem:last-child {
+  color: #ff6b6b;
+}
+
+.userMenuItem:last-child .userMenuIcon {
+  color: #ff6b6b;
+}
+
+.userMenuItem:last-child:hover {
+  background-color: rgba(255, 107, 107, 0.1);
+}
+
+/* Overlay para fechar o menu ao clicar fora */
+.userMenuOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  z-index: 999;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .sidebar {
     width: 70px;
+    transform: translateX(-100%);
   }
 
   .sidebar.open {
-    width: 260px;
+    width: 280px;
+    transform: translateX(0);
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
   }
 
-  .topContainer {
-    padding: 1rem 0.75rem;
+  .flexContainer {
+    padding: 0 0.75rem;
   }
-  
-  .sidebarBtn {
-    width: 35px;
-    height: 35px;
+
+  .menu {
+    padding: 0 0.75rem;
   }
-  
-  .logoIcon {
-    width: 35px;
-    height: 35px;
-    font-size: 1.25rem;
+
+  .sidebarFooter {
+    padding: 0.75rem;
   }
-  
-  .logoText {
-    font-size: 1.3rem;
+
+  .userMenu {
+    left: 0.25rem;
+    right: 0.25rem;
   }
+}
+
+/* Animações suaves */
+.sidebar {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menuItem {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.userMenu {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Scroll personalizado para menu longo */
+.menu {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) transparent;
+}
+
+.menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+.menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.menu::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 2px;
+}
+
+.menu::-webkit-scrollbar-thumb:hover {
+  background: #ffb300;
 }

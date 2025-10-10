@@ -1,0 +1,164 @@
+/* src/components/ExpenseChart/ExpenseChart.module.css */
+.chartContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+/* Estado vazio */
+.chartEmptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #999;
+  padding: 2rem;
+  height: 200px;
+}
+
+.chartEmptyIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.chartEmptyState p {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #666;
+}
+
+.chartEmptyState small {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+/* Gráfico de barras */
+.barChart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.barItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.barLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #333;
+}
+
+.categoryColor {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.categoryName {
+  flex: 1;
+  font-weight: 500;
+}
+
+.categoryAmount {
+  font-weight: 600;
+  color: #1a1a1a;
+  font-size: 0.75rem;
+}
+
+.barTrack {
+  width: 100%;
+  height: 8px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease-in-out;
+  position: relative;
+}
+
+.barFill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0.2) 0%, 
+    rgba(255,255,255,0.4) 50%, 
+    rgba(255,255,255,0.2) 100%);
+}
+
+/* Legenda */
+.chartLegend {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 1rem;
+}
+
+.legendTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.75rem;
+}
+
+.legendItems {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.legendColor {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legendName {
+  flex: 1;
+  color: #666;
+}
+
+.legendPercentage {
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .chartContainer {
+    gap: 1rem;
+  }
+  
+  .barLabel {
+    font-size: 0.75rem;
+  }
+  
+  .legendItems {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+}
