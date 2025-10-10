@@ -1,4 +1,3 @@
-// src/components/ProtectedRoute/ProtectedRoute.jsx
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
@@ -11,7 +10,7 @@ const ProtectedRoute = () => {
     return <Navigate to="/login" replace />;
   }
 
-  // 3. Se houver um token, permite que a rota filha (no nosso caso, a Home) seja renderizada
+  // 3. Se houver um token, permite que a rota filha (Home) seja renderizada
   return <Outlet />;
 };
 
