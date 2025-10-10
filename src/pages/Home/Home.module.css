@@ -408,38 +408,3 @@
   }
 }
 /* ---------- GRÁFICOS GRANDES ---------- */
-.chartsSection {
-  margin-bottom: 3rem;
-}
-.chartsSection h2 {
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-.chartsGrid {
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  gap: 2rem;
-}
-.chartCardLarge {
-  background: #fff;
-  border-radius: 24px;
-  padding: 2rem;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
-  transition: 0.3s ease;
-}
-.chartCardLarge:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
-}
-.chartCardLarge h3 {
-  margin: 0 0 1.5rem 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #333;
-}
-.chartCardLarge > div {
-  height: 200px !important;
-  width: 30% !important;
-}
