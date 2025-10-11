@@ -241,11 +241,23 @@
 }
 
 .main {
-  padding: 2rem;
+  padding: 1rem;
+}
+/* RESET ESPECÍFICO PARA ESTAS SEÇÕES */
+.expenseSection,
+.summarySection,
+.formCard {
+  margin-top: 30px;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.expenseSection {
+  display: contents; /* Faz com que a section não crie um bloco separado */
 }
 
 .container {
-  max-width: 1500px;
+  max-width: 80vw;
   margin: 0 auto;
 }
 
@@ -254,7 +266,6 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
-  margin-bottom: 2rem;
 }
 
 .summaryCard {
@@ -477,7 +488,7 @@
 
 .chartsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
   gap: 1.5rem;
 }
 
