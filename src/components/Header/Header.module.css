@@ -1,32 +1,327 @@
-.main-header {
-  background: var(--background-color);
-  padding: 20px 0;
-  border-bottom: 1px solid #eee;
+/* ---------- VARIÁVEIS CSS ---------- */
+:root {
+  --bg-primary: #f4f6fa;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --text-primary: #000000;
+  --text-secondary: #666666;
+  --border-color: #e0e0e0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* ---------- HEADER MODERNO ---------- */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
   z-index: 1000;
-  backdrop-filter: blur(10px);
-  background-color: rgba(255, 255, 255, 0.8);
+  background: transparent;
 }
 
-.main-header .container {
+.headerContent {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
+  color: var(--text-primary);
+  gap: 20rem;
 }
 
+/* Logo */
 .logo {
-  font-size: 24px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.logo:hover {
+  opacity: 0.8;
+}
+
+.logoIcon {
+  width: 35px;
+  height: 35px;
+  border-radius: 8px;
+  background: #FFC107;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1a1a;
+  font-size: 1.2rem;
+}
+
+.logoText {
+  font-size: 1.25rem;
   font-weight: 700;
-  color: var(--secondary-color);
+  color: #FFC107;
 }
-/* ... (estilos anteriores) ... */
-.main-header {
-  /* ... */
-  transition: all var(--transition-speed) ease;
-}
-.main-header.scrolled {
-  box-shadow: var(--shadow-light);
-  background-color: rgba(255, 255, 255, 0.9);
+
+/* Navegação */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-card);
+  padding: 0.5rem;
+  border-radius: 12px;
   backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.navItem:hover {
+  background: rgba(255, 193, 7, 0.1);
+  color: #FFC107;
+  transform: translateY(-1px);
+}
+
+.navItem.active {
+  background: rgba(255, 193, 7, 0.15);
+  color: #FFC107;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.2);
+}
+
+.navIcon {
+  font-size: 1rem;
+}
+
+.navLabel {
+  white-space: nowrap;
+}
+
+/* Dark Mode Toggle */
+.darkModeToggle {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.darkModeToggle:hover {
+  background: rgba(255, 193, 7, 0.1);
+  color: #FFC107;
+  transform: scale(1.1);
+}
+
+/* Seção do Usuário */
+.userSection {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 193, 7, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.userInfo:hover {
+  background: rgba(255, 193, 7, 0.15);
+  border-color: rgba(255, 193, 7, 0.3);
+  transform: translateY(-1px);
+}
+
+.userAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFC107, #ffed4e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1a1a;
+  font-size: 0.9rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.userName {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.userPlan {
+  font-size: 0.75rem;
+  color: #FFC107;
+  background: rgba(255, 193, 7, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  margin-top: 0.1rem;
+}
+
+/* Menu do Usuário */
+.userMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 0.5rem;
+  min-width: 200px;
+  box-shadow: 0 8px 32px var(--shadow-color);
+  z-index: 1000;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.userMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.userMenuItem:hover {
+  background: rgba(255, 193, 7, 0.1);
+  color: #FFC107;
+  transform: translateX(4px);
+}
+
+.userMenuIcon {
+  font-size: 0.9rem;
+  width: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.userMenuLabel {
+  flex: 1;
+}
+
+.logoutItem {
+  color: #ff6b6b;
+  border-top: 1px solid var(--border-color);
+  margin-top: 0.25rem;
+  padding-top: 0.875rem;
+}
+
+.logoutItem:hover {
+  color: #ff5252;
+  background: rgba(255, 107, 107, 0.1);
+}
+
+/* ---------- RESPONSIVO ---------- */
+@media (max-width: 1024px) {
+  .headerContent {
+    padding: 0 1rem;
+  }
+  
+  .nav {
+    gap: 0.25rem;
+  }
+  
+  .navItem {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .navLabel {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 0 1rem;
+  }
+  
+  .headerContent {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 1rem 0;
+    gap: 1rem;
+  }
+  
+  .nav {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .navLabel {
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  .logoText {
+    display: none;
+  }
+  
+  .userDetails {
+    display: none;
+  }
+  
+  .userInfo {
+    padding: 0.5rem;
+  }
+  
+  .darkModeToggle {
+    font-size: 1rem;
+  }
 }

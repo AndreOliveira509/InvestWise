@@ -7,6 +7,7 @@ import {
 import { RiRobot2Fill } from 'react-icons/ri';
 import { IoAnalytics } from 'react-icons/io5';
 import styles from './Home.module.css';
+import Header from '../../components/Header/Header';
 /* Gráficos */
 import PositiveAndNegativeBarChart from '../../components/PositiveAndNegativeBarChart/PositiveAndNegativeBarChart';
 import CustomActiveShapePieChart from '../../components/CustomActiveShapePieChart/CustomActiveShapePieChart';
@@ -156,73 +157,8 @@ export default function Home() {
   /* ---------- RENDER ---------- */
   return (
     <div className={styles.home}>
-      {/* HEADER MODERNO */}
-      <header className={styles.header}>
-        <div className={styles.headerContent}>
-          {/* Logo */}
-          <div className={styles.logo} onClick={() => navigate('/home')}>
-            <div className={styles.logoIcon}>
-              <FaPiggyBank />
-            </div>
-            <span className={styles.logoText}>InvestiWise</span>
-          </div>
-
-          {/* Menu de Navegação */}
-          <nav className={styles.nav}>
-            {menuItems.map((item) => (
-              <button
-                key={item.path}
-                className={`${styles.navItem} ${
-                  location.pathname === item.path ? styles.active : ''
-                }`}
-                onClick={() => handleNavigation(item.path)}
-              >
-                <span className={styles.navIcon}>{item.icon}</span>
-                <span className={styles.navLabel}>{item.label}</span>
-              </button>
-            ))}
-          </nav>
-
-          {/* User Actions */}
-          <div className={styles.userSection}>
-            <div className={styles.userInfo} onClick={toggleUserMenu}>
-              <div className={styles.userAvatar}>
-                <FaUser />
-              </div>
-              <div className={styles.userDetails}>
-                <span className={styles.userName}>Usuário</span>
-                <span className={styles.userPlan}>Premium</span>
-              </div>
-            </div>
-
-            {/* User Menu Dropdown */}
-            {isUserMenuOpen && (
-              <div className={styles.userMenu}>
-                {userMenuItems.map((item) => (
-                  <button
-                    key={item.path}
-                    className={styles.userMenuItem}
-                    onClick={() => {
-                      handleNavigation(item.path);
-                      setIsUserMenuOpen(false);
-                    }}
-                  >
-                    <span className={styles.userMenuIcon}>{item.icon}</span>
-                    <span className={styles.userMenuLabel}>{item.label}</span>
-                  </button>
-                ))}
-                <button 
-                  className={`${styles.userMenuItem} ${styles.logoutItem}`}
-                  onClick={handleLogout}
-                >
-                  <span className={styles.userMenuIcon}><FaSignOutAlt /></span>
-                  <span className={styles.userMenuLabel}>Sair</span>
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
+         {/* HEADER COMPONENTIZADO */}
+      <Header />
 
       {/* CONTEÚDO PRINCIPAL */}
       <div className={styles.mainContent}>

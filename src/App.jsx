@@ -7,6 +7,7 @@ import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import Simulation from './pages/Simulation/Simulation';
 import Profile from './pages/Profile/Profile';
+import AIQuestions from './pages/AIQuestions/AIQuestions';
 import './App.css';
 
 // Componente para rotas protegidas
@@ -44,6 +45,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/aiquestions" 
+            element={
+              <ProtectedRoute>
+                <AIQuestions />
               </ProtectedRoute>
             } 
           />

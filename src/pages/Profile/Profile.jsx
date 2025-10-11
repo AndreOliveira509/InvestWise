@@ -19,7 +19,6 @@ import {
 } from 'react-icons/fa';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import styles from './Profile.module.css';
-import Sidebar from '../../components/Sidebar/Sidebar';
 
 const Profile = () => {
   const navigate = useNavigate();
