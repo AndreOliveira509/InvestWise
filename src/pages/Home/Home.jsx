@@ -1,293 +1,167 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import {
-  FaMoneyBillWave, FaTrash, FaPlus, FaHome, FaChartPie, FaCalendar,
-  FaUser, FaSignOutAlt, FaSearch, FaFilter, FaCog, FaBookReader, FaPiggyBank
+// pages/Home/Home.jsx
+import { useNavigate } from 'react-router-dom';
+import { 
+  FaChartLine, 
+  FaPiggyBank, 
+  FaMoneyBillWave, 
+  FaChartPie, 
+  FaRocket,
+  FaArrowRight
 } from 'react-icons/fa';
-import { RiRobot2Fill } from 'react-icons/ri';
-import { IoAnalytics } from 'react-icons/io5';
-import styles from './Home.module.css';
 import Header from '../../components/Header/Header';
-/* Gráficos */
-import PositiveAndNegativeBarChart from '../../components/PositiveAndNegativeBarChart/PositiveAndNegativeBarChart';
-import CustomActiveShapePieChart from '../../components/CustomActiveShapePieChart/CustomActiveShapePieChart';
-import SynchronizedLineChart from '../../components/SynchronizedLineChart/SynchronizedLineChart';
-
-/* Categorias */
-const categories = [
-  { id: 'alimentacao', name: 'Alimentação', color: '#FF6B6B', icon: '🍽️' },
-  { id: 'transporte', name: 'Transporte', color: '#4ECDC4', icon: '🚗' },
-  { id: 'moradia',     name: 'Moradia',     color: '#45B7D1', icon: '🏠' },
-  { id: 'lazer',       name: 'Lazer',       color: '#FFA07A', icon: '🎮' },
-  { id: 'saude',       name: 'Saúde',       color: '#98D8C8', icon: '🏥' },
-  { id: 'educacao',    name: 'Educação',    color: '#F7DC6F', icon: '📚' },
-  { id: 'outros',      name: 'Outros',      color: '#BB8FCE', icon: '📦' }
-];
+import styles from './Home.module.css';
 
 export default function Home() {
   const navigate = useNavigate();
-  const location = useLocation();
 
-  /* ---------- ESTADOS ---------- */
-  const [expenses, setExpenses] = useState([]);
-  const [budget, setBudget] = useState(3000);
-  const [search, setSearch] = useState('');
-  const [filterCat, setFilterCat] = useState('all');
-  const [sort, setSort] = useState('date'); // date | amount
-  const [form, setForm] = useState({
-    description: '',
-    amount: '',
-    category: 'alimentacao',
-    date: new Date().toISOString().split('T')[0]
-  });
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-
-  /* ---------- PERSISTÊNCIA ---------- */
-  useEffect(() => {
-    const saved = localStorage.getItem('expenses');
-    const bud = localStorage.getItem('budget');
-    if (saved) setExpenses(JSON.parse(saved));
-    if (bud) setBudget(parseFloat(bud));
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('expenses', JSON.stringify(expenses));
-  }, [expenses]);
-
-  /* ---------- MÉTRICAS ---------- */
-  const totalExpenses = useMemo(() => expenses.reduce((s, e) => s + parseFloat(e.amount || 0), 0), [expenses]);
-  const remaining = budget - totalExpenses;
-  const usedPercent = (totalExpenses / budget) * 100;
-
-  const todayExpenses = useMemo(() => {
-    const today = new Date().toISOString().split('T')[0];
-    return expenses.filter(e => e.date === today).reduce((s, e) => s + parseFloat(e.amount), 0);
-  }, [expenses]);
-
-  const weekSpending = useMemo(() => {
-    const week = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dayStr = d.toISOString().split('T')[0];
-      const daySpent = expenses.filter(e => e.date === dayStr).reduce((s, e) => s + parseFloat(e.amount), 0);
-      week.push({ name: d.toLocaleDateString('pt-BR', { weekday: 'short' }), spent: daySpent });
+  const features = [
+    {
+      icon: <FaChartLine />,
+      title: "Dashboard Completo",
+      description: "Acompanhe todos os seus gastos e receitas em tempo real com gráficos interativos"
+    },
+    {
+      icon: <FaPiggyBank />,
+      title: "Controle de Orçamento",
+      description: "Defina limites e receba alertas quando estiver perto de ultrapassar seu orçamento"
+    },
+    {
+      icon: <FaMoneyBillWave />,
+      title: "Análise de Gastos",
+      description: "Categorize seus gastos e identifique oportunidades de economia"
+    },
+    {
+      icon: <FaChartPie />,
+      title: "Relatórios Detalhados",
+      description: "Gere relatórios completos sobre sua saúde financeira"
     }
-    return week;
-  }, [expenses]);
-
-  const pieData = useMemo(() => {
-    return categories.map(c => ({
-      name: c.name,
-      value: expenses.filter(e => e.category === c.id).reduce((s, e) => s + parseFloat(e.amount), 0),
-      color: c.color
-    })).filter(d => d.value > 0);
-  }, [expenses]);
-
-  const barData = useMemo(() => {
-    return categories.map(c => ({
-      name: c.name,
-      lucro: Math.max(0, budget / 7 - expenses.filter(e => e.category === c.id).reduce((s, e) => s + parseFloat(e.amount), 0)),
-      prejuizo: expenses.filter(e => e.category === c.id).reduce((s, e) => s + parseFloat(e.amount), 0)
-    }));
-  }, [expenses, budget]);
-
-  /* ---------- FILTROS ---------- */
-  const filtered = useMemo(() => {
-    let list = expenses
-      .filter(e => {
-        const matchSearch = e.description.toLowerCase().includes(search.toLowerCase());
-        const matchCat = filterCat === 'all' || e.category === filterCat;
-        return matchSearch && matchCat;
-      })
-      .sort((a, b) => {
-        if (sort === 'date') return new Date(b.date) - new Date(a.date);
-        if (sort === 'amount') return b.amount - a.amount;
-        return 0;
-      });
-    return list.slice(0, 8);
-  }, [expenses, search, filterCat, sort]);
-
-  /* ---------- HANDLERS ---------- */
-  const handleAdd = e => {
-    e.preventDefault();
-    if (!form.description || !form.amount) return;
-    const newExp = { id: Date.now(), ...form, amount: parseFloat(form.amount) };
-    setExpenses([newExp, ...expenses]);
-    setForm({ description: '', amount: '', category: 'alimentacao', date: new Date().toISOString().split('T')[0] });
-  };
-
-  const handleRemove = id => setExpenses(expenses.filter(e => e.id !== id));
-  const handleBudgetEdit = () => {
-    const val = prompt('Novo orçamento:', budget);
-    if (val && !isNaN(val)) setBudget(parseFloat(val));
-  };
-
-  const handleNavigation = (path) => {
-    navigate(path);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
-    navigate('/');
-  };
-
-  const toggleUserMenu = () => {
-    setIsUserMenuOpen(!isUserMenuOpen);
-  };
-
-  /* ---------- ALERTAS ---------- */
-  const alerts = [];
-  if (usedPercent >= 100) alerts.push({ type: 'error', msg: 'Orçamento ultrapassado!' });
-  else if (usedPercent >= 80) alerts.push({ type: 'warning', msg: 'Mais de 80 % usados.' });
-
-  /* Menu items */
-  const menuItems = [
-    { path: "/home", icon: <FaHome />, label: "Dashboard" },
-    { path: "/simulation", icon: <IoAnalytics />, label: "Simulações" },
-    { path: "/aiquestions", icon: <RiRobot2Fill />, label: "IA Financeira" },
-    { path: "/methodology", icon: <FaBookReader />, label: "Metodologia" }
   ];
 
-  const userMenuItems = [
-    { path: "/profile", icon: <FaUser />, label: "Meu Perfil" },
-    { path: "/settings", icon: <FaCog />, label: "Configurações" }
-  ];
+  const handleGoToDashboard = () => {
+    navigate('/dashboard');
+  };
 
-  /* ---------- RENDER ---------- */
   return (
     <div className={styles.home}>
-         {/* HEADER COMPONENTIZADO */}
       <Header />
-
-      {/* CONTEÚDO PRINCIPAL */}
+      
       <div className={styles.mainContent}>
-        <main className={styles.main}>
-          {/* GASTOS */}
-          <section className={styles.expenseSection}>
-            <div className={styles.container}>
-              {/* Formulário moderno */}
-              <div className={styles.formCard}>
-                <h2>Adicionar Gasto</h2>
-                <form onSubmit={handleAdd} className={styles.modernForm}>
-                  <input
-                    value={form.description}
-                    onChange={e => setForm({ ...form, description: e.target.value })}
-                    placeholder="Ex: Almoço, Uber, Netflix"
-                    required
-                  />
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={form.amount}
-                    onChange={e => setForm({ ...form, amount: e.target.value })}
-                    placeholder="R$ 0,00"
-                    required
-                  />
-                  <select
-                    value={form.category}
-                    onChange={e => setForm({ ...form, category: e.target.value })}
-                  >
-                    {categories.map(c => (
-                      <option key={c.id} value={c.id}>
-                        {c.icon} {c.name}
-                      </option>
-                    ))}
-                  </select>
-                  <button type="submit" className={styles.submitBtn}>
-                    <FaPlus /> Adicionar
-                  </button>
-                </form>
+        {/* Hero Section */}
+        <section className={styles.hero}>
+          <div className={styles.heroContent}>
+            <div className={styles.welcomeBadge}>
+              <FaRocket />
+              <span>Bem-vindo ao InvestiWise</span>
+            </div>
+            <h1 className={styles.heroTitle}>
+              Controle Total das suas 
+              <span className={styles.highlight}> Finanças</span>
+            </h1>
+            <p className={styles.heroDescription}>
+              Tome o controle da sua vida financeira com ferramentas poderosas de análise, 
+              simulação e acompanhamento. Visualize seus gastos, planeje investimentos e 
+              alcance seus objetivos financeiros.
+            </p>
+            
+            <div className={styles.heroStats}>
+              <div className={styles.stat}>
+                <span className={styles.statNumber}>+95%</span>
+                <span className={styles.statLabel}>de economia</span>
+              </div>
+              <div className={styles.stat}>
+                <span className={styles.statNumber}>360°</span>
+                <span className={styles.statLabel}>visão financeira</span>
+              </div>
+              <div className={styles.stat}>
+                <span className={styles.statNumber}>24/7</span>
+                <span className={styles.statLabel}>acompanhamento</span>
               </div>
             </div>
-          </section>
 
-          <div className={styles.container}>
-            {/* CARDS RESUMO */}
-            <section className={styles.summarySection}>
-              {/* Card 1 – Orçamento com barra */}
-              <div className={styles.summaryCard} onClick={handleBudgetEdit} style={{ cursor: 'pointer' }}>
-                <div className={styles.cardLeft}>
-                  <div className={styles.cardIcon}><FaMoneyBillWave /></div>
-                  <div>
-                    <h3>Orçamento</h3>
-                    <p>R$ {budget.toLocaleString('pt-BR')}</p>
-                  </div>
-                </div>
-                <div className={styles.cardRight}>
-                  <div className={styles.progressCircle} style={{ '--percent': Math.min(usedPercent, 100) }}>
-                    <span>{usedPercent.toFixed(0)}%</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Card 2 – Total gasto com barra */}
-              <div className={styles.summaryCard}>
-                <div className={styles.cardLeft}>
-                  <div className={styles.cardIcon}><FaChartPie /></div>
-                  <div>
-                    <h3>Total Gasto</h3>
-                    <p>R$ {totalExpenses.toLocaleString('pt-BR')}</p>
-                  </div>
-                </div>
-                <div className={styles.cardRight}>
-                  <div className={styles.progressBar} style={{ '--percent': usedPercent }}></div>
-                </div>
-              </div>
-
-              {/* Card 3 – Saldo restante */}
-              <div className={`${styles.summaryCard} ${remaining >= 0 ? styles.positive : styles.negative}`}>
-                <div className={styles.cardLeft}>
-                  <div className={styles.cardIcon}><FaMoneyBillWave /></div>
-                  <div>
-                    <h3>Saldo</h3>
-                    <p>R$ {Math.abs(remaining).toLocaleString('pt-BR')}</p>
-                  </div>
-                </div>
-                <div className={styles.cardRight}>
-                  <div className={styles.progressCircle} style={{ '--percent': Math.max(0, 100 - usedPercent) }}>
-                    <span>{Math.max(0, 100 - usedPercent).toFixed(0)}%</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Card 4 – Hoje */}
-              <div className={styles.summaryCard}>
-                <div className={styles.cardLeft}>
-                  <div className={styles.cardIcon}><FaCalendar /></div>
-                  <div>
-                    <h3>Hoje</h3>
-                    <p>R$ {todayExpenses.toLocaleString('pt-BR')}</p>
-                  </div>
-                </div>
-                <div className={styles.cardRight}>
-                  <div className={styles.todaySpark}></div>
-                </div>
-              </div>
-            </section>
-
-            {/* ALERTAS */}
-            {alerts.length > 0 && (
-              <section className={styles.alerts}>
-                {alerts.map((a, i) => (
-                  <div key={i} className={`${styles.alert} ${styles[a.type]}`}>
-                    <span>{a.msg}</span>
-                  </div>
-                ))}
-              </section>
-            )}
-
-            {/* GRÁFICOS */}
-            <section className={styles.chartsSection}>
-              <h2>Análise Visual</h2>
-              <div className={styles.chartsGrid}>
-                <div className={styles.chartCard}><h3>Evolução Semanal</h3><SynchronizedLineChart data={weekSpending} /></div>
-                <div className={styles.chartCard}><h3>Balanço por Categoria</h3><PositiveAndNegativeBarChart data={barData} /></div>
-                <div className={styles.chartCard}><h3>Distribuição %</h3><CustomActiveShapePieChart data={pieData} /></div>
-              </div>
-            </section>
+            <button 
+              className={styles.ctaButton}
+              onClick={handleGoToDashboard}
+            >
+              <span>Ir para o Dashboard</span>
+              <FaArrowRight />
+            </button>
           </div>
-        </main>
+
+          <div className={styles.heroVisual}>
+            <div className={styles.visualCard}>
+              <div className={styles.cardHeader}>
+                <div className={styles.cardDots}>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+              <div className={styles.cardContent}>
+                <div className={styles.miniChart}>
+                  <div className={styles.chartBars}>
+                    <div className={styles.bar} style={{height: '60%'}}></div>
+                    <div className={styles.bar} style={{height: '80%'}}></div>
+                    <div className={styles.bar} style={{height: '45%'}}></div>
+                    <div className={styles.bar} style={{height: '90%'}}></div>
+                    <div className={styles.bar} style={{height: '70%'}}></div>
+                  </div>
+                </div>
+                <div className={styles.cardStats}>
+                  <div className={styles.miniStat}>
+                    <span className={styles.miniStatValue}>R$ 2.540</span>
+                    <span className={styles.miniStatLabel}>Saldo Atual</span>
+                  </div>
+                  <div className={styles.miniStat}>
+                    <span className={styles.miniStatValue}>+12%</span>
+                    <span className={styles.miniStatLabel}>este mês</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section className={styles.features}>
+          <div className={styles.container}>
+            <h2 className={styles.sectionTitle}>Tudo que você precisa em um só lugar</h2>
+            <p className={styles.sectionSubtitle}>
+              Ferramentas completas para transformar sua relação com o dinheiro
+            </p>
+            
+            <div className={styles.featuresGrid}>
+              {features.map((feature, index) => (
+                <div key={index} className={styles.featureCard}>
+                  <div className={styles.featureIcon}>
+                    {feature.icon}
+                  </div>
+                  <h3 className={styles.featureTitle}>{feature.title}</h3>
+                  <p className={styles.featureDescription}>{feature.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className={styles.ctaSection}>
+          <div className={styles.container}>
+            <div className={styles.ctaCard}>
+              <h2>Pronto para começar?</h2>
+              <p>
+                Acesse agora mesmo o dashboard completo e descubra todo o potencial 
+                das suas finanças com análises detalhadas e insights inteligentes.
+              </p>
+              <button 
+                className={styles.ctaButtonLarge}
+                onClick={handleGoToDashboard}
+              >
+                <span>Explorar Dashboard Completo</span>
+                <FaArrowRight />
+              </button>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );

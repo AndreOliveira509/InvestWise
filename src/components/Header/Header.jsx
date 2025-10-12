@@ -1,3 +1,4 @@
+// components/Header/Header.jsx
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -79,9 +80,10 @@ export default function Header() {
     }
   });
 
-  /* Menu items */
+  /* Menu items atualizado */
   const menuItems = [
-    { path: "/home", icon: <FaHome />, label: "Dashboard" },
+    { path: "/home", icon: <FaHome />, label: "Home" },
+    { path: "/dashboard", icon: <FaChartPie />, label: "Dashboard" },
     { path: "/simulation", icon: <IoAnalytics />, label: "Simulações" },
     { path: "/aiquestions", icon: <RiRobot2Fill />, label: "IA Financeira" },
   ];
