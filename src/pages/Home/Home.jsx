@@ -165,7 +165,7 @@ export default function Home() {
         <main className={styles.main}>
           {/* GASTOS */}
           <section className={styles.expenseSection}>
-            <div className={styles.expenseWrapper}>
+            <div className={styles.c}>
               {/* Formulário moderno */}
               <div className={styles.formCard}>
                 <h2>Adicionar Gasto</h2>

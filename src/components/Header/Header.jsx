@@ -2,16 +2,18 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   FaHome, FaChartPie, FaUser, FaSignOutAlt, FaCog, FaBookReader, FaPiggyBank,
-  FaMoon, FaSun
+  FaMoon, FaSun, FaTimes
 } from 'react-icons/fa';
 import { RiRobot2Fill } from 'react-icons/ri';
 import { IoAnalytics } from 'react-icons/io5';
+import ProfileModal from "../ProfileModal/ProfileModal";
 import styles from './Header.module.css';
 
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem('darkMode') === 'true';
   });
@@ -29,12 +31,20 @@ export default function Header() {
     setIsUserMenuOpen(!isUserMenuOpen);
   };
 
+  const openProfileModal = () => {
+    setIsProfileModalOpen(true);
+    setIsUserMenuOpen(false);
+  };
+
+  const closeProfileModal = () => {
+    setIsProfileModalOpen(false);
+  };
+
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
     localStorage.setItem('darkMode', newDarkMode.toString());
     
-    // Aplica as variáveis CSS
     const root = document.documentElement;
     if (newDarkMode) {
       root.style.setProperty('--bg-primary', '#1a1a1a');
@@ -82,76 +92,87 @@ export default function Header() {
   ];
 
   return (
-    <header className={styles.header}>
-      <div className={styles.headerContent}>
-        {/* Logo */}
-        <div className={styles.logo} onClick={() => navigate('/home')}>
-          <div className={styles.logoIcon}>
-            <FaPiggyBank />
+    <>
+      <header className={styles.header}>
+        <div className={styles.headerContent}>
+          {/* Logo */}
+          <div className={styles.logo} onClick={() => navigate('/home')}>
+            <div className={styles.logoIcon}>
+              <FaPiggyBank />
+            </div>
+            <span className={styles.logoText}>InvestiWise</span>
           </div>
-          <span className={styles.logoText}>InvestiWise</span>
-        </div>
 
-        {/* Menu de Navegação */}
-        <nav className={styles.nav}>
-          {menuItems.map((item) => (
-            <button
-              key={item.path}
-              className={`${styles.navItem} ${
-                location.pathname === item.path ? styles.active : ''
-              }`}
-              onClick={() => handleNavigation(item.path)}
-            >
-              <span className={styles.navIcon}>{item.icon}</span>
-              <span className={styles.navLabel}>{item.label}</span>
+          {/* Menu de Navegação */}
+          <nav className={styles.nav}>
+            {menuItems.map((item) => (
+              <button
+                key={item.path}
+                className={`${styles.navItem} ${
+                  location.pathname === item.path ? styles.active : ''
+                }`}
+                onClick={() => handleNavigation(item.path)}
+              >
+                <span className={styles.navIcon}>{item.icon}</span>
+                <span className={styles.navLabel}>{item.label}</span>
+              </button>
+            ))}
+          </nav>
+
+          {/* User Actions */}
+          <div className={styles.userSection}>
+            {/* Dark Mode Toggle */}
+            <button className={styles.darkModeToggle} onClick={toggleDarkMode}>
+              {darkMode ? <FaSun /> : <FaMoon />}
             </button>
-          ))}
-        </nav>
 
-        {/* User Actions */}
-        <div className={styles.userSection}>
-          {/* Dark Mode Toggle */}
-          <button className={styles.darkModeToggle} onClick={toggleDarkMode}>
-            {darkMode ? <FaSun /> : <FaMoon />}
-          </button>
-
-          <div className={styles.userInfo} onClick={toggleUserMenu}>
-            <div className={styles.userAvatar}>
-              <FaUser />
+            <div className={styles.userInfo} onClick={toggleUserMenu}>
+              <div className={styles.userAvatar}>
+                <FaUser />
+              </div>
+              <div className={styles.userDetails}>
+                <span className={styles.userName}>Usuário</span>
+                <span className={styles.userPlan}>Premium</span>
+              </div>
             </div>
-            <div className={styles.userDetails}>
-              <span className={styles.userName}>Usuário</span>
-              <span className={styles.userPlan}>Premium</span>
-            </div>
-          </div>
 
-          {/* User Menu Dropdown */}
-          {isUserMenuOpen && (
-            <div className={styles.userMenu}>
-              {userMenuItems.map((item) => (
+            {/* User Menu Dropdown */}
+            {isUserMenuOpen && (
+              <div className={styles.userMenu}>
                 <button
-                  key={item.path}
+                  className={styles.userMenuItem}
+                  onClick={openProfileModal}
+                >
+                  <span className={styles.userMenuIcon}><FaUser /></span>
+                  <span className={styles.userMenuLabel}>Meu Perfil</span>
+                </button>
+                <button
                   className={styles.userMenuItem}
                   onClick={() => {
-                    handleNavigation(item.path);
+                    handleNavigation('/settings');
                     setIsUserMenuOpen(false);
                   }}
                 >
-                  <span className={styles.userMenuIcon}>{item.icon}</span>
-                  <span className={styles.userMenuLabel}>{item.label}</span>
+                  <span className={styles.userMenuIcon}><FaCog /></span>
+                  <span className={styles.userMenuLabel}>Configurações</span>
                 </button>
-              ))}
-              <button 
-                className={`${styles.userMenuItem} ${styles.logoutItem}`}
-                onClick={handleLogout}
-              >
-                <span className={styles.userMenuIcon}><FaSignOutAlt /></span>
-                <span className={styles.userMenuLabel}>Sair</span>
-              </button>
-            </div>
-          )}
+                <button 
+                  className={`${styles.userMenuItem} ${styles.logoutItem}`}
+                  onClick={handleLogout}
+                >
+                  <span className={styles.userMenuIcon}><FaSignOutAlt /></span>
+                  <span className={styles.userMenuLabel}>Sair</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Modal de Perfil */}
+      {isProfileModalOpen && (
+        <ProfileModal onClose={closeProfileModal} />
+      )}
+    </>
   );
 }

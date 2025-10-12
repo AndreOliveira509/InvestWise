@@ -258,11 +258,12 @@
 /* ---------- CARDS RESUMO COM BARRAS ---------- */
 .summarySection {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
 }
 
 .summaryCard {
+  height: 100px;
   background: var(--bg-card);
   border-radius: 20px;
   padding: 1.5rem;
@@ -613,7 +614,7 @@
 .chartsGrid {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
 }
 .chartCardLarge {
   background: #fff;
