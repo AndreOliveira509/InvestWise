@@ -1,13 +1,11 @@
 // pages/Dashboard/Dashboard.jsx
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext'
+import { useAuth } from '../../context/AuthContext';
 import {
-  FaMoneyBillWave, FaTrash, FaPlus, FaHome, FaChartPie, FaCalendar,
-  FaUser, FaSignOutAlt, FaSearch, FaFilter, FaCog, FaBookReader, FaPiggyBank
+  FaMoneyBillWave, FaPlus, FaTrash, FaSearch, FaArrowUp, FaArrowDown
 } from 'react-icons/fa';
-import { RiRobot2Fill } from 'react-icons/ri';
-import { IoAnalytics } from 'react-icons/io5';
+
 import styles from './Dashboard.module.css';
 import Header from '../../components/Header/Header';
 /* Gráficos */
@@ -20,11 +18,11 @@ import SynchronizedLineChart from '../../components/SynchronizedLineChart/Synchr
 const categories = [
   { id: 'alimentacao', name: 'Alimentação', color: '#FF6B6B', icon: '🍽️' },
   { id: 'transporte', name: 'Transporte', color: '#4ECDC4', icon: '🚗' },
-  { id: 'moradia',     name: 'Moradia',     color: '#45B7D1', icon: '🏠' },
-  { id: 'lazer',       name: 'Lazer',       color: '#FFA07A', icon: '🎮' },
-  { id: 'saude',       name: 'Saúde',       color: '#98D8C8', icon: '🏥' },
-  { id: 'educacao',    name: 'Educação',    color: '#F7DC6F', icon: '📚' },
-  { id: 'outros',      name: 'Outros',      color: '#BB8FCE', icon: '📦' }
+  { id: 'moradia', name: 'Moradia', color: '#45B7D1', icon: '🏠' },
+  { id: 'lazer', name: 'Lazer', color: '#FFA07A', icon: '🎮' },
+  { id: 'saude', name: 'Saúde', color: '#98D8C8', icon: '🏥' },
+  { id: 'educacao', name: 'Educação', color: '#F7DC6F', icon: '📚' },
+  { id: 'outros', name: 'Outros', color: '#BB8FCE', icon: '📦' }
 ];
 
 export default function Dashboard() {
@@ -32,22 +30,20 @@ export default function Dashboard() {
   const { user } = useAuth();
 
   /* ---------- ESTADOS ---------- */
-  const [expenses, setExpenses] = useState([]);
-  const [budget, setBudget] = useState(3000); // Defina o estado do orçamento aqui
-  const [search, setSearch] = useState('');
-  const [filterCat, setFilterCat] = useState('all');
-  const [sort, setSort] = useState('date'); // date | amount
+  const [expenses, setExpenses] = useState(() => {
+    const savedExpenses = localStorage.getItem('expenses');
+    return savedExpenses ? JSON.parse(savedExpenses) : [];
+  });
+  const [budget, setBudget] = useState(3000);
+  const [searchTerm, setSearchTerm] = useState('');
   const [form, setForm] = useState({
     description: '',
     amount: '',
     category: 'alimentacao',
     date: new Date().toISOString().split('T')[0]
   });
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   /* ---------- PERSISTÊNCIA ---------- */
-
-
   useEffect(() => {
     localStorage.setItem('expenses', JSON.stringify(expenses));
   }, [expenses]);
@@ -58,11 +54,16 @@ export default function Dashboard() {
   const patrimonio = user ? parseFloat(user.patrimonio) : 0;
   const remaining = patrimonio - totalExpenses;
   const usedPercent = patrimonio > 0 ? (totalExpenses / patrimonio) * 100 : 0;
-  const todayExpenses = useMemo(() => {
-    const today = new Date().toISOString().split('T')[0];
-    return expenses.filter(e => e.date === today).reduce((s, e) => s + parseFloat(e.amount), 0);
-  }, [expenses]);
 
+  // Filtro de despesas para a lista
+  const filteredExpenses = useMemo(() => {
+    return expenses
+      .filter(e => e.description.toLowerCase().includes(searchTerm.toLowerCase()))
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+  }, [expenses, searchTerm]);
+
+
+  // Dados para os gráficos
   const weekSpending = useMemo(() => {
     const week = [];
     for (let i = 6; i >= 0; i--) {
@@ -70,12 +71,13 @@ export default function Dashboard() {
       d.setDate(d.getDate() - i);
       const dayStr = d.toISOString().split('T')[0];
       const daySpent = expenses.filter(e => e.date === dayStr).reduce((s, e) => s + parseFloat(e.amount), 0);
-      week.push({ name: d.toLocaleDateString('pt-BR', { weekday: 'short' }), spent: daySpent });
+      week.push({ name: d.toLocaleDateString('pt-BR', { weekday: 'short' }), gastos: daySpent, orcamento: budget / 30 });
     }
     return week;
-  }, [expenses]);
+  }, [expenses, budget]);
 
   const pieData = useMemo(() => {
+    if (expenses.length === 0) return [{ name: 'Nenhum gasto', value: 1, color: '#e0e0e0' }];
     return categories.map(c => ({
       name: c.name,
       value: expenses.filter(e => e.category === c.id).reduce((s, e) => s + parseFloat(e.amount), 0),
@@ -91,21 +93,6 @@ export default function Dashboard() {
     }));
   }, [expenses, budget]);
 
-  /* ---------- FILTROS ---------- */
-  const filtered = useMemo(() => {
-    let list = expenses
-      .filter(e => {
-        const matchSearch = e.description.toLowerCase().includes(search.toLowerCase());
-        const matchCat = filterCat === 'all' || e.category === filterCat;
-        return matchSearch && matchCat;
-      })
-      .sort((a, b) => {
-        if (sort === 'date') return new Date(b.date) - new Date(a.date);
-        if (sort === 'amount') return b.amount - a.amount;
-        return 0;
-      });
-    return list.slice(0, 8);
-  }, [expenses, search, filterCat, sort]);
 
   /* ---------- HANDLERS ---------- */
   const handleAdd = e => {
@@ -115,150 +102,108 @@ export default function Dashboard() {
     setExpenses([newExp, ...expenses]);
     setForm({ description: '', amount: '', category: 'alimentacao', date: new Date().toISOString().split('T')[0] });
   };
-
-  const handleRemove = id => setExpenses(expenses.filter(e => e.id !== id));
-  const handleBudgetEdit = () => {
-    const val = prompt('Novo orçamento:', budget);
-    if (val && !isNaN(val)) setBudget(parseFloat(val));
+  
+  const handleRemove = id => {
+    setExpenses(expenses.filter(e => e.id !== id));
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
-    navigate('/');
-  };
-
-  const toggleUserMenu = () => {
-    setIsUserMenuOpen(!isUserMenuOpen);
-  };
-
-  /* ---------- ALERTAS ---------- */
-  const alerts = [];
-  if (usedPercent >= 100) alerts.push({ type: 'error', msg: 'Orçamento ultrapassado!' });
-  else if (usedPercent >= 80) alerts.push({ type: 'warning', msg: 'Mais de 80 % usados.' });
-
-  /* ---------- RENDER ---------- */
   return (
     <div className={styles.dashboard}>
-         {/* HEADER COMPONENTIZADO */}
       <Header />
-
-      {/* CONTEÚDO PRINCIPAL */}
       <div className={styles.mainContent}>
         <main className={styles.main}>
-          {/* GASTOS */}
-          <section className={styles.expenseSection}>
-            <div className={styles.container}>
-              {/* Formulário moderno */}
-              <div className={styles.formCard}>
-                <h2>Adicionar Gasto</h2>
-                <form onSubmit={handleAdd} className={styles.modernForm}>
-                  <input
-                    value={form.description}
-                    onChange={e => setForm({ ...form, description: e.target.value })}
-                    placeholder="Ex: Almoço, Uber, Netflix"
-                    required
-                  />
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={form.amount}
-                    onChange={e => setForm({ ...form, amount: e.target.value })}
-                    placeholder="R$ 0,00"
-                    required
-                  />
-                  <select
-                    value={form.category}
-                    onChange={e => setForm({ ...form, category: e.target.value })}
-                  >
-                    {categories.map(c => (
-                      <option key={c.id} value={c.id}>
-                        {c.icon} {c.name}
-                      </option>
-                    ))}
-                  </select>
-                  <button type="submit" className={styles.submitBtn}>
-                    <FaPlus /> Adicionar
-                  </button>
-                </form>
+          <div className={styles.pageHeader}>
+            <h1>Dashboard Financeiro</h1>
+            <p>Sua visão geral de gastos e patrimônio.</p>
+          </div>
+          
+          <section className={styles.formCard}>
+            <form onSubmit={handleAdd} className={styles.modernForm}>
+              <input value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Descrição do gasto..." required />
+              <input type="number" step="0.01" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} placeholder="R$ 0,00" required />
+              <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
+                {categories.map(c => (<option key={c.id} value={c.id}>{c.icon} {c.name}</option>))}
+              </select>
+              <button type="submit" className={styles.submitBtn}><FaPlus /> Adicionar</button>
+            </form>
+          </section>
+
+          <section className={styles.metricsGrid}>
+            <div className={styles.metricCard}>
+              <h3 className={styles.metricTitle}>Patrimônio</h3>
+              <div className={styles.metricValueWrapper}>
+                <span className={styles.metricValue}>R$ {patrimonio.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                <div className={`${styles.metricChange} ${styles.positive}`}><FaArrowUp /><span>1.2%</span></div>
+              </div>
+            </div>
+            <div className={styles.metricCard}>
+              <h3 className={styles.metricTitle}>Total Gasto (Mês)</h3>
+              <div className={styles.metricValueWrapper}>
+                <span className={styles.metricValue}>R$ {totalExpenses.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                <div className={`${styles.metricChange} ${styles.negative}`}><FaArrowDown /><span>-0.5%</span></div>
+              </div>
+            </div>
+            <div className={styles.metricCard}>
+              <h3 className={styles.metricTitle}>% Orçamento Usado</h3>
+              <div className={styles.metricValueWrapper}>
+                <span className={styles.metricValue}>{usedPercent.toFixed(1)}%</span>
+                <div className={`${styles.metricChange} ${usedPercent > 80 ? styles.negative : styles.positive}`}><FaArrowUp /><span>+2.1%</span></div>
+              </div>
+            </div>
+            <div className={styles.metricCard}>
+              <h3 className={styles.metricTitle}>Saldo Restante</h3>
+              <div className={styles.metricValueWrapper}>
+                <span className={styles.metricValue}>R$ {remaining.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                <div className={`${styles.metricChange} ${styles.positive}`}><FaArrowDown /><span>+3.4%</span></div>
               </div>
             </div>
           </section>
 
-          <div className={styles.container}>
-            {/* CARDS RESUMO */}
-            <section className={styles.summarySection}>
-              {/* Card 1 – Orçamento com barra */}
-              <div className={styles.summaryCard} style={{ cursor: 'pointer' }}>
-                <div className={styles.cardLeft}>
-                  <div>
-                    <h3>Patrimônio</h3>
-                    <p>R$ {patrimonio.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
-                  </div>
-                </div>
-                <div className={styles.cardRight}>
-                  <div className={styles.progressCircle} style={{ '--percent': `${Math.min(usedPercent, 100)}%` }}>
-                    <span>{usedPercent.toFixed(0)}%</span>
-                  </div>
-                </div>
+          <div className={styles.contentGrid}>
+            <section className={styles.chartsArea}>
+              <div className={`${styles.chartCard} ${styles.large}`}>
+                <h3 className={styles.chartTitle}>Evolução Semanal</h3>
+                <div className={styles.chartWrapper}><SynchronizedLineChart data={weekSpending} /></div>
               </div>
-
-              {/* Card 2 – Total gasto com barra */}
-              <div className={styles.summaryCard}>
-                <div className={styles.cardLeft}>
-                  <div>
-                    <h3>Total Gasto</h3>
-                    <p>R$ {totalExpenses.toLocaleString('pt-BR')}</p>
-                  </div>
-                </div>
-                <div className={styles.cardRight}>
-                  <div className={styles.progressBar} style={{'--percent': `${usedPercent}%`}}></div>
-                </div>
+              <div className={styles.chartCard}>
+                <h3 className={styles.chartTitle}>Balanço por Categoria</h3>
+                <div className={styles.chartWrapper}><PositiveAndNegativeBarChart data={barData} /></div>
               </div>
-
-              {/* Card 3 – Saldo restante */}
-              <div className={`${styles.summaryCard} ${patrimonio - totalExpenses >= 0 ? styles.positive : styles.negative}`}>
-                <div className={styles.cardLeft}>
-                  <div>
-                    <h3>Saldo</h3>
-                    <p>R$ {(patrimonio - totalExpenses).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
-                  </div>
-                </div>
-                <div className={styles.cardRight}>
-                </div>
-              </div>
-
-              {/* Card 4 – Hoje */}
-              <div className={styles.summaryCard}>
-                <div className={styles.cardLeft}>
-                  <div>
-                    <h3>Hoje</h3>
-                    <p>R$ {todayExpenses.toLocaleString('pt-BR')}</p>
-                  </div>
-                </div>
-                <div className={styles.cardRight}>
-                  <div className={styles.todaySpark}></div>
-                </div>
+              <div className={styles.chartCard}>
+                <h3 className={styles.chartTitle}>Distribuição de Gastos</h3>
+                <div className={styles.chartWrapper}><CustomActiveShapePieChart data={pieData} /></div>
               </div>
             </section>
 
-            {/* ALERTAS */}
-            {alerts.length > 0 && (
-              <section className={styles.alerts}>
-                {alerts.map((a, i) => (
-                  <div key={i} className={`${styles.alert} ${styles[a.type]}`}>
-                    <span>{a.msg}</span>
+            <section className={styles.transactionsArea}>
+              <div className={styles.transactionsCard}>
+                <h3 className={styles.chartTitle}>Gastos Recentes</h3>
+                <div className={styles.transactionControls}>
+                  <div className={styles.searchWrapper}>
+                    <FaSearch className={styles.searchIcon} />
+                    <input type="text" placeholder="Pesquisar gasto..." className={styles.searchInput} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                   </div>
-                ))}
-              </section>
-            )}
-
-            {/* GRÁFICOS */}
-            <section className={styles.chartsSection}>
-              <h2>Análise Visual</h2>
-              <div className={styles.chartsGrid}>
-                <div className={styles.chartCard}><h3>Evolução Semanal</h3><SynchronizedLineChart data={weekSpending} /></div>
-                <div className={styles.chartCard}><h3>Balanço por Categoria</h3><PositiveAndNegativeBarChart data={barData} /></div>
-                <div className={styles.chartCard}><h3>Distribuição %</h3><CustomActiveShapePieChart data={pieData} /></div>
+                </div>
+                <div className={styles.transactionList}>
+                  {filteredExpenses.length > 0 ? (
+                    filteredExpenses.map(exp => {
+                      const category = categories.find(c => c.id === exp.category) || {};
+                      return (
+                        <div key={exp.id} className={styles.transactionItem}>
+                          <div className={styles.transactionIcon} style={{ backgroundColor: `${category.color}20`, color: category.color }}>{category.icon || '💸'}</div>
+                          <div className={styles.transactionDetails}>
+                            <span className={styles.transactionDesc}>{exp.description}</span>
+                            <span className={styles.transactionDate}>{new Date(exp.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>
+                          </div>
+                          <span className={styles.transactionAmount}>- R$ {exp.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                          <button onClick={() => handleRemove(exp.id)} className={styles.deleteBtn}><FaTrash /></button>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className={styles.emptyState}>Nenhum gasto encontrado.</div>
+                  )}
+                </div>
               </div>
             </section>
           </div>

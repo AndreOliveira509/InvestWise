@@ -1,24 +1,17 @@
 // src/components/CustomActiveShapePieChart/CustomActiveShapePieChart.js
 import React, { useState } from 'react';
-import { PieChart, Pie, Sector, ResponsiveContainer, Tooltip, Cell } from 'recharts';
+import { PieChart, Pie, Sector, ResponsiveContainer, Tooltip, Cell, Legend } from 'recharts';
 
 const renderActiveShape = (props) => {
-  const RADIAN = Math.PI / 180;
-  const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
-  const sin = Math.sin(-RADIAN * midAngle);
-  const cos = Math.cos(-RADIAN * midAngle);
-  const sx = cx + (outerRadius + 10) * cos;
-  const sy = cy + (outerRadius + 10) * sin;
-  const mx = cx + (outerRadius + 30) * cos;
-  const my = cy + (outerRadius + 30) * sin;
-  const ex = mx + (cos >= 0 ? 1 : -1) * 22;
-  const ey = my;
-  const textAnchor = cos >= 0 ? 'start' : 'end';
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent } = props;
 
   return (
     <g>
-      <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill} fontSize={14} fontWeight="bold">
+      <text x={cx} y={cy - 10} textAnchor="middle" fill={fill} fontSize={16} fontWeight="bold">
         {payload.name}
+      </text>
+      <text x={cx} y={cy + 10} textAnchor="middle" fill="#94a3b8" fontSize={14}>
+        {`(${(percent * 100).toFixed(1)}%)`}
       </text>
       <Sector
         cx={cx}
@@ -28,6 +21,7 @@ const renderActiveShape = (props) => {
         startAngle={startAngle}
         endAngle={endAngle}
         fill={fill}
+        style={{ filter: `drop-shadow(0 4px 8px ${fill}55)` }}
       />
       <Sector
         cx={cx}
@@ -38,54 +32,39 @@ const renderActiveShape = (props) => {
         outerRadius={outerRadius + 10}
         fill={fill}
       />
-      <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
-      <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333" fontSize={12}>
-        {`R$ ${value.toLocaleString('pt-BR')}`}
-      </text>
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999" fontSize={10}>
-        {`(${(percent * 100).toFixed(2)}%)`}
-      </text>
     </g>
   );
 };
 
+const CustomTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div style={{
+        backgroundColor: 'rgba(30, 41, 59, 0.9)',
+        padding: '12px',
+        border: '1px solid #334155',
+        borderRadius: '12px',
+        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)',
+      }}>
+        <p style={{ margin: 0, color: 'white', fontSize: '14px' }}>
+          {payload[0].name}: <span style={{ fontWeight: '600' }}>R$ {payload[0].value.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 const CustomActiveShapePieChart = ({ data }) => {
   const [activeIndex, setActiveIndex] = useState(0);
-
   const onPieEnter = (_, index) => {
     setActiveIndex(index);
   };
 
   const COLORS = data.map(item => item.color || '#0088FE');
 
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="custom-tooltip" style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          padding: '12px',
-          border: '1px solid #e2e8f0',
-          borderRadius: '8px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-        }}>
-          <p style={{ margin: '0 0 8px 0', fontWeight: '600', color: '#2d3748' }}>
-            {payload[0].name}
-          </p>
-          <p style={{ margin: '4px 0', color: payload[0].payload.color, fontSize: '14px' }}>
-            Valor: <span style={{ fontWeight: '600' }}>R$ {payload[0].value.toLocaleString('pt-BR')}</span>
-          </p>
-          <p style={{ margin: '4px 0', color: '#666', fontSize: '12px' }}>
-            Percentual: {((payload[0].value / data.reduce((sum, item) => sum + item.value, 0)) * 100).toFixed(1)}%
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
-    <div style={{ height: '300px', width: '100%' }}>
+    <div style={{ height: '100%', width: '100%' }}>
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
@@ -93,19 +72,27 @@ const CustomActiveShapePieChart = ({ data }) => {
             activeShape={renderActiveShape}
             data={data}
             cx="50%"
-            cy="50%"
-            innerRadius={60}
-            outerRadius={80}
+            cy="45%" // Levemente ajustado para dar espaço para a legenda
+            innerRadius={80}
+            outerRadius={110}
             dataKey="value"
             onMouseEnter={onPieEnter}
-            animationBegin={0}
-            animationDuration={1500}
           >
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="var(--bg-card)" strokeWidth={2} />
             ))}
           </Pie>
           <Tooltip content={<CustomTooltip />} />
+          <Legend 
+            iconType="circle" 
+            layout="horizontal" 
+            verticalAlign="bottom" 
+            align="center"
+            wrapperStyle={{
+              fontSize: "14px",
+              paddingTop: '15px'
+            }}
+          />
         </PieChart>
       </ResponsiveContainer>
     </div>
