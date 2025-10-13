@@ -5,145 +5,17 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.mainContent {
-  margin-left: 80px;
-  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  min-height: 100vh;
-  background: #f8f9fa;
-}
-
-.mainContent.sidebarOpen {
-  margin-left: 280px;
-}
-
-.mainContent.sidebarClosed {
-  margin-left: 80px;
-}
-
-/* Top Bar */
-.topBar {
-  background: #1a1a1a;
-  border-bottom: 1px solid #333;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  backdrop-filter: blur(8px);
-  background: rgba(26, 26, 26, 0.95);
-}
-
-.topBarContent {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  max-width: 100%;
-}
-
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.menuButton {
-  background: rgba(255, 193, 7, 0.1);
-  border: none;
-  font-size: 1.25rem;
-  color: #FFC107;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.menuButton:hover {
-  background: rgba(255, 193, 7, 0.2);
-  color: #FFD54F;
-}
-
-.pageTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #FFC107;
-}
-
-.userActions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.userInfo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 1rem;
-  background: rgba(255, 193, 7, 0.1);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 193, 7, 0.2);
-}
-
-.userAvatar {
-  width: 32px;
-  height: 32px;
-  background: #FFC107;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #1a1a1a;
-  font-size: 0.8rem;
-}
-
-.userDetails {
-  display: flex;
-  flex-direction: column;
-}
-
-.userName {
-  color: white;
-  font-weight: 600;
-  font-size: 0.8rem;
-}
-
-.userPlan {
-  color: #FFC107;
-  font-size: 0.7rem;
-  font-weight: 500;
-}
-
-.logoutButton {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(244, 67, 54, 0.1);
-  border: 1px solid rgba(244, 67, 54, 0.2);
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  color: #F44336;
-  font-weight: 500;
-  font-size: 0.875rem;
-}
-
-.logoutButton:hover {
-  background: rgba(244, 67, 54, 0.2);
-  border-color: rgba(244, 67, 54, 0.3);
-}
-
 /* Main Content */
 .main {
-  padding: 1.5rem 0;
+  padding-top: 0;
+  min-height: calc(100vh - 70px);
+  background: #f8f9fa;
 }
 
 .container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 2rem;
 }
 
 /* Simulation Header */
@@ -268,7 +140,7 @@
 .inputGroup label {
   display: flex;
   align-items: center;
-  justify-content: between;
+  justify-content: space-between;
   font-weight: 600;
   color: #333;
   margin-bottom: 0.5rem;
@@ -280,7 +152,6 @@
   border: none;
   color: #FFC107;
   cursor: pointer;
-  margin-left: auto;
   padding: 0.25rem;
   border-radius: 4px;
   transition: all 0.3s ease;
@@ -796,24 +667,8 @@
 }
 
 @media (max-width: 768px) {
-  .mainContent.sidebarOpen,
-  .mainContent.sidebarClosed {
-    margin-left: 0;
-  }
-
-  .topBarContent {
-    padding: 1rem;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .userActions {
-    width: 100%;
-    justify-content: space-between;
-  }
-
   .container {
-    padding: 0 1rem;
+    padding: 1rem;
   }
 
   .tabs {
@@ -837,10 +692,6 @@
 }
 
 @media (max-width: 480px) {
-  .userInfo {
-    display: none;
-  }
-
   .projectionGrid {
     grid-template-columns: 1fr;
   }
