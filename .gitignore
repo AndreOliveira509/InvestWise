@@ -41,7 +41,7 @@ lerna-debug.log*
 /api/build/
 
 # Arquivos de ambiente do Backend
-/api/.env
+.env
 /api/.env.development.local
 /api/.env.test.local
 /api/.env.production.local

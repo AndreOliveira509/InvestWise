@@ -9,44 +9,28 @@ import Register from './pages/Register/Register';
 import Simulation from './pages/Simulation/Simulation';
 import Profile from './pages/Profile/Profile';
 import AIQuestions from './pages/AIQuestions/AIQuestions';
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'; // 1. Importe o ProtectedRoute
 import './App.css';
 
-const Simulation = () => <div style={{ padding: '2rem' }}>Página de Simulação - Em desenvolvimento</div>;
-const Dashboard = () => <div style={{ padding: '2rem' }}>Dashboard - Em desenvolvimento</div>;
 
 function App() {
   return (
     <Router>
       <div className="App">
-        <Routes>
+       <Routes>
           {/* Rotas Públicas */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route 
-            path="/home" 
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/simulation" 
-            element={
-              <ProtectedRoute>
-                <Simulation />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/profile" 
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } 
-          />
+          
+          {/* 2. Crie um grupo de rotas protegidas */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/simulation" element={<Simulation />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/aiquestions" element={<AIQuestions />} />
+          </Route>
         </Routes>
       </div>
     </Router>
