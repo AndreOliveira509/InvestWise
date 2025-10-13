@@ -1,3 +1,20 @@
+/* Variáveis CSS para modo escuro/claro */
+:root {
+  --bg-primary: #f4f6fa;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --text-primary: #000000;
+  --text-secondary: #666666;
+  --border-color: #e0e0e0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos globais para modo escuro */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
 /* src/components/Button/Button.module.css */
 .button {
   padding: 12px 24px;

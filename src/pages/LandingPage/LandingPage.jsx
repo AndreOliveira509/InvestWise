@@ -9,6 +9,7 @@ import imagemHome from '../../assets/imagemhome.jpg'
 const LandingPage = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [openFaqIndex, setOpenFaqIndex] = useState(null);
 
   const features = [
     {
@@ -20,11 +21,6 @@ const LandingPage = () => {
       icon: <FaPiggyBank />,
       title: "Simulação de Investimentos",
       description: "Projete seu patrimônio com diferentes estratégias de aplicação"
-    },
-    {
-      icon: <FaShieldAlt />,
-      title: "Segurança em Primeiro Lugar",
-      description: "Seus dados financeiros protegidos com criptografia de ponta a ponta"
     },
     {
       icon: <FaMobileAlt />,
@@ -88,11 +84,6 @@ const LandingPage = () => {
       name: "Carlos Mendes",
       role: "Profissional Liberal",
       text: "Finalmente entendi para onde meu dinheiro estava indo. As projeções me ajudaram a planejar minha aposentadoria."
-    },
-    {
-      name: "Marina Costa",
-      role: "Jovem Investidora",
-      text: "A interface intuitiva e os gráficos me ajudaram a visualizar meu crescimento patrimonial de forma clara."
     }
   ];
 
@@ -136,6 +127,10 @@ const LandingPage = () => {
       element.scrollIntoView({ behavior: 'smooth' });
     }
     setIsMenuOpen(false);
+  };
+
+  const toggleFaq = (index) => {
+    setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
 
   return (
@@ -292,14 +287,20 @@ const LandingPage = () => {
           <p className={styles.sectionSubtitle}>Tire suas dúvidas sobre a plataforma</p>
           <div className={styles.faqContainer}>
             {faqs.map((faq, index) => (
-              <div key={index} className={styles.faqItem}>
+              <div 
+                key={index} 
+                className={`${styles.faqItem} ${openFaqIndex === index ? styles.active : ''}`}
+                onClick={() => toggleFaq(index)}
+              >
                 <div className={styles.faqQuestion}>
                   {faq.question}
                   <FaChevronDown className={styles.faqIcon} />
                 </div>
-                <div className={styles.faqAnswer}>
-                  <p>{faq.answer}</p>
-                </div>
+                {openFaqIndex === index && (
+                  <div className={styles.faqAnswer}>
+                    <p>{faq.answer}</p>
+                  </div>
+                )}
               </div>
             ))}
           </div>
