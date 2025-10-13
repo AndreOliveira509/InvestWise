@@ -1,93 +1,96 @@
-// src/components/SynchronizedLineChart/SynchronizedLineChart.js
+// src/components/SynchronizedLineChart/SynchronizedLineChart.jsx
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div style={{
+        backgroundColor: 'rgba(30, 41, 59, 0.9)',
+        padding: '12px',
+        border: '1px solid #334155',
+        borderRadius: '12px',
+        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)',
+        backdropFilter: 'blur(4px)'
+      }}>
+        <p style={{ margin: '0 0 8px 0', fontWeight: '600', color: '#cbd5e1', borderBottom: '1px solid #475569', paddingBottom: '8px' }}>
+          {label}
+        </p>
+        {payload.map((entry, index) => (
+          <p key={index} style={{
+            margin: '4px 0',
+            color: entry.color,
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <span style={{ height: '10px', width: '10px', backgroundColor: entry.color, borderRadius: '2px', display: 'inline-block' }}></span>
+            {entry.name}: <span style={{ fontWeight: '600', color: 'white' }}>R$ {entry.value.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
 
 const SynchronizedLineChart = ({ data }) => {
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="custom-tooltip" style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          padding: '12px',
-          border: '1px solid #e2e8f0',
-          borderRadius: '8px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-        }}>
-          <p className="label" style={{ margin: '0 0 8px 0', fontWeight: '600', color: '#2d3748' }}>
-            {label}
-          </p>
-          {payload.map((entry, index) => (
-            <p key={index} style={{ 
-              margin: '4px 0', 
-              color: entry.color,
-              fontSize: '14px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}>
-              <span style={{
-                display: 'inline-block',
-                width: '10px',
-                height: '10px',
-                backgroundColor: entry.color,
-                borderRadius: '2px'
-              }}></span>
-              {entry.name}: <span style={{ fontWeight: '600' }}>{entry.value.toLocaleString('pt-BR')}</span>
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
-    <div style={{ height: '300px', width: '100%' }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
+    <div style={{ height: '100%', width: '100%' }}>
+      <ResponsiveContainer>
+        <AreaChart
           data={data}
-          margin={{
-            top: 20,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
+          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+          <defs>
+            <linearGradient id="colorGastos" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#FFC107" stopOpacity={0.8}/>
+              <stop offset="95%" stopColor="#FFC107" stopOpacity={0}/>
+            </linearGradient>
+            <linearGradient id="colorOrcamento" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#8884d8" stopOpacity={0.4}/>
+              <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
           <XAxis 
             dataKey="name" 
-            stroke="#666"
+            stroke="#94a3b8"
             fontSize={12}
+            tickLine={false}
+            axisLine={false}
           />
           <YAxis 
-            stroke="#666"
+            stroke="#94a3b8"
             fontSize={12}
-            tickFormatter={(value) => value.toLocaleString('pt-BR')}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={(value) => `R$${value.toLocaleString('pt-BR')}`}
           />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend />
-          <Line 
+          <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#FFC107', strokeWidth: 1, strokeDasharray: '3 3' }} />
+          <Legend wrapperStyle={{fontSize: "14px", paddingTop: '10px'}}/>
+          <Area 
             type="monotone" 
-            dataKey="visitas" 
-            stroke="#667eea" 
+            dataKey="gastos" 
+            name="Gastos"
+            stroke="#FFC107"
             strokeWidth={3}
-            dot={{ fill: '#667eea', strokeWidth: 2, r: 4 }}
-            activeDot={{ r: 6, fill: '#5a67d8' }}
-            name="Visitas"
-            animationBegin={0}
-            animationDuration={1500}
+            fillOpacity={1}
+            fill="url(#colorGastos)"
+            activeDot={{ r: 8, strokeWidth: 2, fill: '#FFC107' }}
           />
-          <Line 
+          <Area 
             type="monotone" 
-            dataKey="conversoes" 
-            stroke="#ed8936" 
+            dataKey="orcamento" 
+            name="Orçamento Diário"
+            stroke="#A9A9A9"
             strokeWidth={2}
-            dot={{ fill: '#ed8936', strokeWidth: 2, r: 3 }}
-            name="Conversões"
-            animationBegin={400}
-            animationDuration={1500}
+            strokeDasharray="5 5"
+            fillOpacity={1}
+            fill="url(#colorOrcamento)"
           />
-        </LineChart>
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );
