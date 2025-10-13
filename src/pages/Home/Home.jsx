@@ -28,7 +28,7 @@ export default function Home() {
       }
       
       try {
-        const response = await axios.get('http://localhost:3001/users/me', {
+        const response = await axios.get('/api/users/me', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
