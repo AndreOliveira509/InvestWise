@@ -8,11 +8,43 @@ import {
   FaRocket,
   FaArrowRight
 } from 'react-icons/fa';
+import { useAuth } from '../../context/AuthContext'
 import Header from '../../components/Header/Header';
 import styles from './Home.module.css';
+import { useState, useEffect } from 'react';
+import axios from 'axios'; // 1. Adicione a importação do axios
 
 export default function Home() {
   const navigate = useNavigate();
+  const { user, setUser } = useAuth();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem('investiwise_token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+      
+      try {
+        const response = await axios.get('http://localhost:3001/users/me', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUser(response.data);
+      } catch (error){
+        console.error('Falha ao buscar dados do usuário', error);
+        localStorage.removeItem('investiwise_token');
+        navigate('/login');
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+   fetchUser(); // 2. Corrija o nome da função aqui
+}, [navigate, setUser]);
 
   const features = [
     {
@@ -41,6 +73,10 @@ export default function Home() {
     navigate('/dashboard');
   };
 
+  if (loading || !user) {
+    return <div>A carregar...</div>;
+  }
+  
   return (
     <div className={styles.home}>
       <Header />

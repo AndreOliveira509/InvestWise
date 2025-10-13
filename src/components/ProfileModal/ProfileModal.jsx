@@ -1,26 +1,32 @@
 import { useState, useEffect } from 'react';
-import { FaTimes, FaUser, FaCog, FaEdit, FaSave, FaCamera } from 'react-icons/fa';
-import { MdAccountBalanceWallet } from 'react-icons/md';
+import { FaTimes, FaUser, FaCog, FaEdit, FaSave, FaCamera } from 'react-icons/fa'; // Adicionei FaCamera
 import styles from './ProfileModal.module.css';
+import { useAuth } from '../../context/AuthContext';
+import axios from 'axios';
 
 const ProfileModal = ({ onClose }) => {
+  const { user, setUser } = useAuth(); // Obtenha o usuário do contexto
   const [activeTab, setActiveTab] = useState('profile');
   const [isEditing, setIsEditing] = useState(false);
-  
-  // Dados do usuário
-  const [userData, setUserData] = useState({
-    name: 'João Silva',
-    email: 'joao.silva@email.com',
-    phone: '(11) 99999-9999',
-    location: 'São Paulo, SP',
-    birthDate: '15/03/1990',
-    cpf: '123.456.789-00'
+
+  const [formData, setFormData] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    patrimonio: user ? parseFloat(user.patrimonio) : 0,
+    // Adicione outros campos se eles existirem no seu modelo de usuário
   });
 
-  const [formData, setFormData] = useState(userData);
 
   // Bloquear scroll e adicionar blur quando o modal abrir
   useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name,
+        email: user.email,
+        patrimonio: parseFloat(user.patrimonio),
+      });
+    }
+
     // Salvar a posição atual do scroll
     const scrollY = window.scrollY;
     
@@ -59,17 +65,48 @@ const ProfileModal = ({ onClose }) => {
       
       window.removeEventListener('keydown', handleEsc);
     };
-  }, []);
+  }, [user]);
+
+const handleSaveChanges = async () => {
+  const token = localStorage.getItem('investiwise_token');
+  try {
+    // Crie um objeto com todos os dados do formulário
+    const dataToUpdate = {
+      name: formData.name,
+      email: formData.email, // Se você permitir a edição do e-mail
+      patrimonio: parseFloat(formData.patrimonio),
+    };
+
+    const response = await axios.patch(
+      'http://localhost:3001/users/me',
+      dataToUpdate, // Envie o objeto completo
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    
+    // Atualiza o estado global do usuário com os novos dados
+    setUser(response.data); 
+    setIsEditing(false);
+
+  } catch (error) {
+    console.error("Erro ao atualizar os dados:", error);
+  }
+};
+
 
   const handleEditToggle = () => {
-    if (isEditing) {
-      setUserData(formData);
-    }
     setIsEditing(!isEditing);
   };
 
   const handleCancelEdit = () => {
-    setFormData(userData);
+    setFormData({ // Reseta para os dados originais do usuário
+        name: user.name,
+        email: user.email,
+        patrimonio: parseFloat(user.patrimonio),
+    });
     setIsEditing(false);
   };
 
@@ -126,15 +163,15 @@ const ProfileModal = ({ onClose }) => {
                 </button>
               </div>
               <div className={styles.userInfo}>
-                <h1 className={styles.userName}>{userData.name}</h1>
-                <p className={styles.userEmail}>{userData.email}</p>
+                <h1 className={styles.userName}>{user?.name}</h1>
+                <p className={styles.userEmail}>{user?.email}</p>
                 <div className={styles.userStats}>
                   <div className={styles.stat}>
                     <span className={styles.statNumber}>12</span>
                     <span className={styles.statLabel}>Meses</span>
                   </div>
                   <div className={styles.stat}>
-                    <span className={styles.statNumber}>R$ 45.670</span>
+                    <span className={styles.statNumber}>R$ {user?.patrimonio}</span>
                     <span className={styles.statLabel}>Patrimônio</span>
                   </div>
                   <div className={styles.stat}>
@@ -148,8 +185,7 @@ const ProfileModal = ({ onClose }) => {
             <div className={styles.headerActions}>
               <button 
                 className={`${styles.editButton} ${isEditing ? styles.save : ''}`}
-                onClick={handleEditToggle}
-              >
+                onClick={isEditing ? handleSaveChanges : handleEditToggle}>
                 {isEditing ? <FaSave /> : <FaEdit />}
                 {isEditing ? 'Salvar' : 'Editar Perfil'}
               </button>
@@ -198,7 +234,7 @@ const ProfileModal = ({ onClose }) => {
                         className={styles.input}
                       />
                     ) : (
-                      <div className={styles.infoValue}>{userData.name}</div>
+                      <div className={styles.infoValue}>{user?.name}</div>
                     )}
                   </div>
 
@@ -212,63 +248,21 @@ const ProfileModal = ({ onClose }) => {
                         className={styles.input}
                       />
                     ) : (
-                      <div className={styles.infoValue}>{userData.email}</div>
+                      <div className={styles.infoValue}>{user?.email}</div>
                     )}
                   </div>
 
                   <div className={styles.infoGroup}>
-                    <label>Telefone</label>
+                    <label>Patrimônio</label>
                     {isEditing ? (
                       <input
-                        type="tel"
-                        value={formData.phone}
-                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                        type="number"
+                        value={formData.patrimonio}
+                        onChange={(e) => handleInputChange('patrimonio', e.target.value)}
                         className={styles.input}
                       />
                     ) : (
-                      <div className={styles.infoValue}>{userData.phone}</div>
-                    )}
-                  </div>
-
-                  <div className={styles.infoGroup}>
-                    <label>Localização</label>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={formData.location}
-                        onChange={(e) => handleInputChange('location', e.target.value)}
-                        className={styles.input}
-                      />
-                    ) : (
-                      <div className={styles.infoValue}>{userData.location}</div>
-                    )}
-                  </div>
-
-                  <div className={styles.infoGroup}>
-                    <label>Data de Nascimento</label>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={formData.birthDate}
-                        onChange={(e) => handleInputChange('birthDate', e.target.value)}
-                        className={styles.input}
-                      />
-                    ) : (
-                      <div className={styles.infoValue}>{userData.birthDate}</div>
-                    )}
-                  </div>
-
-                  <div className={styles.infoGroup}>
-                    <label>CPF</label>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={formData.cpf}
-                        onChange={(e) => handleInputChange('cpf', e.target.value)}
-                        className={styles.input}
-                      />
-                    ) : (
-                      <div className={styles.infoValue}>{userData.cpf}</div>
+                      <div className={styles.infoValue}>{user?.patrimonio}</div>
                     )}
                   </div>
                 </div>
@@ -336,7 +330,6 @@ const ProfileModal = ({ onClose }) => {
                       </label>
                     </div>
                   </div>
-
                 </div>
               </div>
             )}

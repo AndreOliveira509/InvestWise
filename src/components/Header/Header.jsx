@@ -9,23 +9,27 @@ import { RiRobot2Fill } from 'react-icons/ri';
 import { IoAnalytics } from 'react-icons/io5';
 import ProfileModal from "../ProfileModal/ProfileModal";
 import styles from './Header.module.css';
+import { useAuth } from '../../context/AuthContext';
+
 
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem('darkMode') === 'true';
-  });
+  return localStorage.getItem('darkMode') === 'true';
+});
 
   const handleNavigation = (path) => {
     navigate(path);
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
-    navigate('/');
+    // Limpa o token e redireciona para o login
+    localStorage.removeItem('investiwise_token'); 
+    navigate('/login');
   };
 
   const toggleUserMenu = () => {
@@ -133,7 +137,7 @@ export default function Header() {
                 <FaUser />
               </div>
               <div className={styles.userDetails}>
-                <span className={styles.userName}>Usuário</span>
+                <span className={styles.userName}>{user?.name}</span>
                 <span className={styles.userPlan}>Premium</span>
               </div>
             </div>

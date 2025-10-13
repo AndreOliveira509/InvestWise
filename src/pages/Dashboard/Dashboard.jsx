@@ -1,6 +1,7 @@
 // pages/Dashboard/Dashboard.jsx
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext'
 import {
   FaMoneyBillWave, FaTrash, FaPlus, FaHome, FaChartPie, FaCalendar,
   FaUser, FaSignOutAlt, FaSearch, FaFilter, FaCog, FaBookReader, FaPiggyBank
@@ -13,6 +14,7 @@ import Header from '../../components/Header/Header';
 import PositiveAndNegativeBarChart from '../../components/PositiveAndNegativeBarChart/PositiveAndNegativeBarChart';
 import CustomActiveShapePieChart from '../../components/CustomActiveShapePieChart/CustomActiveShapePieChart';
 import SynchronizedLineChart from '../../components/SynchronizedLineChart/SynchronizedLineChart';
+
 
 /* Categorias */
 const categories = [
@@ -27,10 +29,11 @@ const categories = [
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   /* ---------- ESTADOS ---------- */
   const [expenses, setExpenses] = useState([]);
-  const [budget, setBudget] = useState(3000);
+  const [budget, setBudget] = useState(3000); // Defina o estado do orçamento aqui
   const [search, setSearch] = useState('');
   const [filterCat, setFilterCat] = useState('all');
   const [sort, setSort] = useState('date'); // date | amount
@@ -43,12 +46,7 @@ export default function Dashboard() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   /* ---------- PERSISTÊNCIA ---------- */
-  useEffect(() => {
-    const saved = localStorage.getItem('expenses');
-    const bud = localStorage.getItem('budget');
-    if (saved) setExpenses(JSON.parse(saved));
-    if (bud) setBudget(parseFloat(bud));
-  }, []);
+
 
   useEffect(() => {
     localStorage.setItem('expenses', JSON.stringify(expenses));
@@ -56,9 +54,10 @@ export default function Dashboard() {
 
   /* ---------- MÉTRICAS ---------- */
   const totalExpenses = useMemo(() => expenses.reduce((s, e) => s + parseFloat(e.amount || 0), 0), [expenses]);
-  const remaining = budget - totalExpenses;
-  const usedPercent = (totalExpenses / budget) * 100;
 
+  const patrimonio = user ? parseFloat(user.patrimonio) : 0;
+  const remaining = patrimonio - totalExpenses;
+  const usedPercent = patrimonio > 0 ? (totalExpenses / patrimonio) * 100 : 0;
   const todayExpenses = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
     return expenses.filter(e => e.date === today).reduce((s, e) => s + parseFloat(e.amount), 0);
@@ -189,15 +188,15 @@ export default function Dashboard() {
             {/* CARDS RESUMO */}
             <section className={styles.summarySection}>
               {/* Card 1 – Orçamento com barra */}
-              <div className={styles.summaryCard} onClick={handleBudgetEdit} style={{ cursor: 'pointer' }}>
+              <div className={styles.summaryCard} style={{ cursor: 'pointer' }}>
                 <div className={styles.cardLeft}>
                   <div>
-                    <h3>Orçamento</h3>
-                    <p>R$ {budget.toLocaleString('pt-BR')}</p>
+                    <h3>Patrimônio</h3>
+                    <p>R$ {patrimonio.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                   </div>
                 </div>
                 <div className={styles.cardRight}>
-                  <div className={styles.progressCircle} style={{ '--percent': Math.min(usedPercent, 100) }}>
+                  <div className={styles.progressCircle} style={{ '--percent': `${Math.min(usedPercent, 100)}%` }}>
                     <span>{usedPercent.toFixed(0)}%</span>
                   </div>
                 </div>
@@ -212,16 +211,16 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className={styles.cardRight}>
-                  <div className={styles.progressBar} style={{ '--percent': usedPercent }}></div>
+                  <div className={styles.progressBar} style={{'--percent': `${usedPercent}%`}}></div>
                 </div>
               </div>
 
               {/* Card 3 – Saldo restante */}
-              <div className={`${styles.summaryCard} ${remaining >= 0 ? styles.positive : styles.negative}`}>
+              <div className={`${styles.summaryCard} ${patrimonio - totalExpenses >= 0 ? styles.positive : styles.negative}`}>
                 <div className={styles.cardLeft}>
                   <div>
                     <h3>Saldo</h3>
-                    <p>R$ {Math.abs(remaining).toLocaleString('pt-BR')}</p>
+                    <p>R$ {(patrimonio - totalExpenses).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                   </div>
                 </div>
                 <div className={styles.cardRight}>
