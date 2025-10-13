@@ -206,13 +206,6 @@ Pergunta do usuário: "${userMessage}"
                     <FaRobot className={styles.titleIcon} />
                     Assistente IA Profissional
                   </h1>
-                  <button 
-                    className={styles.darkModeToggle}
-                    onClick={toggleDarkMode}
-                    aria-label={darkMode ? "Ativar modo claro" : "Ativar modo escuro"}
-                  >
-                    {darkMode ? <FaSun /> : <FaMoon />}
-                  </button>
                 </div>
                 <p className={styles.subtitle}>
                   Consultoria inteligente com Gemini 2.5 — Respostas focadas e profissionais
