@@ -69,7 +69,7 @@ const Profile = () => {
   const handleCancelEdit = () => {
     setFormData(userData.personal);
     setIsEditing(false);
-  };
+  };a
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
