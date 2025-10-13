@@ -38,6 +38,7 @@
   border-radius: 16px;
   border: 1px solid var(--border-color);
   margin-bottom: -100px;
+  z-index: 10;
 }
 
 
