@@ -1,7 +1,72 @@
 /* pages/LandingPage/LandingPage.module.css */
+
+/* =========================================================
+   Variáveis principais (usadas pelo JS via setProperty)
+   JS altera: --bg-primary, --bg-secondary, --bg-card,
+              --text-primary, --text-secondary,
+              --border-color, --shadow-color
+   ========================================================= */
+:root {
+  /* valores padrão (modo claro) - idênticos ao que você já tinha */
+  --bg-primary: #f4f6fa;       /* fundo geral */
+  --bg-secondary: #ffffff;     /* seções brancas */
+  --bg-card: #ffffff;          /* cartões */
+  --text-primary: #000000;
+  --text-secondary: #666666;
+  --border-color: #e0e0e0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+
+  /* cores auxiliares originais que seu CSS já usava */
+
+  --secondary-background: #fff;
+  --text-light: #ffffff;
+
+  --transition-speed: 0.3s;
+  --border-radius: 10px;
+}
+
+/* ===== Compatibilidade: mapeia variáveis antigas para as novas =====
+   Assim, partes do CSS que referenciam --background-color, --surface-color
+   e outras irão acompanhar o que o JS altera.
+*/
+:root {
+  --background-color: var(--bg-primary);
+  --surface-color: var(--bg-secondary);
+  --background-card: var(--bg-card);
+  --shadow-light: 0 4px 10px var(--shadow-color);
+  --shadow-medium: 0 8px 20px var(--shadow-color);
+}
+
+/* =========================================================
+   Dark mode — definido tanto como `.darkMode` (CSS Module)
+   quanto `body.darkMode` (caso você prefira string "darkMode").
+   O JS que você mostrou usa styles.darkMode, então .darkMode aqui
+   será gerado como uma classe com hash e aplicada corretamente.
+   ========================================================= */
+.darkMode,
+body.darkMode {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-card: #2d2d2d;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --border-color: #404040;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+
+  /* manter compatibilidade com as variáveis antigas */
+  --background-color: var(--bg-primary);
+  --surface-color: var(--bg-secondary);
+  --background-card: var(--bg-card);
+  --shadow-light: 0 4px 10px var(--shadow-color);
+  --shadow-medium: 0 8px 20px var(--shadow-color);
+}
+
+/* ================== LAYOUT BASE ================== */
 .landingPage {
   min-height: 100vh;
   background: var(--background-color);
+  color: var(--text-primary);
+  transition: background var(--transition-speed), color var(--transition-speed);
 }
 
 .container {
@@ -10,15 +75,23 @@
   padding: 0 20px;
 }
 
-/* Header Styles */
+/* ================== HEADER ================== */
 .header {
   position: fixed;
   top: 0;
   width: 100%;
+  /* use var para manter o comportamento atual no claro e escuro */
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   z-index: 1000;
   border-bottom: 1px solid var(--border-color);
+  transition: background var(--transition-speed), border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+/* quando em dark mode queremos o header escuro mas sem quebrar transparência */
+.darkMode .header,
+body.darkMode .header {
+  background: rgba(30, 30, 30, 0.85);
 }
 
 .navbar {
@@ -68,7 +141,25 @@
   cursor: pointer;
 }
 
-/* Hero Section */
+.themeToggle {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.themeToggle:hover {
+  transform: scale(1.1);
+  color: var(--primary-color);
+}
+
+/* ================== HERO ==================
+   O hero usava antes cores brancas fixas — agora usamos var(--text-light)
+   para o texto do hero e var(--background-card) para o painel.
+   Mantive o visual (texto claro sobre imagem) — apenas mapeado para variáveis.
+==========================================*/
 .hero {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -77,10 +168,11 @@
   padding: 8rem 15rem 4rem;
   max-width: 100vw;
   min-height: 80vh;
-  color: white;
   position: relative;
 }
 
+/* mantemos o texto do hero sempre visível sobre a imagem;
+   em modo escuro a imagem de fundo continua, mas o texto permanece legível */
 .heroContent h1 {
   font-size: 3rem;
   font-weight: 700;
@@ -109,12 +201,13 @@
 }
 
 .dashboardPreview {
-  background: white;
+  background: var(--background-card);
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-light);
   border: 1px solid var(--border-color);
   min-width: 300px;
+  transition: background var(--transition-speed), border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
 
 .chartContainer {
@@ -157,7 +250,7 @@
 /* Features Section */
 .features {
   padding: 80px 0;
-  background: #f8f9fa;
+ --bg-secondary: #2d2d2d;
 }
 
 .features h2 {
@@ -281,6 +374,17 @@
 .step {
   text-align: center;
   position: relative;
+--background-card: var(--bg-card);
+  border-radius: 10px;
+  padding: 2rem 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.step:hover {
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.35);
+  transform: translateY(-8px);
 }
 
 .stepNumber {
