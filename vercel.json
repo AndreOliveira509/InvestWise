@@ -2,11 +2,11 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/src/main.ts",
+      "source": "api/src/main.ts",
       "use": "@vercel/node"
     },
     {
-      "src": "package.json",
+      "source": "package.json",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist"
@@ -15,12 +15,12 @@
   ],
   "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/src/main.ts"
+      "source": "/api/(.*)",
+      "destination": "/api/src/main.ts"
     },
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
