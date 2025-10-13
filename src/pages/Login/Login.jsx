@@ -64,7 +64,7 @@ const Login = () => {
     <div className={styles.loginPage}>
       <div className={styles.loginContainer}>
         <div className={styles.loginHeader}>
-          <div className={styles.logo}>InvestiWise</div>
+          <div className={styles.logo}>InvestWise</div>
           <h1>Bem-vindo de volta</h1>
           <p>Entre na sua conta para continuar</p>
         </div>
