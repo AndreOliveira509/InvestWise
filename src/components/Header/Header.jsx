@@ -106,7 +106,7 @@ export default function Header() {
             <div className={styles.logoIcon}>
               <FaPiggyBank />
             </div>
-            <span className={styles.logoText}>InvestiWise</span>
+            <span className={styles.logoText}>InvestWise</span>
           </div>
 
           {/* Menu de Navegação */}

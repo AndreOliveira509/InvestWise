@@ -87,7 +87,7 @@ export default function Home() {
           <div className={styles.heroContent}>
             <div className={styles.welcomeBadge}>
               <FaRocket />
-              <span>Bem-vindo ao InvestiWise</span>
+              <span>Bem-vindo ao InvestWise</span>
             </div>
             <h1 className={styles.heroTitle}>
               Controle Total das suas 

@@ -29,25 +29,20 @@ const Login = () => {
   const handleSubmit = async (e) => {
     // 1. Impede o recarregamento da página
     e.preventDefault();
-    console.log('handleSubmit foi chamado!'); // DEBUG
 
     setError('');
     setLoading(true);
 
-    try {
-      console.log('Enviando para a API:', formData); // DEBUG
-      
+    try { 
       const response = await axios.post('http://localhost:3001/auth/login', {
         email: formData.email,
         password: formData.password,
       });
-      
-      console.log('Resposta da API:', response.data); // DEBUG
+    
       const { access_token } = response.data;
       
       if (access_token) {
         localStorage.setItem('investiwise_token', access_token);
-        console.log('Token guardado! A navegar para /home...'); // DEBUG
         navigate('/home');
       } else {
         setError('Token não recebido da API.');
@@ -69,7 +64,7 @@ const Login = () => {
     <div className={styles.loginPage}>
       <div className={styles.loginContainer}>
         <div className={styles.loginHeader}>
-          <div className={styles.logo}>InvestiWise</div>
+          <div className={styles.logo}>InvestWise</div>
           <h1>Bem-vindo de volta</h1>
           <p>Entre na sua conta para continuar</p>
         </div>
