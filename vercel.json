@@ -2,15 +2,8 @@
   "version": 2,
   "builds": [
     {
-      "source": "api/src/main.ts",
+      "src": "api/src/main.ts",
       "use": "@vercel/node"
-    },
-    {
-      "source": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
     }
   ],
   "rewrites": [
