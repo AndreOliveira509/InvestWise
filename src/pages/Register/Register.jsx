@@ -42,7 +42,7 @@ const Register = () => {
 
     try {
       // Faz a requisição POST para o endpoint do backend
-      const response = await axios.post('http://localhost:3001/auth/cadastro', {
+      const response = await axios.post('/api/auth/cadastro', {
         name: formData.name,
         email: formData.email,
         password: formData.password
