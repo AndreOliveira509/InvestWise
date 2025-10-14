@@ -67,6 +67,12 @@ const cryptocurrencies = [
   { symbol: 'XRP', name: 'Ripple' }
 ];
 
+// Função para gerar números "aleatórios" determinísticos
+const getDeterministicRandom = (seed, min, max) => {
+  const x = Math.sin(seed) * 10000;
+  return min + (x - Math.floor(x)) * (max - min);
+};
+
 export default function Simulation() {
   const { user } = useAuth();
 
@@ -124,6 +130,9 @@ export default function Simulation() {
     const months = parseInt(simulationForm.timePeriod);
     const baseMonthlyRate = parseFloat(simulationForm.expectedReturn) / 100;
 
+    // Seed base para números determinísticos
+    const baseSeed = initial + monthly + months + baseMonthlyRate;
+
     let simulationData = [];
     let total = initial;
 
@@ -133,18 +142,23 @@ export default function Simulation() {
 
         switch (simulationForm.investmentType) {
           case 'acoes':
-            const volatility = (Math.random() * 0.1) - 0.05;
+            // Volatilidade determinística baseada no seed
+            const volatility = getDeterministicRandom(baseSeed + i, -0.05, 0.08);
             monthlyRate = Math.max(baseMonthlyRate + volatility, -0.15);
             break;
           case 'cripto':
             const cryptoData = cryptoPrices[simulationForm.cryptoType];
             const baseCryptoRate = cryptoData ? (cryptoData.change / 100) : baseMonthlyRate;
-            const cryptoVolatility = (Math.random() * 0.3) - 0.15;
+            // Volatilidade determinística para cripto também
+            const cryptoVolatility = getDeterministicRandom(baseSeed + i + 1000, -0.15, 0.15);
             monthlyRate = baseCryptoRate + cryptoVolatility;
             break;
           case 'previdencia':
             monthlyRate = baseMonthlyRate - 0.001;
             break;
+          default:
+            // Para renda fixa e FIIs, usa a taxa base sem alterações
+            monthlyRate = baseMonthlyRate;
         }
 
         total = total * (1 + monthlyRate) + monthly;
@@ -169,7 +183,18 @@ export default function Simulation() {
       simulationData,
       roi: totalContributions > 0 ? (totalEarnings / totalContributions) * 100 : 0
     };
-  }, [simulationForm, showResults, cryptoPrices]);
+  }, [
+    // Apenas estas dependências afetam o cálculo
+    simulationForm.initialAmount,
+    simulationForm.monthlyContribution,
+    simulationForm.timePeriod,
+    simulationForm.investmentType,
+    simulationForm.expectedReturn,
+    simulationForm.cryptoType,
+    showResults,
+    // CryptoPrices só quando for investimento em cripto
+    ...(simulationForm.investmentType === 'cripto' ? [cryptoPrices] : [])
+  ]);
 
   const handleSimulation = (e) => {
     e.preventDefault();
