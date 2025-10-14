@@ -9,7 +9,8 @@ import Register from './pages/Register/Register';
 import Simulation from './pages/Simulation/Simulation';
 import Profile from './pages/Profile/Profile';
 import AIQuestions from './pages/AIQuestions/AIQuestions';
-import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'; // 1. Importe o ProtectedRoute
+import AboutUs from './pages/AboutUs/AboutUs'; // 1. Importe a nova página
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import './App.css';
 
 
@@ -23,13 +24,13 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           
-          {/* 2. Crie um grupo de rotas protegidas */}
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<Home />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/simulation" element={<Simulation />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/aiquestions" element={<AIQuestions />} />
+            <Route path="/about-us" element={<AboutUs />} /> {/* 2. Adicione a nova rota */}
           </Route>
         </Routes>
       </div>
