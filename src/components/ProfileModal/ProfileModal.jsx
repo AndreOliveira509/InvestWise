@@ -78,7 +78,7 @@ const handleSaveChanges = async () => {
     };
 
     const response = await axios.patch(
-      'http://localhost:3001/users/me',
+      '/api/users/me',
       dataToUpdate, // Envie o objeto completo
       {
         headers: {
