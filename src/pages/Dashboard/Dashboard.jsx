@@ -8,7 +8,6 @@ import {
 } from 'react-icons/fa';
 
 import styles from './Dashboard.module.css';
-import Header from '../../components/Header/Header';
 /* Gráficos */
 import PositiveAndNegativeBarChart from '../../components/PositiveAndNegativeBarChart/PositiveAndNegativeBarChart';
 import CustomActiveShapePieChart from '../../components/CustomActiveShapePieChart/CustomActiveShapePieChart';
@@ -26,46 +25,16 @@ const categories = [
 ];
 
 export default function Dashboard() {
-  const { user, setUser } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const [expenses, setExpenses] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [transactionsLoading, setTransactionsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [form, setForm] = useState({
     description: '',
     amount: '',
-    categoryId: 1, // Começa com o ID da primeira categoria
+    categoryId: 1,
     date: new Date().toISOString().split('T')[0],
   });
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (user) {
-        // Se o usuário já está no contexto, não precisa fazer nada
-        return;
-      }
-      
-      const token = localStorage.getItem('investiwise_token');
-      if (!token) {
-        navigate('/login');
-        return;
-      }
-      
-      try {
-        const response = await axios.get('/api/users/me', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUser(response.data); // Salva o usuário no contexto
-      } catch (error){
-        console.error('Falha ao buscar dados do usuário no Dashboard', error);
-        localStorage.removeItem('investiwise_token');
-        navigate('/login');
-      }
-    };
-
-    fetchUser();
-  }, [user, setUser, navigate]);
-
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -80,7 +49,7 @@ export default function Dashboard() {
       } catch (error) {
         console.error("Erro ao buscar transações:", error);
       } finally {
-        setLoading(false); 
+        setTransactionsLoading(false); 
       }
     };
 
@@ -88,6 +57,7 @@ export default function Dashboard() {
   }, [user]);
 
   /* ---------- MÉTRICAS ---------- */
+
   const totalExpenses = useMemo(() => expenses.reduce((s, e) => s + parseFloat(e.amount || 0), 0), [expenses]);
   const patrimonio = user ? parseFloat(user.patrimonio) : 0;
   const remaining = patrimonio - totalExpenses;
@@ -106,7 +76,7 @@ export default function Dashboard() {
       d.setDate(d.getDate() - i);
       const dayStr = d.toISOString().split('T')[0];
       const daySpent = expenses
-        .filter(e => e.date.startsWith(dayStr)) // Usar startsWith para comparar datas
+        .filter(e => e.date.startsWith(dayStr))
         .reduce((s, e) => s + parseFloat(e.amount), 0);
       week.push({ name: d.toLocaleDateString('pt-BR', { weekday: 'short' }), gastos: daySpent });
     }
@@ -123,8 +93,7 @@ export default function Dashboard() {
   }, [expenses]);
 
   const barData = useMemo(() => {
-    // 4. CORREÇÃO: Usar 'patrimonio' em vez de 'budget'
-    const monthlyBudget = patrimonio / 12; // Exemplo de cálculo de orçamento mensal
+    const monthlyBudget = patrimonio / 12;
     return categories.map(c => ({
       name: c.name,
       lucro: Math.max(0, monthlyBudget / categories.length - expenses.filter(e => e.categoryId === c.id).reduce((s, e) => s + parseFloat(e.amount), 0)),
@@ -133,6 +102,7 @@ export default function Dashboard() {
   }, [expenses, patrimonio]);
 
   /* ---------- HANDLERS ---------- */
+
   const handleAdd = async (e) => {
     e.preventDefault();
     if (!form.description || !form.amount) return;
@@ -156,35 +126,28 @@ export default function Dashboard() {
       console.error("Erro ao adicionar transação:", error);
     }
   };
+  
   const handleRemove = async (id) => {
     const token = localStorage.getItem('investiwise_token');
     try {
       await axios.delete(`/api/transaction/${id}`, {
-        headers: { Authorization: `Bearer ${token}`}
+        headers: { Authorization: `Bearer ${token}` }
       });
       setExpenses(expenses.filter(e => e.id !== id));
     } catch (error) {
       console.error("Erro ao remover transação:", error);
     }
-    
   };
 
-
-  if (loading && expenses.length === 0) {
-    return (
-      <div className={styles.loading}>
-        <div className={styles.spinner}></div>
-        <span>Carregando...</span>
-      </div>
-    );
+  if (transactionsLoading) {
+    return <div className={styles.contentLoading}>Carregando transações...</div>;
   }
 
   return (
-    <div className={styles.dashboard}>
-      <Header />
-      <div className={styles.mainContent}>
-        <main className={styles.main}>
-          <div className={styles.pageHeader}>
+    <div className={styles.mainContent}>
+      <main className={styles.main}>
+        {/* ... o resto do seu JSX ... */}
+         <div className={styles.pageHeader}>
             <h1>Dashboard Financeiro</h1>
             <p>Sua visão geral de gastos e patrimônio.</p>
           </div>
@@ -276,8 +239,7 @@ export default function Dashboard() {
               </div>
             </section>
           </div>
-        </main>
-      </div>
+      </main>
     </div>
   );
 }

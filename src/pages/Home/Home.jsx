@@ -13,10 +13,8 @@ import {
   FaArrowDown
 } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext'
-import Header from '../../components/Header/Header';
 import styles from './Home.module.css';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import {
   ComposedChart, Area, Bar, Line, XAxis, YAxis, CartesianGrid, 
   Tooltip, Legend, ResponsiveContainer
@@ -31,42 +29,24 @@ const cryptocurrencies = [
   { symbol: 'XRP', name: 'Ripple' }
 ];
 
+
 export default function Home() {
   const navigate = useNavigate();
-  const { user, setUser } = useAuth();
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
   const [cryptoPrices, setCryptoPrices] = useState({});
   const [chartData, setChartData] = useState([]);
-  const [cryptoLoading, setCryptoLoading] = useState(false);
+  const [cryptoLoading, setCryptoLoading] = useState(true);
+
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem('investiwise_token');
-      if (!token) {
-        navigate('/login');
-        return;
-      }
-      
-      try {
-        const response = await axios.get('/api/users/me', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setUser(response.data);
-      } catch (error){
-        console.error('Falha ao buscar dados do usuário', error);
-        localStorage.removeItem('investiwise_token');
-        navigate('/login');
-      } finally {
-        setLoading(false);
-      }
+    const fetchData = async () => {
+      await fetchCryptoPrices();
+      generateChartData();
+      setCryptoLoading(false);
     };
+    fetchData();
+  }, []); 
 
-    fetchUser();
-    fetchCryptoPrices();
-    generateChartData();
-  }, [navigate, setUser]);
 
   const fetchCryptoPrices = async () => {
     setCryptoLoading(true);
@@ -94,12 +74,11 @@ export default function Home() {
     } catch (err) {
       console.error('Error fetching crypto prices:', err);
     } finally {
-      setCryptoLoading(false);
+      // a flag de loading principal é controlada no useEffect acima
     }
   };
 
   const generateChartData = () => {
-    // Dados simulados para o gráfico
     const data = [];
     const baseValues = {
       btc: 250000,
@@ -173,21 +152,19 @@ export default function Home() {
     return null;
   };
 
-  if (loading || !user) {
+  if (cryptoLoading) {
     return (
       <div className={styles.loading}>
         <div className={styles.spinner}></div>
-        <span>Carregando...</span>
+        <span>Carregando dados da home...</span>
       </div>
     );
   }
 
   return (
-    <div className={styles.home}>
-      <Header />
-      
+    <div className={styles.home}>    
       <div className={styles.mainContent}>
-        {/* COTAÇÕES EM TEMPO REAL */}
+       {/* ... O RESTO DO SEU JSX DA HOME PAGE ... */}
         <section className={styles.cryptoSection}>
           <div className={styles.cryptoHeader}>
             <div className={styles.cryptoTitle}>
