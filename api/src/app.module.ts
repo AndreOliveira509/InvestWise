@@ -9,7 +9,7 @@ import { TransactionModule } from './transaction/transaction.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, PrismaModule], // Módulos importados
+  imports: [AuthModule, UsersModule, PrismaModule, TransactionModule],
   controllers: [AppController],
   providers: [AppService],
 })

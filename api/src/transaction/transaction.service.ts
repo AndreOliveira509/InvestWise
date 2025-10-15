@@ -17,13 +17,20 @@ export class TransactionService {
 
   findAllByUserId(userId: number){
     return this.prisma.transaction.findMany({
-      where: { userId},
+      where: { userId },
       orderBy: {
         date: 'desc',
       },
       include: {
         category: true,
       },
+    });
+  }
+
+  // Método para remover
+  remove(id: number) {
+    return this.prisma.transaction.delete({
+      where: { id },
     });
   }
 }

@@ -26,7 +26,8 @@ const categories = [
 ];
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
+  const navigate = useNavigate();
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -38,20 +39,48 @@ export default function Dashboard() {
   });
 
   useEffect(() => {
+    const fetchUser = async () => {
+      if (user) {
+        // Se o usuário já está no contexto, não precisa fazer nada
+        return;
+      }
+      
+      const token = localStorage.getItem('investiwise_token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+      
+      try {
+        const response = await axios.get('/api/users/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUser(response.data); // Salva o usuário no contexto
+      } catch (error){
+        console.error('Falha ao buscar dados do usuário no Dashboard', error);
+        localStorage.removeItem('investiwise_token');
+        navigate('/login');
+      }
+    };
+
+    fetchUser();
+  }, [user, setUser, navigate]);
+
+
+  useEffect(() => {
     const fetchTransactions = async () => {
       if (!user) return;
 
       const token = localStorage.getItem('investiwise_token');
       try {
-        // 3. CORREÇÃO: Usar a URL completa da API
-        const response = await axios.get('/api/transactions', {
+        const response = await axios.get('/api/transaction', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setExpenses(response.data);
       } catch (error) {
         console.error("Erro ao buscar transações:", error);
       } finally {
-        setLoading(false);
+        setLoading(false); 
       }
     };
 
@@ -118,8 +147,7 @@ export default function Dashboard() {
     };
 
     try {
-      // 5. CORREÇÃO: Usar a URL completa da API
-      const response = await axios.post('/api/transactions', newTransaction, {
+      const response = await axios.post('/api/transaction', newTransaction, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setExpenses([response.data, ...expenses]);
@@ -128,17 +156,27 @@ export default function Dashboard() {
       console.error("Erro ao adicionar transação:", error);
     }
   };
-  
-  // 6. CORREÇÃO: Adicionar a função de remover
   const handleRemove = async (id) => {
-    // Lógica para remover do backend (ainda não implementada na API)
-    // Por enquanto, remove apenas do estado local
-    setExpenses(expenses.filter(e => e.id !== id));
+    const token = localStorage.getItem('investiwise_token');
+    try {
+      await axios.delete(`/api/transaction/${id}`, {
+        headers: { Authorization: `Bearer ${token}`}
+      });
+      setExpenses(expenses.filter(e => e.id !== id));
+    } catch (error) {
+      console.error("Erro ao remover transação:", error);
+    }
+    
   };
 
 
-  if (loading) {
-    return <div>A carregar dados...</div>
+  if (loading && expenses.length === 0) {
+    return (
+      <div className={styles.loading}>
+        <div className={styles.spinner}></div>
+        <span>Carregando...</span>
+      </div>
+    );
   }
 
   return (

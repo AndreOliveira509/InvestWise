@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req, Delete, Param, ParseIntPipe } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -20,4 +20,10 @@ export class TransactionController {
     const userId = req.user.id;
     return this.transactionService.findAllByUserId(userId);
   }
+
+  @Delete(':id')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.transactionService.remove(id);
+  }
+  
 }
