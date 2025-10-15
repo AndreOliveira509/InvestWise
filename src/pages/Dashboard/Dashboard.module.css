@@ -12,35 +12,37 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* Espaçamento entre seções */
+  gap: 1.5rem;
 }
 
 .pageHeader {
   padding: 0.5rem 0;
 }
 
+
 .pageHeader h1 {
+  display: flex;
+  justify-content: center;
   font-size: 1.75rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .pageHeader p {
+  display: flex;
+  justify-content: center;
   font-size: 1rem;
   color: var(--text-secondary);
   margin-top: 0.25rem;
 }
 
-/* FORMULÁRIO DE GASTOS */
+/* --- FORMULÁRIO DE GASTOS --- */
 .formCard {
   background: var(--bg-card);
   padding: 1rem 1.5rem;
   border-radius: 16px;
   border: 1px solid var(--border-color);
-  margin-bottom: -100px;
-  z-index: 10;
 }
-
 
 .modernForm {
   display: grid;
@@ -89,13 +91,11 @@
   transform: translateY(-2px);
 }
 
-/* CARDS DE MÉTRICAS */
+/* --- CARDS DE MÉTRICAS --- */
 .metricsGrid {
-  height: 0px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
-  margin-bottom: -85px;
 }
 
 .metricCard {
@@ -320,6 +320,152 @@
   color: var(--text-secondary);
 }
 
+/* --- SEÇÃO DE INVESTIMENTOS --- */
+.investmentsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sectionHeader {}
+
+.sectionTitle {
+  display: flex;
+  gap: 20px;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.addForm {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+.formInput {
+  flex-grow: 1;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 1rem;
+  min-width: 200px;
+}
+
+.addButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--color-primary, #FFC107);
+  color: #1a1a1a;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.addButton:hover {
+  background-color: var(--color-primary-dark, #FFA000);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* --- SEÇÃO DE GASTOS --- */
+.expensesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* --- ESTILOS PARA A LISTA E GRÁFICO DE INVESTIMENTOS --- */
+.investmentContentGrid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.investmentListCard {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  width: 1800px; /* <-- LARGURA AJUSTADA */
+}
+
+.investmentList {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.investmentList::-webkit-scrollbar { width: 5px; }
+.investmentList::-webkit-scrollbar-track { background: transparent; }
+.investmentList::-webkit-scrollbar-thumb { background: #3498db; border-radius: 5px; }
+
+.investmentItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.investmentItem:last-child {
+  border-bottom: none;
+}
+
+.investmentDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.investmentName {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.investmentCategory {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 50px;
+  align-self: flex-start;
+}
+
+.investmentValues {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.investmentValue {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.investmentChange {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.investmentChange.positive { color: #34D399; }
+.investmentChange.negative { color: #F87171; }
+
 
 /* RESPONSIVIDADE */
 @media (max-width: 1200px) {
@@ -338,6 +484,12 @@
   .chartsArea {
     grid-template-columns: 1fr;
   }
+  .investmentContentGrid {
+    grid-template-columns: 1fr;
+  }
+  .addForm {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {
@@ -345,3 +497,74 @@
   .modernForm { grid-template-columns: 1fr; }
   .metricsGrid { grid-template-columns: 1fr; }
 }
+/* ... (todos os estilos anteriores permanecem os mesmos) ... */
+
+/* ESTILO ATUALIZADO */
+.investmentItem {
+  display: grid; /* MUDADO para grid */
+  grid-template-columns: 1fr auto auto; /* NOVAS colunas */
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.investmentItem:last-child {
+  border-bottom: none;
+}
+
+.investmentDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.investmentName {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.investmentCategory {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 50px;
+  align-self: flex-start;
+}
+
+.investmentValues {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.investmentValue {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.investmentChange {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.investmentChange.positive { color: #34D399; }
+.investmentChange.negative { color: #F87171; }
+
+/* Adicionado para o botão de excluir na lista de investimentos */
+.investmentItem .deleteBtn {
+  opacity: 0;
+}
+
+.investmentItem:hover .deleteBtn {
+  opacity: 1;
+}
+
+
+/* RESPONSIVIDADE */
+/* ... (o restante do CSS permanece o mesmo) ... */
