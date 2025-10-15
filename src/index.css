@@ -1,26 +1,13 @@
 /* src/index.css */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* ... seu css existente */
-
-:root {
-  /* Paleta de Cores */
-  --primary-color: #FFC107; /* Amarelo um pouco mais vibrante */
-  --secondary-color: #1a1a1a; /* Preto suave */
-  /* ... o resto do seu CSS */
-}
-/* ... */
 :root {
   /* Paleta de Cores */
   --primary-color: #FFC107; /* Amarelo um pouco mais vibrante */
   --secondary-color: #090909; /* Preto suave */
   --background-color: #FFFFFF;
   --surface-color: #f8f9fa; /* Cor para seções com fundo diferente */
-  
+
   /* Tipografia */
   --text-primary: #212529;
   --text-secondary: #5a5a5a;
