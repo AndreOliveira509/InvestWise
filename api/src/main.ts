@@ -1,13 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common'; // 1. Importe o ValidationPipe
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors();
+  
+  app.setGlobalPrefix('api'); 
 
-  // 2. Use o pipe globalmente na sua aplicação
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(process.env.PORT ?? 3001);
 }
