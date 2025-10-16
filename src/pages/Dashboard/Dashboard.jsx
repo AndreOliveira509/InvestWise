@@ -29,6 +29,20 @@ const investmentCategories = {
   crypto: { name: 'Criptomoedas', color: '#e67e22' },
 };
 
+// Dados de exemplo para a seção de investimentos
+const dummyInvestments = [
+  { id: 1, name: 'FII XPTO11', category: 'fiis', value: '1500.00', date: '2023-10-01', change: 25.50 },
+  { id: 2, name: 'Ação ZYWC3', category: 'acoes', value: '3200.00', date: '2023-10-05', change: -15.20 },
+  { id: 3, name: 'Tesouro Direto 2035', category: 'rendaFixa', value: '5000.00', date: '2023-09-20', change: 112.00 },
+];
+
+const dummyInvestmentHistory = [
+    { name: '01/10', value: 10000 }, { name: '05/10', value: 10250 },
+    { name: '10/10', value: 10150 }, { name: '15/10', value: 10500 },
+    { name: '20/10', value: 10450 }, { name: '25/10', value: 10800 },
+    { name: '30/10', value: 10750 },
+];
+
 export default function Dashboard() {
   const { user } = useAuth();
   const [expenses, setExpenses] = useState([]);
@@ -40,6 +54,18 @@ export default function Dashboard() {
     categoryId: 1,
     date: new Date().toISOString().split('T')[0],
   });
+
+  // Estados para o formulário de investimentos
+  const [investmentForm, setInvestmentForm] = useState({
+    name: '',
+    value: '',
+    category: 'fiis',
+    date: new Date().toISOString().split('T')[0]
+  });
+  
+  // Use os dados de exemplo para renderizar a lista
+  const [investments, setInvestments] = useState(dummyInvestments);
+  const [investmentHistoryData, setInvestmentHistoryData] = useState(dummyInvestmentHistory);
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -71,8 +97,8 @@ export default function Dashboard() {
   const filteredExpenses = useMemo(() => {
     return expenses
       .filter(e => e.description.toLowerCase().includes(searchTerm.toLowerCase()))
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
-  ), [expenses, searchTerm]);
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+  }, [expenses, searchTerm]);
 
 
   const weekSpending = useMemo(() => {
@@ -144,6 +170,16 @@ export default function Dashboard() {
       console.error("Erro ao remover transação:", error);
     }
   };
+  
+  // Funções de placeholder para investimentos
+  const handleAddInvestment = (e) => {
+    e.preventDefault();
+    alert('Funcionalidade de adicionar investimento ainda não implementada.');
+  };
+
+  const handleRemoveInvestment = (id) => {
+    alert(`Funcionalidade de remover o investimento ${id} ainda não implementada.`);
+  };
 
   if (transactionsLoading) {
     return <div className={styles.contentLoading}>Carregando transações...</div>;
@@ -152,7 +188,6 @@ export default function Dashboard() {
   return (
     <div className={styles.mainContent}>
       <main className={styles.main}>
-        {/* ... o resto do seu JSX ... */}
          <div className={styles.pageHeader}>
             <h1>Dashboard Financeiro</h1>
             <p>Sua visão geral de gastos e investimentos.</p>
