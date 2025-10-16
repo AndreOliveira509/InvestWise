@@ -16,14 +16,9 @@ import {
 } from "react-icons/fa";
 import styles from "./AIQuestions.module.css";
 import Header from '../../components/Header/Header';
-// NOTE: keep your Gemini import if you use it; key preserved from your file
 import { GoogleGenerativeAI } from "@google/generative-ai";
-
-// Chart.js and related
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
-
-// jsPDF and SheetJS
 import { jsPDF } from 'jspdf';
 import * as XLSX from 'xlsx';
 
@@ -45,7 +40,6 @@ const AIQuestions = () => {
   const recognitionRef = useRef(null);
   const speechSynthesisRef = useRef(null);
 
-  // user financial sample, keep or adapt
   const [userFinancialData] = useState({
     monthlyIncome: 5000,
     monthlyExpenses: 3500,
@@ -54,8 +48,6 @@ const AIQuestions = () => {
     financialGoals: 'Comprar um apartamento'
   });
 
-  // pending chart flow:
-  // { messageId, aiContent, userRequest } when AI produced content for image and we need chart type
   const [pendingChartRequest, setPendingChartRequest] = useState(null);
 
   useEffect(() => {
@@ -75,7 +67,6 @@ const AIQuestions = () => {
       setMessages(initialMessages);
     }
 
-    // Speech recognition setup (if available)
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       recognitionRef.current = new SpeechRecognition();
@@ -140,7 +131,6 @@ const AIQuestions = () => {
     }
   };
 
-  // simple detector to decide what the user asked for
   const detectFileRequest = (userMessage) => {
     const lower = userMessage.toLowerCase();
     if (lower.includes('pdf') || lower.includes('documento pdf') || (lower.includes('gerar pdf') || lower.includes('crie um pdf'))) {
@@ -161,7 +151,6 @@ const AIQuestions = () => {
     return { type: null, detected: false };
   };
 
-  // call Gemini (or fallback) - returns { text, fileRequest }
   const callGeminiForFiles = async (userMessage) => {
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
@@ -170,7 +159,6 @@ const AIQuestions = () => {
       let prompt = '';
 
       if (fileRequest.detected) {
-        // If asking for image/graph, ask the model to return data or instructions in a structured way
         if (fileRequest.type === 'image') {
           prompt = `
 Usuário solicitou geração de um gráfico/imagem.
@@ -184,7 +172,6 @@ TAREFA:
 RETORNE APENAS O CONTEÚDO (JSON se possível ou texto simples).
 `;
         } else {
-          // For other files, produce the content text that will be embedded into the file.
           prompt = `
 O usuário pediu que seja gerado um arquivo do tipo ${fileRequest.type.toUpperCase()}.
 Pedido: "${userMessage}"
@@ -199,7 +186,6 @@ Meta: ${userFinancialData.financialGoals}
 `;
         }
       } else {
-        // generic conversational prompt
         prompt = `
 Responda de forma útil e clara ao usuário:
 "${userMessage}"
@@ -215,19 +201,15 @@ Dívidas: R$ ${userFinancialData.debts}
       const result = await model.generateContent(prompt);
       const responseText = await result.response.text();
 
-      // If Gemini returned JSON for chart, attempt to parse
       if (fileRequest.detected && fileRequest.type === 'image') {
-        // try to find JSON in the response
         try {
           const jsonStart = responseText.indexOf('{');
           if (jsonStart !== -1) {
             const possibleJson = responseText.slice(jsonStart);
             const parsed = JSON.parse(possibleJson);
-            // put the parsed JSON as content
             return { text: parsed, fileRequest: 'image' };
           }
         } catch (err) {
-          // not JSON — return text fallback
           return { text: responseText, fileRequest: 'image' };
         }
       }
@@ -239,18 +221,15 @@ Dívidas: R$ ${userFinancialData.debts}
     }
   };
 
-  // SEND handler with special handling for pendingChartRequest flow
   const handleSendMessage = async (e) => {
     e?.preventDefault?.();
     if (!inputMessage.trim()) return;
 
-    // If we have a pendingChartRequest, interpret this input as the chart type
     if (pendingChartRequest) {
       const chartTypeInput = inputMessage.trim().toLowerCase();
       setInputMessage('');
       setIsLoading(true);
 
-      // Inform user and generate chart
       const userConfirmMessage = {
         id: Date.now(),
         text: `Gerando gráfico do tipo "${chartTypeInput}"...`,
@@ -259,12 +238,10 @@ Dívidas: R$ ${userFinancialData.debts}
       };
       setMessages(prev => [...prev, userConfirmMessage]);
 
-      // Determine data: try parse from aiContent (if JSON provided), else use userFinancialData
       let dataObj = null;
       if (typeof pendingChartRequest.aiContent === 'object' && pendingChartRequest.aiContent.labels && pendingChartRequest.aiContent.values) {
         dataObj = pendingChartRequest.aiContent;
       } else {
-        // fallback to user's financial data
         dataObj = {
           title: 'Resumo Financeiro',
           labels: ['Renda', 'Despesas', 'Economias', 'Dívidas'],
@@ -278,10 +255,8 @@ Dívidas: R$ ${userFinancialData.debts}
         };
       }
 
-      // create chart image and attach as fileData to a new AI message
       try {
         const blob = await createChartImage(chartTypeInput, dataObj, darkMode);
-        // build ai message with fileData
         const aiMessage = {
           id: Date.now() + 1,
           text: `✅ Gráfico (${chartTypeInput}) gerado com sucesso!`,
@@ -289,15 +264,14 @@ Dívidas: R$ ${userFinancialData.debts}
           timestamp: new Date(),
           fileData: {
             type: 'image',
-            content: blob, // blob of image
+            content: blob,
             userRequest: pendingChartRequest.userRequest,
             chartType: chartTypeInput,
             filename: `grafico-${Date.now()}`
           }
         };
         setMessages(prev => [...prev, aiMessage]);
-        // auto-download
-        downloadBlob(blob, `${aiMessage.fileData.filename}.png`, 'image/png');
+        
       } catch (err) {
         console.error('Erro criando gráfico:', err);
         const aiMessage = {
@@ -315,7 +289,6 @@ Dívidas: R$ ${userFinancialData.debts}
       return;
     }
 
-    // Normal flow: create user message and call model
     const userMessage = {
       id: Date.now(),
       text: inputMessage,
@@ -329,9 +302,7 @@ Dívidas: R$ ${userFinancialData.debts}
 
     const response = await callGeminiForFiles(userMessage.text);
 
-    // If AI asked for an image and returned structured JSON, we will ask the user which chart type they want
     if (response.fileRequest === 'image') {
-      // push AI message that content was prepared, and ask follow-up question
       const descText = (typeof response.text === 'string')
         ? `Detectei que você quer uma imagem/gráfico. Descrição: ${response.text}`
         : `Detectei que você quer uma imagem/gráfico. Dados prontos para gráfico recebidos.`;
@@ -344,7 +315,6 @@ Dívidas: R$ ${userFinancialData.debts}
       };
       setMessages(prev => [...prev, aiMessage]);
 
-      // save pending request so next user message chooses type
       setPendingChartRequest({
         messageId: aiMessage.id,
         aiContent: response.text,
@@ -355,10 +325,9 @@ Dívidas: R$ ${userFinancialData.debts}
       return;
     }
 
-    // For non-image file requests: create AI message and attach fileData if necessary
     const aiMessage = {
       id: Date.now() + 1,
-      text: response.fileRequest ? `✅ Conteúdo para ${response.fileRequest.toUpperCase()} gerado com sucesso! Use o botão para baixar.` : response.text,
+      text: response.fileRequest ? `Conteúdo para ${response.fileRequest.toUpperCase()} gerado com sucesso! Use o botão para baixar.` : response.text,
       sender: 'ai',
       timestamp: new Date()
     };
@@ -371,7 +340,6 @@ Dívidas: R$ ${userFinancialData.debts}
         filename: `relatorio-${Date.now()}`
       };
     } else {
-      // plain response as text
       aiMessage.text = response.text;
     }
 
@@ -379,11 +347,9 @@ Dívidas: R$ ${userFinancialData.debts}
     setIsLoading(false);
   };
 
-  // create chart image using Chart.js, returns Blob (png)
   const createChartImage = (chartType, dataObj, isDark) => {
     return new Promise((resolve, reject) => {
       try {
-        // create or reuse a hidden canvas element
         let canvas = hiddenCanvasRef.current;
         if (!canvas) {
           canvas = document.createElement('canvas');
@@ -392,20 +358,17 @@ Dívidas: R$ ${userFinancialData.debts}
           hiddenCanvasRef.current = canvas;
         }
 
-        // remove previous chart instance on canvas if any
         if (canvas._chartInstance) {
           canvas._chartInstance.destroy();
         }
 
         const ctx = canvas.getContext('2d');
 
-        // Background fill to match theme
         ctx.save();
         ctx.fillStyle = isDark ? '#0f1720' : '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.restore();
 
-        // Chart.js config
         const labels = dataObj.labels || [];
         const values = dataObj.values || [];
         const title = dataObj.title || 'Gráfico';
@@ -469,7 +432,6 @@ Dívidas: R$ ${userFinancialData.debts}
                 label: 'Distribuição',
                 data: values,
                 backgroundColor: labels.map((_, i) => {
-                  // generate pastel palette
                   const palette = [
                     '#60a5fa', '#f97316', '#34d399', '#f472b6', '#facc15', '#a78bfa', '#fb7185'
                   ];
@@ -479,7 +441,7 @@ Dívidas: R$ ${userFinancialData.debts}
             },
             options: commonOptions
           };
-        } else { // line fallback
+        } else {
           chartConfig = {
             type: 'line',
             data: {
@@ -498,36 +460,38 @@ Dívidas: R$ ${userFinancialData.debts}
           };
         }
 
-        // Create chart instance
         const chartInstance = new Chart(ctx, chartConfig);
         canvas._chartInstance = chartInstance;
 
-        // Let Chart render then export to blob
         setTimeout(() => {
           canvas.toBlob((blob) => {
             if (!blob) return reject(new Error('Falha ao criar blob do gráfico.'));
             resolve(blob);
           }, 'image/png', 1);
-        }, 300); // brief timeout to ensure render
+        }, 300);
       } catch (err) {
         reject(err);
       }
     });
   };
 
-  // helper to download any blob
   const downloadBlob = (blob, filename, mime) => {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 200);
+    try {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+    } catch (error) {
+      console.error('Erro ao fazer download:', error);
+      alert('Erro ao fazer download do arquivo.');
+    }
   };
 
-  // generate PDF (uses jsPDF)
   const generatePDF = (content, filename = 'relatorio', userRequest = '') => {
     try {
       const doc = new jsPDF({
@@ -535,22 +499,18 @@ Dívidas: R$ ${userFinancialData.debts}
         format: 'a4'
       });
 
-      // Title
       doc.setFontSize(18);
       doc.setTextColor(40, 40, 40);
       doc.text('Relatório Gerado pela Assistente IA', 40, 60);
 
-      // meta
       doc.setFontSize(11);
       doc.setTextColor(100);
       doc.text(`Solicitação: ${userRequest}`, 40, 85);
       doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 40, 100);
 
-      // separator
       doc.setDrawColor(220);
       doc.line(40, 110, 555, 110);
 
-      // main content
       doc.setFontSize(12);
       doc.setTextColor(20);
       const lines = doc.splitTextToSize(typeof content === 'object' ? JSON.stringify(content, null, 2) : String(content), 515);
@@ -564,7 +524,6 @@ Dívidas: R$ ${userFinancialData.debts}
         y += 14;
       });
 
-      // footer
       doc.setFontSize(9);
       doc.setTextColor(120);
       doc.text('Gerado por Assistente IA - confidencial', 40, 780);
@@ -576,7 +535,6 @@ Dívidas: R$ ${userFinancialData.debts}
     }
   };
 
-  // generate TXT
   const generateTXT = (content, filename = 'relatorio', userRequest = '') => {
     try {
       const header = `RELATÓRIO\nSolicitação: ${userRequest}\nGerado em: ${new Date().toLocaleString('pt-BR')}\n\n`;
@@ -589,34 +547,12 @@ Dívidas: R$ ${userFinancialData.debts}
     }
   };
 
-  // generate DOC (simple HTML -> .doc)
   const generateDOC = (content, filename = 'relatorio', userRequest = '') => {
     try {
-      const html = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8" />
-          <title>Relatório</title>
-          <style>
-            body { font-family: Arial, Helvetica, sans-serif; color: #111; padding: 20px; }
-            h1 { color: #111; }
-            pre { white-space: pre-wrap; word-wrap: break-word; }
-          </style>
-        </head>
-        <body>
-          <h1>Relatório Gerado pela Assistente IA</h1>
-          <p><strong>Solicitação:</strong> ${userRequest}</p>
-          <p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
-          <hr />
-          <div>
-            <pre>${typeof content === 'object' ? JSON.stringify(content, null, 2) : String(content)}</pre>
-          </div>
-          <footer><small>Gerado por Assistente IA</small></footer>
-        </body>
-        </html>
-      `;
-      const blob = new Blob([html], { type: 'application/msword' });
+      const header = `Relatório Gerado pela Assistente IA\n\nSolicitação: ${userRequest}\nGerado em: ${new Date().toLocaleString('pt-BR')}\n\n`;
+      const body = typeof content === 'object' ? JSON.stringify(content, null, 2) : String(content);
+      const fullContent = header + body + '\n\nGerado por Assistente IA';
+      const blob = new Blob([fullContent], { type: 'application/msword' });
       downloadBlob(blob, `${filename}.doc`, 'application/msword');
     } catch (err) {
       console.error('Erro DOC:', err);
@@ -624,11 +560,10 @@ Dívidas: R$ ${userFinancialData.debts}
     }
   };
 
-  // generate Excel using SheetJS
   const generateXLSX = (content, filename = 'planilha', userRequest = '') => {
     try {
-      // If content is object with labels/values, build sheet accordingly
       let wsData = [];
+      
       if (typeof content === 'object' && content.labels && content.values) {
         wsData.push(['Categoria', 'Valor']);
         for (let i = 0; i < content.labels.length; i++) {
@@ -637,18 +572,19 @@ Dívidas: R$ ${userFinancialData.debts}
       } else if (Array.isArray(content)) {
         wsData = content;
       } else {
-        // generic: put content in one cell
-        wsData = [['Conteúdo'], [typeof content === 'object' ? JSON.stringify(content) : String(content)]];
+        wsData = [
+          ['Relatório Gerado pela Assistente IA'],
+          ['Solicitação:', userRequest],
+          ['Gerado em:', new Date().toLocaleString('pt-BR')],
+          [''],
+          ['Conteúdo:'],
+          [typeof content === 'object' ? JSON.stringify(content, null, 2) : String(content)]
+        ];
       }
 
       const wb = XLSX.utils.book_new();
       const ws = XLSX.utils.aoa_to_sheet(wsData);
       XLSX.utils.book_append_sheet(wb, ws, 'Relatório');
-
-      // add metadata sheet
-      const meta = XLSX.utils.aoa_to_sheet([['Solicitação', userRequest], ['Gerado em', new Date().toLocaleString('pt-BR')]]);
-      XLSX.utils.book_append_sheet(wb, meta, 'Meta');
-
       XLSX.writeFile(wb, `${filename}.xlsx`);
     } catch (err) {
       console.error('Erro XLSX:', err);
@@ -656,46 +592,37 @@ Dívidas: R$ ${userFinancialData.debts}
     }
   };
 
-  // handleDownload: message may contain fileData or plain text
   const handleDownload = (message) => {
+    console.log('Download clicked:', message.fileData);
+    
     if (message.fileData) {
       const { type, content, userRequest, filename } = message.fileData;
 
       switch (type) {
         case 'pdf':
-          generatePDF(content, filename || `relatorio-${Date.now()}`, userRequest || '');
+          generatePDF(content, filename, userRequest);
           break;
         case 'txt':
-          generateTXT(content, filename || `relatorio-${Date.now()}`, userRequest || '');
+          generateTXT(content, filename, userRequest);
           break;
         case 'doc':
-          generateDOC(content, filename || `relatorio-${Date.now()}`, userRequest || '');
+          generateDOC(content, filename, userRequest);
           break;
         case 'xlsx':
-          generateXLSX(content, filename || `planilha-${Date.now()}`, userRequest || '');
+          generateXLSX(content, filename, userRequest);
           break;
         case 'image':
           if (content instanceof Blob) {
-            // direct blob (chart image)
-            downloadBlob(content, `${filename || `grafico-${Date.now()}`}.png`, 'image/png');
-          } else if (typeof content === 'string') {
-            // if content is dataURI or base64 string: create link
-            const link = document.createElement('a');
-            link.href = content;
-            link.download = `${filename || 'imagem'}.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            downloadBlob(content, `${filename}.png`, 'image/png');
           } else {
-            alert('Formato de imagem não suportado para download.');
+            console.error('Conteúdo da imagem não é um Blob válido:', content);
+            alert('Erro: Conteúdo da imagem inválido.');
           }
           break;
         default:
-          // fallback: save as txt
-          generateTXT(message.text, `conversa-${Date.now()}`, 'Conversa IA');
+          generateTXT(content, filename, userRequest);
       }
     } else {
-      // no fileData -> save conversation snippet as txt
       generateTXT(message.text, `conversa-${Date.now()}`, 'Conversa IA');
     }
   };
@@ -711,7 +638,6 @@ Dívidas: R$ ${userFinancialData.debts}
     }
   };
 
-  // text-to-speech for AI responses
   const speakText = (text) => {
     if (!speechSynthesisRef.current) return;
 
@@ -811,15 +737,6 @@ Dívidas: R$ ${userFinancialData.debts}
                           >
                             {isSpeaking ? <FaVolumeMute /> : <FaVolumeUp />}
                           </button>
-                          {!message.fileData && (
-                            <button
-                              className={styles.actionButton}
-                              onClick={() => handleDownload(message)}
-                              title="Baixar conversa"
-                            >
-                              <FaDownload />
-                            </button>
-                          )}
                         </div>
                       )}
                     </div>
