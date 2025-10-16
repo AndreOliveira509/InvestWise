@@ -349,7 +349,7 @@
 
 .metricCard {
   background: var(--bg-card);
-  padding: 1.5rem;
+  padding: 2rem;
   border-radius: 16px;
   border: 1px solid var(--border-color);
   display: flex;
