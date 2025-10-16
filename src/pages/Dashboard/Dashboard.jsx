@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { FaPlus, FaTrash, FaSearch, FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import axios from 'axios';
 import styles from './Dashboard.module.css';
 import FormCard from '../../components/FormCard/FormCard';
 import PositiveAndNegativeBarChart from '../../components/PositiveAndNegativeBarChart/PositiveAndNegativeBarChart';
@@ -10,35 +11,58 @@ import InvestmentProfitabilityChart from '../../components/InvestmentProfitabili
 
 // Definições de categorias de gastos e investimentos
 const categories = [
-  { id: 'alimentacao', name: 'Alimentação', color: '#FF6B6B', icon: '🍽️' },
-  { id: 'transporte', name: 'Transporte', color: '#4ECDC4', icon: '🚗' },
-  { id: 'moradia', name: 'Moradia', color: '#45B7D1', icon: '🏠' },
-  { id: 'lazer', name: 'Lazer', color: '#FFA07A', icon: '🎮' },
-  { id: 'saude', name: 'Saúde', color: '#98D8C8', icon: '🏥' },
-  { id: 'educacao', name: 'Educação', color: '#F7DC6F', icon: '📚' },
-  { id: 'outros', name: 'Outros', color: '#BB8FCE', icon: '📦' }
+  { id: 1, name: 'Alimentação', color: '#FF6B6B', icon: '🍽️' },
+  { id: 2, name: 'Transporte', color: '#4ECDC4', icon: '🚗' },
+  { id: 3, name: 'Moradia', color: '#45B7D1', icon: '🏠' },
+  { id: 4, name: 'Lazer', color: '#FFA07A', icon: '🎮' },
+  { id: 5, name: 'Saúde', color: '#98D8C8', icon: '🏥' },
+  { id: 6, name: 'Educação', color: '#F7DC6F', icon: '📚' },
+  { id: 7, name: 'Outros', color: '#BB8FCE', icon: '📦' }
 ];
 
 const investmentCategories = {
-  fiis: { name: 'Fundos Imobiliários', color: '#3498db' },
-  acoes: { name: 'Ações', color: '#2ecc71' },
-  rendaFixa: { name: 'Renda Fixa', color: '#f1c40f' },
-  crypto: { name: 'Criptomoedas', color: '#e67e22' },
+  fiis: {id: 1, name: 'Fundos Imobiliários', color: '#3498db' },
+  acoes: { id: 2, name: 'Ações', color: '#2ecc71' },
+  rendaFixa: { id: 3, name: 'Renda Fixa', color: '#f1c40f' },
+  crypto: { id: 4, name: 'Criptomoedas', color: '#e67e22' },
 };
 
 export default function Dashboard() {
   const { user } = useAuth();
 
   // Estados com localStorage para persistir os dados
-  const [expenses, setExpenses] = useState(() => JSON.parse(localStorage.getItem('expenses') || '[]'));
-  const [investments, setInvestments] = useState(() => JSON.parse(localStorage.getItem('investments') || '[]'));
-  
+  const [expenses, setExpenses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [investments, setInvestments] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [form, setForm] = useState({ description: '', amount: '', categoryId: 'alimentacao', date: new Date().toISOString().split('T')[0] });
-  const [investmentForm, setInvestmentForm] = useState({ name: '', value: '', category: 'fiis', date: new Date().toISOString().split('T')[0] });
+  const [form, setForm] = useState({ description: '', amount: '', categoryId: 1, date: new Date().toISOString().split('T')[0] });
+  const [investmentForm, setInvestmentForm] = useState({ name: '', value: '', category: 1, date: new Date().toISOString().split('T')[0] });
 
-  // Efeitos para salvar no localStorage sempre que os estados mudarem
-  useEffect(() => { localStorage.setItem('expenses', JSON.stringify(expenses)); }, [expenses]);
+useEffect(() => {
+    const fetchTransactions = async () => {
+      if (!user) return; 
+
+      const token = localStorage.getItem('investiwise_token');
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const response = await axios.get('/api/transaction', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setExpenses(response.data); 
+      } catch (error) {
+        console.error("Erro ao buscar transações:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTransactions();
+  }, [user]);
   useEffect(() => { localStorage.setItem('investments', JSON.stringify(investments)); }, [investments]);
 
   // --- Métricas Financeiras ---
@@ -106,14 +130,41 @@ export default function Dashboard() {
   }, [investments]);
 
   // --- Handlers ---
-  const handleAdd = e => {
+const handleAdd = async (e) => {
     e.preventDefault();
     if (!form.description || !form.amount) return;
-    setExpenses([{ id: Date.now(), ...form, amount: parseFloat(form.amount) }, ...expenses]);
-    setForm({ description: '', amount: '', categoryId: 'alimentacao', date: new Date().toISOString().split('T')[0] });
+
+    const token = localStorage.getItem('investiwise_token');
+    const newTransaction = {
+      description: form.description,
+      amount: parseFloat(form.amount),
+      date: new Date(form.date).toISOString(),
+      type: 'EXPENSE', // Definindo o tipo como GASTO
+      categoryId: parseInt(form.categoryId),
+    };
+
+    try {
+      const response = await axios.post('/api/transaction', newTransaction, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setExpenses([response.data, ...expenses]);
+      setForm({ description: '', amount: '', categoryId: 1, date: new Date().toISOString().split('T')[0] });
+    } catch (error) {
+      console.error("Erro ao adicionar transação:", error);
+    }
   };
   
-  const handleRemove = id => setExpenses(expenses.filter(e => e.id !== id));
+  const handleRemove = async (id) => {
+    const token = localStorage.getItem('investiwise_token');
+    try {
+      await axios.delete(`/api/transaction/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setExpenses(expenses.filter(e => e.id !== id));
+    } catch (error) {
+      console.error("Erro ao remover transação:", error);
+    }
+  };
 
   const handleAddInvestment = e => {
     e.preventDefault();
@@ -122,13 +173,17 @@ export default function Dashboard() {
         id: Date.now(), 
         ...investmentForm, 
         value: parseFloat(investmentForm.value), 
-        change: (Math.random() - 0.4) * parseFloat(investmentForm.value) * 0.1 // Simula uma variação inicial
+        change: (Math.random() - 0.4) * parseFloat(investmentForm.value) * 0.1 
     };
     setInvestments([newInvestment, ...investments]);
     setInvestmentForm({ name: '', value: '', category: 'fiis', date: new Date().toISOString().split('T')[0] });
   };
 
   const handleRemoveInvestment = id => setInvestments(investments.filter(inv => inv.id !== id));
+
+  if (loading) {
+    return <div className={styles.contentLoading}>Carregando dados...</div>;
+  }
   
   return (
     <div className={styles.mainContent}>

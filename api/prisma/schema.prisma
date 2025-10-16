@@ -26,6 +26,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   transactions Transaction[]
+  investments  Investment[]
 }
 
 model Transaction {
@@ -50,4 +51,24 @@ model Category {
   name        String        @unique
   color       String
   transactions Transaction[]
+}
+
+model Investment {
+  id        Int @id     @default(autoincrement())
+  name      String
+  value     Decimal
+  date      DateTime
+
+  userId    Int
+  user      User @relation(fields: [userId], references: [id])
+
+  categoryId Int
+  category   CategoryInvestment @relation(fields: [categoryId], references: [id])
+}
+
+model CategoryInvestment {
+  id Int @id @default(autoincrement())
+  name String @unique
+  color String
+  investments Investment[]
 }

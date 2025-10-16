@@ -132,7 +132,9 @@ export default function Header() {
                 <FaUser />
               </div>
               <div className={styles.userDetails}>
-                <span className={styles.userName}>{user?.name}</span>
+                <span className={styles.userName}>
+                  {user?.name ? user.name.split(' ')[0].charAt(0).toUpperCase() + user.name.split(' ')[0].slice(1) : 'Usuário'}
+                </span>
                 <span className={styles.userPlan}>Premium</span>
               </div>
             </div>
