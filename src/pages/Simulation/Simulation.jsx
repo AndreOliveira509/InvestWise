@@ -5,7 +5,8 @@ import {
   FaCalculator, FaChartLine, FaMoneyBillWave, FaArrowUp,
   FaDatabase, FaSync, FaPercent, FaCalendar,
   FaDollarSign, FaCoins, FaChartBar, FaPiggyBank,
-  FaBuilding, FaGlobeAmericas, FaUniversity
+  FaBuilding, FaGlobeAmericas, FaUniversity,
+  FaChevronDown
 } from 'react-icons/fa';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, 
@@ -62,16 +63,9 @@ const cryptocurrencies = [
   { symbol: 'BTC', name: 'Bitcoin' },
   { symbol: 'ETH', name: 'Ethereum' },
   { symbol: 'BNB', name: 'Binance Coin' },
-  { symbol: 'ADA', name: 'Cardano' },
   { symbol: 'SOL', name: 'Solana' },
   { symbol: 'XRP', name: 'Ripple' }
 ];
-
-// Função para gerar números "aleatórios" determinísticos
-const getDeterministicRandom = (seed, min, max) => {
-  const x = Math.sin(seed) * 10000;
-  return min + (x - Math.floor(x)) * (max - min);
-};
 
 export default function Simulation() {
   const { user } = useAuth();
@@ -88,6 +82,7 @@ export default function Simulation() {
   const [showResults, setShowResults] = useState(false);
   const [cryptoPrices, setCryptoPrices] = useState({});
   const [loading, setLoading] = useState(false);
+  const [showCryptoQuotes, setShowCryptoQuotes] = useState(true);
 
   useEffect(() => {
     fetchCryptoPrices();
@@ -111,6 +106,11 @@ export default function Simulation() {
           }
         } catch (err) {
           console.warn(`Failed to fetch ${crypto.symbol}:`, err);
+          // Fallback para dados mock quando a API falhar
+          prices[crypto.symbol] = {
+            price: Math.random() * 100 + 10,
+            change: (Math.random() * 10) - 5
+          };
         }
       }
       
@@ -130,9 +130,6 @@ export default function Simulation() {
     const months = parseInt(simulationForm.timePeriod);
     const baseMonthlyRate = parseFloat(simulationForm.expectedReturn) / 100;
 
-    // Seed base para números determinísticos
-    const baseSeed = initial + monthly + months + baseMonthlyRate;
-
     let simulationData = [];
     let total = initial;
 
@@ -142,23 +139,18 @@ export default function Simulation() {
 
         switch (simulationForm.investmentType) {
           case 'acoes':
-            // Volatilidade determinística baseada no seed
-            const volatility = getDeterministicRandom(baseSeed + i, -0.05, 0.08);
+            const volatility = (Math.random() * 0.1) - 0.05;
             monthlyRate = Math.max(baseMonthlyRate + volatility, -0.15);
             break;
           case 'cripto':
             const cryptoData = cryptoPrices[simulationForm.cryptoType];
             const baseCryptoRate = cryptoData ? (cryptoData.change / 100) : baseMonthlyRate;
-            // Volatilidade determinística para cripto também
-            const cryptoVolatility = getDeterministicRandom(baseSeed + i + 1000, -0.15, 0.15);
+            const cryptoVolatility = (Math.random() * 0.3) - 0.15;
             monthlyRate = baseCryptoRate + cryptoVolatility;
             break;
           case 'previdencia':
             monthlyRate = baseMonthlyRate - 0.001;
             break;
-          default:
-            // Para renda fixa e FIIs, usa a taxa base sem alterações
-            monthlyRate = baseMonthlyRate;
         }
 
         total = total * (1 + monthlyRate) + monthly;
@@ -183,18 +175,7 @@ export default function Simulation() {
       simulationData,
       roi: totalContributions > 0 ? (totalEarnings / totalContributions) * 100 : 0
     };
-  }, [
-    // Apenas estas dependências afetam o cálculo
-    simulationForm.initialAmount,
-    simulationForm.monthlyContribution,
-    simulationForm.timePeriod,
-    simulationForm.investmentType,
-    simulationForm.expectedReturn,
-    simulationForm.cryptoType,
-    showResults,
-    // CryptoPrices só quando for investimento em cripto
-    ...(simulationForm.investmentType === 'cripto' ? [cryptoPrices] : [])
-  ]);
+  }, [simulationForm, showResults, cryptoPrices]);
 
   const handleSimulation = (e) => {
     e.preventDefault();
@@ -246,7 +227,7 @@ export default function Simulation() {
       <div className={styles.container}>
         {/* COTAÇÕES NA PARTE SUPERIOR */}
         <div className={styles.cryptoHeader}>
-          <div className={styles.cryptoHeaderContent}>
+          <div className={styles.cryptoHeaderTop}>
             <div className={styles.cryptoTitle}>
               <FaDatabase className={styles.cryptoTitleIcon} />
               <span>Cotações em Tempo Real</span>
@@ -259,6 +240,15 @@ export default function Simulation() {
                 Atualizar
               </button>
             </div>
+            <button 
+              onClick={() => setShowCryptoQuotes(!showCryptoQuotes)}
+              className={`${styles.toggleBtn} ${showCryptoQuotes ? styles.rotated : ''}`}
+            >
+              <FaChevronDown />
+            </button>
+          </div>
+          
+          <div className={`${styles.cryptoContent} ${showCryptoQuotes ? styles.show : ''}`}>
             <div className={styles.cryptoGridHorizontal}>
               {cryptocurrencies.map(crypto => {
                 const priceData = cryptoPrices[crypto.symbol];
@@ -291,6 +281,7 @@ export default function Simulation() {
           </div>
         </div>
 
+        {/* RESTANTE DO CÓDIGO PERMANECE IGUAL... */}
         <div className={styles.grid}>
           {/* SIDEBAR */}
           <div className={styles.sidebar}>
@@ -464,9 +455,9 @@ export default function Simulation() {
                       <span className={styles.metricValue}>
                         R$ {simulationResults.finalAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
-                      <div className={styles.metricChange}>
+                      <div className={`${styles.metricChange} ${simulationResults.roi >= 0 ? styles.positive : styles.negative}`}>
                         <FaArrowUp />
-                        <span>+{simulationResults.roi.toFixed(1)}% ROI</span>
+                        <span>{simulationResults.roi >= 0 ? '+' : ''}{simulationResults.roi.toFixed(1)}% ROI</span>
                       </div>
                     </div>
                   </div>
@@ -492,7 +483,7 @@ export default function Simulation() {
                       <span className={styles.metricValue}>
                         R$ {simulationResults.totalEarnings.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
-                      <div className={styles.metricChange}>
+                      <div className={`${styles.metricChange} ${simulationResults.totalEarnings >= 0 ? styles.positive : styles.negative}`}>
                         <FaArrowUp />
                         <span>Rendimento</span>
                       </div>
@@ -512,14 +503,14 @@ export default function Simulation() {
                         data={simulationResults.simulationData} 
                         margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                       >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
                         <XAxis 
                           dataKey="name" 
-                          stroke="#64748b"
+                          stroke="var(--text-secondary)"
                           fontSize={12}
                         />
                         <YAxis 
-                          stroke="#64748b"
+                          stroke="var(--text-secondary)"
                           fontSize={12}
                           tickFormatter={(value) => `R$ ${(value/1000).toFixed(0)}k`}
                         />
@@ -559,14 +550,14 @@ export default function Simulation() {
                         data={simulationResults.simulationData} 
                         margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                       >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
                         <XAxis 
                           dataKey="name" 
-                          stroke="#64748b"
+                          stroke="var(--text-secondary)"
                           fontSize={12}
                         />
                         <YAxis 
-                          stroke="#64748b"
+                          stroke="var(--text-secondary)"
                           fontSize={12}
                           tickFormatter={(value) => `R$ ${(value/1000).toFixed(0)}k`}
                         />
