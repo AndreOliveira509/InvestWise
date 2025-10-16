@@ -1,18 +1,13 @@
 /* src/index.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* ... seu css existente */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
 :root {
   /* Paleta de Cores */
   --primary-color: #FFC107; /* Amarelo um pouco mais vibrante */
-  --secondary-color: #1a1a1a; /* Preto suave */
+  --secondary-color: #090909; /* Preto suave */
   --background-color: #FFFFFF;
   --surface-color: #f8f9fa; /* Cor para seções com fundo diferente */
-  
+
   /* Tipografia */
   --text-primary: #212529;
   --text-secondary: #5a5a5a;
@@ -49,9 +44,6 @@ body {
   padding: 0 20px;
 }
 
-section {
-  padding: 100px 0; /* Espaçamento padrão para todas as seções */
-}
 
 .section-title {
   font-size: 42px;

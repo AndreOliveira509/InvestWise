@@ -1,17 +1,15 @@
-// pages/Dashboard/Dashboard.jsx
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
-import {
-  FaMoneyBillWave, FaPlus, FaTrash, FaSearch, FaArrowUp, FaArrowDown
-} from 'react-icons/fa';
-
+import { FaPlus, FaTrash, FaSearch, FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import styles from './Dashboard.module.css';
-/* Gráficos */
+import Header from '../../components/Header/Header';
+import FormCard from '../../components/FormCard/FormCard';
 import PositiveAndNegativeBarChart from '../../components/PositiveAndNegativeBarChart/PositiveAndNegativeBarChart';
 import CustomActiveShapePieChart from '../../components/CustomActiveShapePieChart/CustomActiveShapePieChart';
 import SynchronizedLineChart from '../../components/SynchronizedLineChart/SynchronizedLineChart';
+import InvestmentProfitabilityChart from '../../components/InvestmentProfitabilityChart/InvestmentProfitabilityChart';
 
 /* Categorias */
 const categories = [
@@ -23,6 +21,13 @@ const categories = [
   { id: 6, name: 'Educação', color: '#F7DC6F', icon: '📚' },
   { id: 7, name: 'Outros', color: '#BB8FCE', icon: '📦' }
 ];
+
+const investmentCategories = {
+  fiis: { name: 'Fundos Imobiliários', color: '#3498db' },
+  acoes: { name: 'Ações', color: '#2ecc71' },
+  rendaFixa: { name: 'Renda Fixa', color: '#f1c40f' },
+  crypto: { name: 'Criptomoedas', color: '#e67e22' },
+};
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -66,8 +71,9 @@ export default function Dashboard() {
   const filteredExpenses = useMemo(() => {
     return expenses
       .filter(e => e.description.toLowerCase().includes(searchTerm.toLowerCase()))
-      .sort((a, b) => new Date(b.date) - new Date(a.date));
-  }, [expenses, searchTerm]);
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+  ), [expenses, searchTerm]);
+
 
   const weekSpending = useMemo(() => {
     const week = [];
@@ -149,73 +155,79 @@ export default function Dashboard() {
         {/* ... o resto do seu JSX ... */}
          <div className={styles.pageHeader}>
             <h1>Dashboard Financeiro</h1>
-            <p>Sua visão geral de gastos e patrimônio.</p>
+            <p>Sua visão geral de gastos e investimentos.</p>
           </div>
+          <hr />
 
-          <section className={styles.formCard}>
-            <form onSubmit={handleAdd} className={styles.modernForm}>
-              <input value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Descrição do gasto..." required />
-              <input type="number" step="0.01" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} placeholder="R$ 0,00" required />
-              <select value={form.categoryId} onChange={e => setForm({ ...form, categoryId: e.target.value })}>
-                {categories.map(c => (<option key={c.id} value={c.id}>{c.icon} {c.name}</option>))}
+          <section className={styles.investmentsSection}>
+            <div className={styles.sectionHeader}><h2 className={styles.sectionTitle}>Meus Investimentos</h2></div>
+            <FormCard onSubmit={handleAddInvestment}>
+              <input type="text" placeholder="Nome do Ativo" value={investmentForm.name} onChange={e => setInvestmentForm({ ...investmentForm, name: e.target.value })}/>
+              <input type="number" placeholder="Valor (R$)" value={investmentForm.value} onChange={e => setInvestmentForm({ ...investmentForm, value: e.target.value })}/>
+              <select value={investmentForm.category} onChange={e => setInvestmentForm({ ...investmentForm, category: e.target.value })}>
+                {Object.keys(investmentCategories).map(catId => (<option key={catId} value={catId}>{investmentCategories[catId].name}</option>))}
               </select>
-              <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} />
-              <button type="submit" className={styles.submitBtn}><FaPlus /> Adicionar</button>
-            </form>
+              <input type="date" value={investmentForm.date} onChange={e => setInvestmentForm({ ...investmentForm, date: e.target.value })}/>
+              <button type="submit"><FaPlus /> Adicionar</button>
+            </FormCard>
+            
+            <div className={styles.metricsGrid}>
+              <div className={styles.metricCard}><h3 className={styles.metricTitle}>Fundo Imobiliário MXRF11</h3><div className={styles.metricValueWrapper}><span className={styles.metricValue}>R$ 5.250,00</span><div className={`${styles.metricChange} ${styles.positive}`}><FaArrowUp /><span>+R$ 52,10</span></div></div></div>
+              <div className={styles.metricCard}><h3 className={styles.metricTitle}>Ações da Petrobras</h3><div className={styles.metricValueWrapper}><span className={styles.metricValue}>R$ 10.800,00</span><div className={`${styles.metricChange} ${styles.positive}`}><FaArrowUp /><span>+R$ 180,50</span></div></div></div>
+              <div className={styles.metricCard}><h3 className={styles.metricTitle}>Tesouro Selic 2029</h3><div className={styles.metricValueWrapper}><span className={styles.metricValue}>R$ 15.000,00</span><div className={`${styles.metricChange} ${styles.positive}`}><FaArrowUp /><span>+R$ 112,00</span></div></div></div>
+              <div className={styles.metricCard}><h3 className={styles.metricTitle}>Bitcoin</h3><div className={styles.metricValueWrapper}><span className={styles.metricValue}>R$ 2.300,00</span><div className={`${styles.metricChange} ${styles.negative}`}><FaArrowDown /><span>-R$ 98,40</span></div></div></div>
+            </div>
+            
+            <div className={styles.investmentListCard}>
+              <h3 className={styles.chartTitle}>Ativos na Carteira</h3>
+              <div className={styles.investmentList}>
+                {investments.length > 0 ? (investments.map(inv => (
+                  <div key={inv.id} className={styles.investmentItem}>
+                    <div className={styles.investmentDetails}><span className={styles.investmentName}>{inv.name}</span><span className={styles.investmentCategory} style={{ backgroundColor: `${investmentCategories[inv.category].color}30`, color: investmentCategories[inv.category].color }}>{investmentCategories[inv.category].name}</span></div>
+                    <div className={styles.investmentValues}><span className={styles.transactionDate}>{new Date(inv.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span><span className={styles.investmentValue}>R$ {parseFloat(inv.value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span><span className={`${styles.investmentChange} ${inv.change >= 0 ? styles.positive : styles.negative}`}>{inv.change >= 0 ? <FaArrowUp /> : <FaArrowDown />} R$ {Math.abs(inv.change).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></div>
+                    <button onClick={() => handleRemoveInvestment(inv.id)} className={styles.deleteBtn}><FaTrash /></button>
+                  </div>
+                ))) : (<div className={styles.emptyState}>Nenhum investimento encontrado.</div>)}
+              </div>
+            </div>
+
+            {investments.length > 0 && (
+              <div className={styles.profitabilityChartCard}>
+                <h3 className={styles.chartTitle}>Evolução da Carteira (Últimos 30 dias)</h3>
+                <div className={styles.chartWrapper}>
+                  <InvestmentProfitabilityChart data={investmentHistoryData} />
+                </div>
+              </div>
+            )}
           </section>
 
-          <section className={styles.metricsGrid}>
-            <div className={styles.metricCard}>
-              <h3 className={styles.metricTitle}>Patrimônio</h3>
-              <div className={styles.metricValueWrapper}>
-                <span className={styles.metricValue}>R$ {patrimonio.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-              </div>
-            </div>
-            <div className={styles.metricCard}>
-              <h3 className={styles.metricTitle}>Total Gasto (Mês)</h3>
-              <div className={styles.metricValueWrapper}>
-                <span className={styles.metricValue}>R$ {totalExpenses.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-              </div>
-            </div>
-            <div className={styles.metricCard}>
-              <h3 className={styles.metricTitle}>% Patrimônio Usado</h3>
-              <div className={styles.metricValueWrapper}>
-                <span className={styles.metricValue}>{usedPercent.toFixed(1)}%</span>
-              </div>
-            </div>
-            <div className={styles.metricCard}>
-              <h3 className={styles.metricTitle}>Saldo Restante</h3>
-              <div className={styles.metricValueWrapper}>
-                <span className={styles.metricValue}>R$ {remaining.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-              </div>
-            </div>
+          <section className={styles.expensesSection}>
+            <div className={styles.sectionHeader}><h2 className={styles.sectionTitle}>Meus Gastos</h2></div>
+            <FormCard onSubmit={handleAdd}>
+              <input value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Descrição do gasto..." required />
+              <input type="number" step="0.01" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} placeholder="R$ 0,00" required />
+              <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>{categories.map(c => (<option key={c.id} value={c.id}>{c.icon} {c.name}</option>))}</select>
+              <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })}/>
+              <button type="submit"><FaPlus /> Adicionar</button>
+            </FormCard>
+            <section className={styles.metricsGrid}>
+              <div className={styles.metricCard}><h3 className={styles.metricTitle}>Patrimônio</h3><div className={styles.metricValueWrapper}><span className={styles.metricValue}>R$ {patrimonio.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span><div className={`${styles.metricChange} ${styles.positive}`}><FaArrowUp /><span>1.2%</span></div></div></div>
+              <div className={styles.metricCard}><h3 className={styles.metricTitle}>Total Gasto (Mês)</h3><div className={styles.metricValueWrapper}><span className={styles.metricValue}>R$ {totalExpenses.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span><div className={`${styles.metricChange} ${styles.negative}`}><FaArrowDown /><span>-0.5%</span></div></div></div>
+              <div className={styles.metricCard}><h3 className={styles.metricTitle}>% Orçamento Usado</h3><div className={styles.metricValueWrapper}><span className={styles.metricValue}>{usedPercent.toFixed(1)}%</span><div className={`${styles.metricChange} ${usedPercent > 80 ? styles.negative : styles.positive}`}><FaArrowUp /><span>+2.1%</span></div></div></div>
+              <div className={styles.metricCard}><h3 className={styles.metricTitle}>Saldo Restante</h3><div className={styles.metricValueWrapper}><span className={styles.metricValue}>R$ {remaining.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span><div className={`${styles.metricChange} ${styles.positive}`}><FaArrowDown /><span>+3.4%</span></div></div></div>
+            </section>
           </section>
 
           <div className={styles.contentGrid}>
             <section className={styles.chartsArea}>
-              <div className={`${styles.chartCard} ${styles.large}`}>
-                <h3 className={styles.chartTitle}>Evolução Semanal</h3>
-                <div className={styles.chartWrapper}><SynchronizedLineChart data={weekSpending} /></div>
-              </div>
-              <div className={styles.chartCard}>
-                <h3 className={styles.chartTitle}>Balanço por Categoria</h3>
-                <div className={styles.chartWrapper}><PositiveAndNegativeBarChart data={barData} /></div>
-              </div>
-              <div className={styles.chartCard}>
-                <h3 className={styles.chartTitle}>Distribuição de Gastos</h3>
-                <div className={styles.chartWrapper}><CustomActiveShapePieChart data={pieData} /></div>
-              </div>
+              <div className={`${styles.chartCard} ${styles.large}`}><h3 className={styles.chartTitle}>Evolução Semanal</h3><div className={styles.chartWrapper}><SynchronizedLineChart data={weekSpending} /></div></div>
+              <div className={styles.chartCard}><h3 className={styles.chartTitle}>Balanço por Categoria</h3><div className={styles.chartWrapper}><PositiveAndNegativeBarChart data={barData} /></div></div>
+              <div className={styles.chartCard}><h3 className={styles.chartTitle}>Distribuição de Gastos</h3><div className={styles.chartWrapper}><CustomActiveShapePieChart data={pieData} /></div></div>
             </section>
-
             <section className={styles.transactionsArea}>
               <div className={styles.transactionsCard}>
                 <h3 className={styles.chartTitle}>Gastos Recentes</h3>
-                <div className={styles.transactionControls}>
-                  <div className={styles.searchWrapper}>
-                    <FaSearch className={styles.searchIcon} />
-                    <input type="text" placeholder="Pesquisar gasto..." className={styles.searchInput} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-                  </div>
-                </div>
+                <div className={styles.transactionControls}><div className={styles.searchWrapper}><FaSearch className={styles.searchIcon} /><input type="text" placeholder="Pesquisar gasto..." className={styles.searchInput} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} /></div></div>
                 <div className={styles.transactionList}>
                   {filteredExpenses.length > 0 ? (
                     filteredExpenses.map(exp => {

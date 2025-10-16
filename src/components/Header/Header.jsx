@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   FaHome, FaChartPie, FaUser, FaSignOutAlt, FaCog, FaBookReader, FaPiggyBank,
-  FaMoon, FaSun, FaTimes
+  FaMoon, FaSun, FaTimes, FaUsers // 1. Adicione o ícone FaUsers
 } from 'react-icons/fa';
 import { RiRobot2Fill } from 'react-icons/ri';
 import { IoAnalytics } from 'react-icons/io5';
@@ -28,7 +28,7 @@ export default function Header() {
 
   const handleLogout = () => {
     // Limpa o token e redireciona para o login
-    localStorage.removeItem('investiwise_token'); 
+    localStorage.removeItem('investiwise_token');
     navigate('/login');
   };
 
@@ -92,11 +92,6 @@ export default function Header() {
     { path: "/aiquestions", icon: <RiRobot2Fill />, label: "IA Financeira" },
   ];
 
-  const userMenuItems = [
-    { path: "/profile", icon: <FaUser />, label: "Meu Perfil" },
-    { path: "/settings", icon: <FaCog />, label: "Configurações" }
-  ];
-
   return (
     <>
       <header className={styles.header}>
@@ -152,17 +147,18 @@ export default function Header() {
                   <span className={styles.userMenuIcon}><FaUser /></span>
                   <span className={styles.userMenuLabel}>Meu Perfil</span>
                 </button>
+                {/* 2. Botão "Configurações" alterado para "Sobre Nós" */}
                 <button
                   className={styles.userMenuItem}
                   onClick={() => {
-                    handleNavigation('/settings');
+                    handleNavigation('/about-us');
                     setIsUserMenuOpen(false);
                   }}
                 >
-                  <span className={styles.userMenuIcon}><FaCog /></span>
-                  <span className={styles.userMenuLabel}>Configurações</span>
+                  <span className={styles.userMenuIcon}><FaUsers /></span>
+                  <span className={styles.userMenuLabel}>Sobre Nós</span>
                 </button>
-                <button 
+                <button
                   className={`${styles.userMenuItem} ${styles.logoutItem}`}
                   onClick={handleLogout}
                 >
