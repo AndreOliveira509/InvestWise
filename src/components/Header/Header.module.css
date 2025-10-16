@@ -40,11 +40,16 @@
 
 /* Logo */
 .logo {
+  padding: 0.5rem;
+  border-radius: 10px;
+  background-color: #fff;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.75rem;
   cursor: pointer;
   transition: opacity 0.3s ease;
+  
 }
 
 .logo:hover {
@@ -144,6 +149,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  
 }
 
 .userInfo {
@@ -155,7 +161,7 @@
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px solid transparent;
+  border: 1px solid #ffed4e;
 }
 
 .userInfo:hover {
