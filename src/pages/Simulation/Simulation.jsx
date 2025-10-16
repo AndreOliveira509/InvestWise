@@ -242,7 +242,6 @@ export default function Simulation() {
   return (
     <div className={styles.simulation}>
       <div className={styles.container}>
-        {/* COTAÇÕES NA PARTE SUPERIOR */}
         <div className={styles.cryptoHeader}>
           <div className={styles.cryptoHeaderContent}>
             <div className={styles.cryptoTitle}>
