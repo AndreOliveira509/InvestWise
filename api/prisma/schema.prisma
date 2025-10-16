@@ -24,4 +24,51 @@ model User {
   patrimonio Decimal @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  transactions Transaction[]
+  investments  Investment[]
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  description String
+  amount      Decimal
+  date        DateTime
+  type        String
+
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+
+  categoryId  Int
+  category    Category @relation(fields: [categoryId], references: [id])
+
+  createdAt   DateTime @default(now())
+
+}
+
+model Category {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  color       String
+  transactions Transaction[]
+}
+
+model Investment {
+  id        Int @id     @default(autoincrement())
+  name      String
+  value     Decimal
+  date      DateTime
+
+  userId    Int
+  user      User @relation(fields: [userId], references: [id])
+
+  categoryId Int
+  category   CategoryInvestment @relation(fields: [categoryId], references: [id])
+}
+
+model CategoryInvestment {
+  id Int @id @default(autoincrement())
+  name String @unique
+  color String
+  investments Investment[]
 }

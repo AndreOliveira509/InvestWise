@@ -351,3 +351,12 @@
   .mainContent { padding: 1rem; }
   .metricsGrid { grid-template-columns: 1fr; }
 }
+
+.contentLoading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh; /* Ajuste conforme necessário */
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+}
