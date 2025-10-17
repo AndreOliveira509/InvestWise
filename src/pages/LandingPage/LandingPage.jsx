@@ -1,15 +1,29 @@
-// pages/LandingPage/LandingPage.js
+// pages/LandingPage/LandingPage.jsx
 import { useNavigate } from "react-router-dom";
-import { FaChartLine, FaPiggyBank, FaShieldAlt, FaMobileAlt, FaTimes, FaBars, FaDollarSign, FaChartPie, FaLightbulb, FaBullseye, FaBrain, FaChevronDown } from "react-icons/fa";
-import { useState } from "react";
+import { 
+  FaChartLine, FaPiggyBank, FaShieldAlt, FaMobileAlt, FaTimes, FaBars,
+  FaDollarSign, FaChartPie, FaLightbulb, FaBullseye, FaBrain, FaChevronDown,
+  FaMoon, FaSun
+} from "react-icons/fa";
+import { useState, useEffect } from "react";
 import styles from "./LandingPage.module.css";
 import Button from "../../components/Button/Button";
-import imagemHome from '../../assets/imagemhome.jpg'
+import imagemHome from '../../assets/imagemhome.jpg';
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Alternar modo escuro
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
+  useEffect(() => {
+    document.body.classList.toggle(styles.darkMode, isDarkMode);
+  }, [isDarkMode]);
 
   const features = [
     {
@@ -141,6 +155,7 @@ const LandingPage = () => {
           <div className={styles.logo}>
             <div className={styles.logoText}>InvestiWise</div>
           </div>
+
           <nav className={`${styles.nav} ${isMenuOpen ? styles.active : ''}`}>
             <a href="#features" onClick={(e) => { e.preventDefault(); scrollToSection('features'); }}>Recursos</a>
             <a href="#benefits" onClick={(e) => { e.preventDefault(); scrollToSection('benefits'); }}>Vantagens</a>
@@ -148,7 +163,11 @@ const LandingPage = () => {
             <a href="#testimonials" onClick={(e) => { e.preventDefault(); scrollToSection('testimonials'); }}>Depoimentos</a>
             <a href="#faq" onClick={(e) => { e.preventDefault(); scrollToSection('faq'); }}>FAQ</a>
           </nav>
+
           <div className={`${styles.authButtons} ${isMenuOpen ? styles.active : ''}`}>
+            <button onClick={toggleDarkMode} className={styles.themeToggle}>
+              {isDarkMode ? <FaSun /> : <FaMoon />}
+            </button>
             <Button secondary onClick={handleLoginClick}>
               Entrar
             </Button>
@@ -156,6 +175,7 @@ const LandingPage = () => {
               Cadastrar
             </Button>
           </div>
+
           <button 
             className={styles.mobileMenuButton} 
             onClick={toggleMenu}
