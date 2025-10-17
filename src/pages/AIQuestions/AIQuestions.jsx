@@ -681,7 +681,6 @@ Dívidas: R$ ${userFinancialData.debts}
 
   return (
     <div className={styles.aiQuestions}>
-      <Header />
       <main className={styles.main}>
         <div className={styles.container}>
           <section className={styles.aiHeader}>
