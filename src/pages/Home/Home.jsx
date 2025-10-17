@@ -28,14 +28,12 @@ const cryptocurrencies = [
   { symbol: 'XRP', name: 'Ripple' }
 ];
 
-
 export default function Home() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [cryptoPrices, setCryptoPrices] = useState({});
   const [chartData, setChartData] = useState([]);
   const [cryptoLoading, setCryptoLoading] = useState(true);
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,7 +43,6 @@ export default function Home() {
     };
     fetchData();
   }, []); 
-
 
   const fetchCryptoPrices = async () => {
     setCryptoLoading(true);
@@ -73,7 +70,7 @@ export default function Home() {
     } catch (err) {
       console.error('Error fetching crypto prices:', err);
     } finally {
-      // a flag de loading principal é controlada no useEffect acima
+      setCryptoLoading(false);
     }
   };
 
@@ -163,20 +160,12 @@ export default function Home() {
   return (
     <div className={styles.home}>    
       <div className={styles.mainContent}>
-       {/* ... O RESTO DO SEU JSX DA HOME PAGE ... */}
+        {/* COTAÇÕES SEM BOTÃO ATUALIZAR */}
         <section className={styles.cryptoSection}>
           <div className={styles.cryptoHeader}>
             <div className={styles.cryptoTitle}>
               <FaDatabase className={styles.cryptoIcon} />
               <span>Cotações em Tempo Real</span>
-              <button 
-                onClick={fetchCryptoPrices} 
-                className={styles.refreshBtn}
-                disabled={cryptoLoading}
-              >
-                <FaSync className={cryptoLoading ? styles.spinning : ''} />
-                Atualizar
-              </button>
             </div>
             <div className={styles.cryptoGrid}>
               {cryptocurrencies.map(crypto => {

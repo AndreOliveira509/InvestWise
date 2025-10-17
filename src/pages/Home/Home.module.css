@@ -59,7 +59,7 @@
   to { transform: rotate(360deg); }
 }
 
-/* CRYPTO SECTION */
+/* CRYPTO SECTION - ATUALIZADO SEM BOTÃO */
 .cryptoSection {
   margin: 2rem 0;
 }
@@ -86,35 +86,11 @@
   font-size: 1.1rem;
 }
 
-.refreshBtn {
-  background: transparent;
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary);
-  padding: 0.5rem 1rem;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  margin-left: auto;
-  font-family: 'Poppins', sans-serif;
-}
-
-.refreshBtn:hover {
-  border-color: var(--accent-color);
-  color: var(--accent-color);
-}
-
-.refreshBtn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.spinning {
-  animation: spin 1s linear infinite;
-}
+/* REMOVIDAS AS REGRAS DO BOTÃO REFRESH */
+/* .refreshBtn { ... } */
+/* .refreshBtn:hover { ... } */
+/* .refreshBtn:disabled { ... } */
+/* .spinning { ... } */
 
 .cryptoGrid {
   display: grid;
