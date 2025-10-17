@@ -33,10 +33,13 @@ export default function Dashboard() {
   // Estados com localStorage para persistir os dados
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [investments, setInvestments] = useState([]);
+  const [investments, setInvestments] = useState(() => {
+    const savedInvestments = localStorage.getItem('investments');
+    return savedInvestments ? JSON.parse(savedInvestments) : [];
+  });
   const [searchTerm, setSearchTerm] = useState('');
   const [form, setForm] = useState({ description: '', amount: '', categoryId: 1, date: new Date().toISOString().split('T')[0] });
-  const [investmentForm, setInvestmentForm] = useState({ name: '', value: '', category: 1, date: new Date().toISOString().split('T')[0] });
+  const [investmentForm, setInvestmentForm] = useState({ name: '', value: '', category: 'fiis', date: new Date().toISOString().split('T')[0] });
 
 useEffect(() => {
     const fetchTransactions = async () => {
@@ -63,6 +66,7 @@ useEffect(() => {
 
     fetchTransactions();
   }, [user]);
+  
   useEffect(() => { localStorage.setItem('investments', JSON.stringify(investments)); }, [investments]);
 
   // --- Métricas Financeiras ---
@@ -111,19 +115,20 @@ useEffect(() => {
   const investmentHistoryData = useMemo(() => {
     if (investments.length === 0) return [];
     const totalInvested = investments.reduce((sum, inv) => sum + parseFloat(inv.value || 0), 0);
+    const totalChange = investments.reduce((sum, inv) => sum + parseFloat(inv.change || 0), 0);
     if (totalInvested === 0) return [];
     
     const history = [];
-    let currentValue = totalInvested * 0.95; 
-
-    for (let i = 29; i >= 0; i--) {
+    const days = 30;
+    for (let i = days - 1; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      const randomFactor = (Math.random() - 0.5) * 0.03;
-      currentValue *= (1 + randomFactor);
+      const simulatedPatrimonio = totalInvested + (totalChange / (days - 1)) * (days - 1 - i);
+      const randomFactor = 1 + (Math.random() - 0.5) * 0.02;
+      const finalValue = simulatedPatrimonio * randomFactor;
       history.push({
         date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-        patrimonio: parseFloat(currentValue.toFixed(2)),
+        patrimonio: parseFloat(finalValue.toFixed(2)),
       });
     }
     return history;
@@ -139,7 +144,7 @@ const handleAdd = async (e) => {
       description: form.description,
       amount: parseFloat(form.amount),
       date: new Date(form.date).toISOString(),
-      type: 'EXPENSE', // Definindo o tipo como GASTO
+      type: 'EXPENSE',
       categoryId: parseInt(form.categoryId),
     };
 
@@ -288,7 +293,12 @@ const handleAdd = async (e) => {
                         <div className={styles.transactionIcon} style={{ backgroundColor: `${category.color}20`, color: category.color }}>{category.icon || '💸'}</div>
                         <div className={styles.transactionDetails}>
                           <span className={styles.transactionDesc}>{exp.description}</span>
-                          <span className={styles.transactionDate}>{new Date(exp.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>
+                          {/* --- ALTERAÇÃO AQUI --- */}
+                          <div className={styles.transactionMeta}>
+                            <span className={styles.transactionDate}>{new Date(exp.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>
+                            <span className={styles.transactionStatus} title="Pago"></span>
+                          </div>
+                          {/* --- FIM DA ALTERAÇÃO --- */}
                         </div>
                         <span className={styles.transactionAmount}>- R$ {parseFloat(exp.amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                         <button onClick={() => handleRemove(exp.id)} className={styles.deleteBtn}><FaTrash /></button>

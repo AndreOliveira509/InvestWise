@@ -282,6 +282,7 @@
   padding-right: 0.5rem;
 }
 
+
 .transactionItem {
   display: grid;
   grid-template-columns: auto 1fr auto auto;
@@ -290,8 +291,8 @@
   padding: 0.75rem 0.5rem;
   border-bottom: 1px solid var(--border-color);
 }
-
-.transactionItem:last-child {
+.transactionItem:hover {
+  background-color: rgba(255, 193, 7, 0.1);
   border-bottom: none;
 }
 
@@ -359,4 +360,33 @@
   min-height: 50vh; /* Ajuste conforme necessário */
   font-size: 1.2rem;
   color: var(--text-secondary);
+}
+/* --- ADICIONE ESTES ESTILOS AO FINAL DO SEU ARQUIVO CSS --- */
+
+/* Estilo para o container da data e do status */
+.transactionMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Espaço entre a data e o ponto de status */
+  margin-top: 4px;
+}
+
+/* Estilo para o ponto de status (verde = pago) */
+
+
+/* Garante que o botão de deletar esteja sempre visível */
+.deleteBtn {
+  background-color: transparent;
+  border: none;
+  color: #aeb8c4;
+  cursor: pointer;
+  opacity: 1; /* Garante que não está transparente */
+  visibility: visible; /* Garante que não está invisível */
+  transition: color 0.2s ease;
+  font-size: 1rem;
+  padding: 8px;
+}
+
+.deleteBtn:hover {
+  color: #e74c3c; /* Cor vermelha ao passar o mouse */
 }
