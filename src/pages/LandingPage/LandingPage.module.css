@@ -60,6 +60,9 @@ body.darkMode {
   --shadow-light: 0 4px 10px var(--shadow-color);
   --shadow-medium: 0 8px 20px var(--shadow-color);
 }
+h2{
+  text-align: center;
+}
 
 /* ================== LAYOUT BASE ================== */
 .landingPage {

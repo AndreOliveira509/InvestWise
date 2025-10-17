@@ -5,27 +5,37 @@
   align-items: center;
   justify-content: center;
   height: 100px;
-  background-color: var(--bg-secondary-transparent); /* Transparência */
+  background-color: var(--bg-secondary-transparent);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
   z-index: 1000;
+  padding: 0 1rem;
 }
 
 .headerContent {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   color: var(--text-primary);
-  gap: 20rem;
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  gap: 1rem; /* Adiciona um espaço entre os elementos */
 }
+/* Adicione isso ao seu arquivo Header.module.css */
 
+.logoIcon img {
+  width: 100%;      /* Faz a imagem ocupar toda a largura do container */
+  height: 100%;     /* Faz a imagem ocupar toda a altura do container */
+  object-fit: cover; /* Garante que a imagem cubra o espaço sem distorcer */
+}
 /* Logo */
 .logo {
   padding: 0.5rem;
   border-radius: 10px;
-  background-color: var(--bg-card); /* Usando variável */
+  background-color: var(--bg-card);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -61,11 +71,14 @@
 .nav {
   display: flex;
   align-items: center;
+  justify-content: center; /* centraliza o conteúdo horizontalmente */
   gap: 0.5rem;
   background: var(--bg-card);
   padding: 0.5rem;
   border-radius: 12px;
   border: 1px solid var(--border-color);
+  transform: translateY(0);
+  transition: all 0.3s ease;
 }
 
 .navItem {
@@ -199,7 +212,7 @@
   padding: 0.5rem;
   min-width: 200px;
   box-shadow: 0 8px 32px var(--shadow-color);
-  z-index: 1001; /* Garante que fique acima de outros elementos */
+  z-index: 1001;
   animation: slideDown 0.2s ease;
 }
 
@@ -262,52 +275,26 @@
 
 /* ---------- RESPONSIVO ---------- */
 @media (max-width: 1024px) {
-  .headerContent {
-    padding: 0 1rem;
-  }
-  .nav {
-    gap: 0.25rem;
+  .navLabel {
+    display: none; /* Oculta o texto dos itens de navegação */
   }
   .navItem {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8rem;
-  }
-  .navLabel {
-    display: none;
+    padding: 0.75rem; /* Ajusta o padding para os ícones */
   }
 }
 
 @media (max-width: 768px) {
-  .header {
-    padding: 0 1rem;
-  }
-  .headerContent {
-    flex-wrap: wrap;
-    height: auto;
-    padding: 1rem 0;
-    gap: 1rem;
-  }
-  .nav {
-    order: 3;
-    width: 100%;
-    justify-content: center;
-  }
-  .navLabel {
-    display: block;
-  }
-}
-
-@media (max-width: 480px) {
+  /*
+    Para telas menores, não usamos 'flex-wrap'.
+    Em vez disso, ocultamos elementos para que tudo caiba na mesma linha.
+  */
   .logoText {
-    display: none;
+    display: none; /* Oculta o texto do logo */
   }
   .userDetails {
-    display: none;
+    display: none; /* Oculta os detalhes do usuário */
   }
   .userInfo {
-    padding: 0.5rem;
-  }
-  .darkModeToggle {
-    font-size: 1rem;
+    padding: 0.5rem; /* Ajusta o padding do avatar do usuário */
   }
 }
