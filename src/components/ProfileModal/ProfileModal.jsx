@@ -172,7 +172,7 @@ const handleSaveChanges = async () => {
                   </div>
                   <div className={styles.stat}>
                     <span className={styles.statNumber}>R$ {user?.patrimonio}</span>
-                    <span className={styles.statLabel}>Patrimônio</span>
+                    <span className={styles.statLabel}>Orçamento</span>
                   </div>
                   <div className={styles.stat}>
                     <span className={styles.statNumber}>Premium</span>
@@ -253,7 +253,7 @@ const handleSaveChanges = async () => {
                   </div>
 
                   <div className={styles.infoGroup}>
-                    <label>Patrimônio</label>
+                    <label>Orçamento</label>
                     {isEditing ? (
                       <input
                         type="number"

@@ -1,33 +1,16 @@
-/* ---------- VARIÁVEIS CSS ---------- */
-:root {
-  --bg-primary: #f4f6fa;
-  --bg-secondary: #ffffff;
-  --bg-card: #ffffff;
-  --text-primary: #000000;
-  --text-secondary: #666666;
-  --border-color: #e0e0e0;
-  --shadow-color: rgba(0, 0, 0, 0.1);
-}
+/* src/components/Header/Header.module.css */
 
-/* ---------- HEADER MODERNO ---------- */
 .header {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100px;
+  background-color: var(--bg-secondary-transparent); /* Transparência */
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: transparent;
-}
-/* Adicione estas regras ao seu Header.module.css existente */
-
-/* Z-index para garantir que o modal fique acima de tudo */
-/* Ajuste no userMenu para garantir que fique acima do conteúdo */
-.userMenu {
-  z-index: 1001;
 }
 
 .headerContent {
@@ -42,14 +25,14 @@
 .logo {
   padding: 0.5rem;
   border-radius: 10px;
-  background-color: #fff;
+  background-color: var(--bg-card); /* Usando variável */
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
   cursor: pointer;
   transition: opacity 0.3s ease;
-  
+  border: 1px solid var(--border-color);
 }
 
 .logo:hover {
@@ -60,18 +43,18 @@
   width: 35px;
   height: 35px;
   border-radius: 8px;
-  background: #FFC107;
+  background: var(--primary-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1a1a1a;
+  color: var(--secondary-color);
   font-size: 1.2rem;
 }
 
 .logoText {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #FFC107;
+  color: var(--primary-color);
 }
 
 /* Navegação */
@@ -82,7 +65,6 @@
   background: var(--bg-card);
   padding: 0.5rem;
   border-radius: 12px;
-  backdrop-filter: blur(10px);
   border: 1px solid var(--border-color);
 }
 
@@ -103,14 +85,14 @@
 
 .navItem:hover {
   background: rgba(255, 193, 7, 0.1);
-  color: #FFC107;
+  color: var(--primary-color);
   transform: translateY(-1px);
 }
 
 .navItem.active {
   background: rgba(255, 193, 7, 0.15);
-  color: #FFC107;
-  border: 1px solid #FFC107;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
   box-shadow: 0 2px 8px rgba(255, 193, 7, 0.2);
 }
 
@@ -139,7 +121,7 @@
 
 .darkModeToggle:hover {
   background: rgba(255, 193, 7, 0.1);
-  color: #FFC107;
+  color: var(--primary-color);
   transform: scale(1.1);
 }
 
@@ -149,7 +131,6 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  
 }
 
 .userInfo {
@@ -161,7 +142,7 @@
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px solid #ffed4e;
+  border: 1px solid var(--primary-color);
 }
 
 .userInfo:hover {
@@ -174,13 +155,13 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #FFC107, #ffed4e);
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-color-hover));
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1a1a1a;
+  color: var(--secondary-color);
   font-size: 0.9rem;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid var(--bg-card);
 }
 
 .userDetails {
@@ -198,7 +179,7 @@
 
 .userPlan {
   font-size: 0.75rem;
-  color: #FFC107;
+  color: var(--primary-color);
   background: rgba(255, 193, 7, 0.1);
   padding: 0.2rem 0.5rem;
   border-radius: 12px;
@@ -218,7 +199,7 @@
   padding: 0.5rem;
   min-width: 200px;
   box-shadow: 0 8px 32px var(--shadow-color);
-  z-index: 1000;
+  z-index: 1001; /* Garante que fique acima de outros elementos */
   animation: slideDown 0.2s ease;
 }
 
@@ -251,7 +232,7 @@
 
 .userMenuItem:hover {
   background: rgba(255, 193, 7, 0.1);
-  color: #FFC107;
+  color: var(--primary-color);
   transform: translateX(4px);
 }
 
@@ -268,15 +249,15 @@
 }
 
 .logoutItem {
-  color: #ff6b6b;
+  color: var(--negative-color);
   border-top: 1px solid var(--border-color);
   margin-top: 0.25rem;
   padding-top: 0.875rem;
 }
 
 .logoutItem:hover {
-  color: #ff5252;
-  background: rgba(255, 107, 107, 0.1);
+  color: var(--negative-color);
+  background: var(--negative-bg);
 }
 
 /* ---------- RESPONSIVO ---------- */
@@ -284,16 +265,13 @@
   .headerContent {
     padding: 0 1rem;
   }
-  
   .nav {
     gap: 0.25rem;
   }
-  
   .navItem {
     padding: 0.5rem 0.75rem;
     font-size: 0.8rem;
   }
-  
   .navLabel {
     display: none;
   }
@@ -303,20 +281,17 @@
   .header {
     padding: 0 1rem;
   }
-  
   .headerContent {
     flex-wrap: wrap;
     height: auto;
     padding: 1rem 0;
     gap: 1rem;
   }
-  
   .nav {
     order: 3;
     width: 100%;
     justify-content: center;
   }
-  
   .navLabel {
     display: block;
   }
@@ -326,15 +301,12 @@
   .logoText {
     display: none;
   }
-  
   .userDetails {
     display: none;
   }
-  
   .userInfo {
     padding: 0.5rem;
   }
-  
   .darkModeToggle {
     font-size: 1rem;
   }

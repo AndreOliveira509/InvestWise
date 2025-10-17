@@ -1,14 +1,104 @@
-/* Variáveis CSS para modo escuro/claro */
+/* ==========================================================================
+    PALETA DE CORES E VARIÁVEIS GLOBAIS
+   ========================================================================== */
+
+/* * ---------------------------------------------------------------------------
+ * TEMA CLARO (PADRÃO)
+ * ---------------------------------------------------------------------------
+ */
 :root {
-  --bg-primary: #f4f6fa;
-  --bg-secondary: #ffffff;
-  --bg-card: #ffffff;
-  --text-primary: #000000;
-  --text-secondary: #666666;
-  --border-color: #e0e0e0;
-  --shadow-color: rgba(0, 0, 0, 0.1);
+  /* Cores Principais (Accent Colors) */
+  --primary-color: #FFC107;      /* Amarelo vibrante, usado para botões, links e destaques */
+  --primary-color-hover: #FFA000; /* Tom mais escuro de amarelo para efeitos hover */
+  --secondary-color: #090909;    /* Preto suave, usado como cor de contraste para textos e fundos */
+
+  /* Cores de Fundo (Background Colors) */
+  --bg-primary: #f8fafc;         /* Fundo principal da página (cinza muito claro) */
+  --bg-secondary: #ffffff;       /* Fundo para elementos secundários como headers */
+  --bg-card: #ffffff;            /* Fundo de cards e modais */
+  --surface-color: #f8f9fa;      /* Cor de superfície para seções com fundo levemente diferente */
+
+  /* Cores de Texto (Text Colors) */
+  --text-primary: #1e293b;       /* Cor principal para textos (quase preto) */
+  --text-secondary: #64748b;     /* Cor para textos secundários, legendas e descrições */
+  --text-light: #5a5a5a;         /* Variação de cor para texto secundário */
+
+  /* Cores de Borda e Sombra (Borders & Shadows) */
+  --border-color: #e2e8f0;       /* Cor para bordas sutis */
+  --shadow-color: rgba(0, 0, 0, 0.06); /* Sombra suave para elevação de elementos */
+
+  /* Cores de Feedback */
+  --positive-color: #10b981;        /* Verde para sucesso e valores positivos */
+  --negative-color: #ef4444;        /* Vermelho para alertas e valores negativos */
+  --positive-bg: rgba(16, 185, 129, 0.15);
+  --negative-bg: rgba(239, 68, 68, 0.15);
+
+  /* Outros */
+  --container-width: 1140px;
+  --border-radius: 12px;
+  --transition-speed: 0.3s;
 }
 
+/* * ---------------------------------------------------------------------------
+ * TEMA ESCURO (DARK MODE)
+ * ---------------------------------------------------------------------------
+ * Ativado quando o atributo `data-theme="dark"` está presente no elemento <html> ou <body>.
+ */
+[data-theme="dark"] {
+  /* Cores Principais */
+  --primary-color: #FFC107;
+  --primary-color-hover: #ffca28; /* Amarelo um pouco mais claro para melhor contraste */
+  --secondary-color: #f1f5f9;     /* Cor de contraste (branco suave) */
+
+  /* Cores de Fundo */
+  --bg-primary: #0f172a;          /* Fundo principal (azul escuro) */
+  --bg-secondary: #1e293b;        /* Fundo para headers e elementos secundários */
+  --bg-card: #1e293b;             /* Fundo de cards e modais */
+  --surface-color: #1e293b;       /* Cor de superfície */
+
+  /* Cores de Texto */
+  --text-primary: #f1f5f9;        /* Cor principal para textos (branco suave) */
+  --text-secondary: #94a3b8;      /* Cor para textos secundários */
+  --text-light: #94a3b8;
+
+  /* Cores de Borda e Sombra */
+  --border-color: #334155;        /* Bordas com baixo contraste */
+  --shadow-color: rgba(0, 0, 0, 0.3); /* Sombra mais visível no escuro */
+
+  /* Cores de Feedback */
+  --positive-color: #34D399;
+  --negative-color: #F87171;
+  --positive-bg: rgba(16, 185, 129, 0.2);
+  --negative-bg: rgba(239, 68, 68, 0.2);
+}
+
+/* ==========================================================================
+   ESTILOS GLOBAIS E RESETS
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Poppins', sans-serif; /* Certifique-se de importar a fonte Poppins */
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+}
+
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 20px;
+}
 /* Estilos globais para modo escuro */
 body {
   background-color: var(--bg-primary);

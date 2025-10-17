@@ -86,12 +86,12 @@
   font-weight: 700;
   line-height: 1.2;
   margin-bottom: 1.5rem;
-  color: var(--text-light);
+  color: white;
 }
 
 .heroContent p {
   font-size: 1.2rem;
-  color: var(--text-light);
+  color: white;
   margin-bottom: 2rem;
   line-height: 1.6;
 }

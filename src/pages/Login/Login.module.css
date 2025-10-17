@@ -4,15 +4,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: var(--bg-primary); /* Usando variável */
   padding: 20px;
   animation: fadeIn 0.8s ease-in-out;
 }
 
 .loginContainer {
-  background: white;
+  background: var(--bg-card); /* Usando variável */
   padding: 40px;
   border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px var(--shadow-color); /* Usando variável */
+  border: 1px solid var(--border-color); /* Usando variável */
   width: 100%;
   max-width: 500px;
   animation: slideUp 0.6s ease-out;
@@ -28,7 +30,7 @@
 .logo {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--secondary-color);
+  color: var(--text-primary); /* Usando variável */
   margin-bottom: 20px;
   animation: bounceIn 1s ease-out;
 }
@@ -41,7 +43,7 @@
 }
 
 .loginHeader p {
-  color: var(--text-secondary);
+  color: var(--text-secondary); /* Usando variável */
   font-size: 1.1rem;
   animation: slideInFromRight 0.6s ease-out 0.4s both;
 }
@@ -80,24 +82,25 @@
 
 .inputGroup:focus-within .inputIcon {
   transform: scale(1.1) rotate(5deg);
-  color: var(--secondary-color);
+  color: var(--primary-color-hover);
 }
 
 .inputGroup input {
   width: 100%;
   padding: 15px;
-  border: 2px solid #858585;
+  border: 1px solid var(--border-color); /* Usando variável */
   border-radius: 10px;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background: var(--background-color);
+  background: var(--bg-primary); /* Usando variável */
+  color: var(--text-primary); /* Usando variável */
   transform: translateX(0);
 }
 
 .inputGroup input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2); /* Sombra pode ser mantida */
   transform: translateX(5px);
 }
 
@@ -137,6 +140,7 @@
   gap: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
+  color: var(--text-secondary);
 }
 
 .rememberMe:hover {
@@ -186,7 +190,7 @@
   font-size: 1.1rem;
   margin-top: 10px;
   background: var(--primary-color);
-  color: white;
+  color: var(--secondary-color); /* Cor de texto que contrasta com o primário */
   border: none;
   border-radius: 10px;
   cursor: pointer;
@@ -196,15 +200,15 @@
 }
 
 .loginButton:hover {
-  background: var(--secondary-color);
+  background: var(--primary-color-hover);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 15px var(--shadow-color);
   animation: none;
 }
 
 .loginButton:active {
   transform: translateY(0);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 5px var(--shadow-color);
 }
 
 .loginFooter {
@@ -213,6 +217,7 @@
   padding-top: 20px;
   border-top: 1px solid var(--border-color);
   animation: fadeIn 0.8s ease-in-out 0.9s both;
+  color: var(--text-secondary);
 }
 
 .signupLink {
@@ -254,96 +259,20 @@
   animation: fadeInUp 0.6s ease-out 1s both;
 }
 
-/* Animações Keyframes (as mesmas do Register) */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInFromLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideInFromRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes bounceIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.3);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  70% {
-    transform: scale(0.9);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(255, 215, 0, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
-  }
-}
+/* Keyframes (não precisam de alteração para o dark mode) */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideInFromLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideInFromRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3); } 50% { opacity: 1; transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); } }
 
 @media (max-width: 480px) {
   .loginContainer {
     padding: 30px 20px;
     animation: slideUp 0.5s ease-out;
   }
-  
   .formOptions {
     flex-direction: column;
     gap: 15px;
