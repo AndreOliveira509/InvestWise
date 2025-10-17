@@ -21,10 +21,10 @@ const categories = [
 ];
 
 const investmentCategories = {
-  fiis: {id: 1, name: 'Fundos Imobiliários', color: '#3498db' },
-  acoes: { id: 2, name: 'Ações', color: '#2ecc71' },
-  rendaFixa: { id: 3, name: 'Renda Fixa', color: '#f1c40f' },
-  crypto: { id: 4, name: 'Criptomoedas', color: '#e67e22' },
+  fiis: { name: 'Fundos Imobiliários', color: '#3498db' },
+  acoes: { name: 'Ações', color: '#2ecc71' },
+  rendaFixa: { name: 'Renda Fixa', color: '#f1c40f' },
+  crypto: { name: 'Criptomoedas', color: '#e67e22' }
 };
 
 export default function Dashboard() {
@@ -33,15 +33,13 @@ export default function Dashboard() {
   // Estados com localStorage para persistir os dados
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [investments, setInvestments] = useState(() => {
-    const savedInvestments = localStorage.getItem('investments');
-    return savedInvestments ? JSON.parse(savedInvestments) : [];
-  });
+  const [investments, setInvestments] = useState([]);
+  const [investmentsLoading, setInvestmentsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [form, setForm] = useState({ description: '', amount: '', categoryId: 1, date: new Date().toISOString().split('T')[0] });
   const [investmentForm, setInvestmentForm] = useState({ name: '', value: '', category: 'fiis', date: new Date().toISOString().split('T')[0] });
 
-useEffect(() => {
+  useEffect(() => {
     const fetchTransactions = async () => {
       if (!user) return; 
 
@@ -68,6 +66,32 @@ useEffect(() => {
   }, [user]);
   
   useEffect(() => { localStorage.setItem('investments', JSON.stringify(investments)); }, [investments]);
+
+  useEffect(() => {
+    const fetchInvestments = async () => {
+      if (!user) return;
+
+      const token = localStorage.getItem('investiwise_token');
+      if (!token) {
+        setInvestmentsLoading(false);
+        return;
+      }
+
+      try {
+        setInvestmentsLoading(true);
+        const response = await axios.get('/api/investments', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setInvestments(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar investimentos:", error);
+      } finally {
+        setInvestmentsLoading(false);
+      }
+    };
+
+    fetchInvestments();
+  }, [user]);
 
   // --- Métricas Financeiras ---
   const totalExpenses = useMemo(() => expenses.reduce((s, e) => s + parseFloat(e.amount || 0), 0), [expenses]);
@@ -171,22 +195,41 @@ const handleAdd = async (e) => {
     }
   };
 
-  const handleAddInvestment = e => {
+  const handleAddInvestment = async (e) => {
     e.preventDefault();
     if (!investmentForm.name || !investmentForm.value) return;
-    const newInvestment = { 
-        id: Date.now(), 
-        ...investmentForm, 
-        value: parseFloat(investmentForm.value), 
-        change: (Math.random() - 0.4) * parseFloat(investmentForm.value) * 0.1 
+    
+    const token = localStorage.getItem('investiwise_token');
+    const newInvestmentData = { 
+      ...investmentForm, 
+      value: parseFloat(investmentForm.value),
+      date: new Date(investmentForm.date).toISOString(),
     };
-    setInvestments([newInvestment, ...investments]);
-    setInvestmentForm({ name: '', value: '', category: 'fiis', date: new Date().toISOString().split('T')[0] });
+
+    try {
+      const response = await axios.post('/api/investments', newInvestmentData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setInvestments([response.data, ...investments]);
+      setInvestmentForm({ name: '', value: '', category: 'fiis', date: new Date().toISOString().split('T')[0] });
+    } catch (error) {
+      console.error("Erro ao adicionar investimento:", error);
+    }
   };
 
-  const handleRemoveInvestment = id => setInvestments(investments.filter(inv => inv.id !== id));
+  const handleRemoveInvestment = async (id) => {
+    const token = localStorage.getItem('investiwise_token');
+    try {
+      await axios.delete(`/api/investments/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setInvestments(investments.filter(inv => inv.id !== id));
+    } catch (error) {
+      console.error("Erro ao remover investimento:", error);
+    }
+  };
 
-  if (loading) {
+  if (loading || investmentsLoading) {
     return <div className={styles.contentLoading}>Carregando dados...</div>;
   }
   
