@@ -24,7 +24,6 @@ const cryptocurrencies = [
   { symbol: 'BTC', name: 'Bitcoin' },
   { symbol: 'ETH', name: 'Ethereum' },
   { symbol: 'BNB', name: 'Binance Coin' },
-  { symbol: 'ADA', name: 'Cardano' },
   { symbol: 'SOL', name: 'Solana' },
   { symbol: 'XRP', name: 'Ripple' }
 ];
