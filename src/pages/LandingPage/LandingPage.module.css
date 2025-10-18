@@ -73,7 +73,7 @@ h2{
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1800px;
   margin: 0 auto;
   padding: 0 20px;
 }
@@ -102,7 +102,7 @@ body.darkMode .header {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  max-width: 1200px;
+  max-width: 1800px;
   margin: 0 auto;
 }
 
@@ -600,45 +600,26 @@ body.darkMode .header {
   margin-bottom: 5px;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .mobileMenuButton {
-    display: block;
-  }
+/* =========================================================
+   ================== RESPONSIVE DESIGN ==================
+   ========================================================= */
 
-  .nav, .authButtons {
-    display: none;
-  }
-
-  .nav.active, .authButtons.active {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background: white;
-    padding: 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  }
-
-  .nav.active {
-    gap: 1rem;
-  }
-
-  .authButtons.active {
-    gap: 1rem;
-    align-items: stretch;
-  }
-
+/* Tablets e Desktops Pequenos */
+@media (max-width: 1024px) {
   .hero {
     grid-template-columns: 1fr;
+    gap: 3rem;
+    padding: 8rem 2rem 4rem;
     text-align: center;
-    padding: 6rem 1rem 2rem;
   }
 
-  .heroContent h1 {
-    font-size: 2.2rem;
+  .heroContent {
+    order: 2; /* O texto fica abaixo da imagem em telas menores */
+  }
+
+  .heroVisual {
+    order: 1;
+    margin-bottom: 2rem;
   }
 
   .heroButtons {
@@ -646,16 +627,79 @@ body.darkMode .header {
   }
 
   .footerContent {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    text-align: center;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 3rem;
   }
 
   .footerLinks {
-    grid-template-columns: 1fr;
-    gap: 2rem;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Celulares Grandes e Tablets em Retrato */
+@media (max-width: 768px) {
+  h2 {
+    font-size: 2rem;
   }
 
+  .sectionSubtitle {
+    font-size: 1rem;
+  }
+
+  /* --- Header e Navegação --- */
+  .navbar {
+    flex-wrap: wrap;
+    padding: 1rem 1.5rem;
+  }
+  
+  .mobileMenuButton {
+    display: block; /* Mostra o botão do menu */
+    font-size: 1.8rem;
+  }
+
+  .nav,
+  .authButtons {
+    display: none; /* Esconde os links e botões por padrão */
+    order: 3;
+    width: 100%;
+    margin-top: 1rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+    background: var(--surface-color);
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px var(--shadow-color);
+  }
+
+  .authButtons {
+    order: 4; /* Garante que os botões fiquem por último */
+    padding-bottom: 1rem;
+    border-top: none;
+    margin-top: 0;
+    box-shadow: none;
+  }
+  
+  /* Quando o menu está ativo (via JS), exibe os itens */
+  .nav.active, 
+  .authButtons.active {
+    display: flex;
+  }
+
+  /* --- Seção Hero --- */
+  .hero {
+    padding-top: 8rem;
+  }
+
+  .heroContent h1 {
+    font-size: 2.2rem;
+  }
+
+  .heroContent p {
+    font-size: 1.1rem;
+  }
+  
+  /* --- Grids de Conteúdo --- */
   .featuresGrid,
   .benefitsGrid,
   .steps,
@@ -663,17 +707,96 @@ body.darkMode .header {
     grid-template-columns: 1fr;
   }
   
+  .features,
+  .benefits,
+  .howItWorks,
+  .testimonials,
+  .faq {
+    padding: 4rem 1.5rem;
+  }
+  
   .benefitCard {
     text-align: center;
-    padding: 30px 20px;
   }
-  
-  .features h2 {
-    font-size: 28px;
-    margin-bottom: 40px;
+
+  .testimonialGrid {
+    grid-template-columns: 1fr;
   }
-  
+
+  /* --- CTA --- */
   .cta h2 {
-    font-size: 28px;
+    font-size: 2rem;
+  }
+  .cta p {
+    font-size: 1.1rem;
+  }
+  
+  /* --- Rodapé --- */
+  .footerContent {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    text-align: center;
+  }
+
+  .footerBrand {
+    align-items: center;
+  }
+
+  .footerLinks {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+/* Celulares Pequenos */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 1rem;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+  }
+
+  .hero {
+    padding: 7rem 1rem 3rem;
+  }
+  
+  .heroContent h1 {
+    font-size: 1.8rem;
+  }
+
+  .heroContent p {
+    font-size: 1rem;
+  }
+
+  .heroButtons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .dashboardPreview {
+    padding: 1.5rem;
+    min-width: 90vw;
+  }
+
+  .featureCard,
+  .benefitCard,
+  .step,
+  .testimonialCard {
+    padding: 1.5rem;
+  }
+
+  .faqQuestion {
+    font-size: 1.1rem;
+    padding: 1rem 1.2rem;
+  }
+
+  .faqAnswer {
+    font-size: 0.95rem;
+  }
+
+  .cta {
+    padding: 3rem 1rem;
   }
 }
