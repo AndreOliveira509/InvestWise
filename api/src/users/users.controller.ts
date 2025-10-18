@@ -15,6 +15,14 @@ export class UsersController {
     return user;
   }
 
+  @UseGuards(AuthGuard('jwt')) // Protege a rota, garantindo que o usuário esteja logado
+  @Get('financial-summary')
+  getFinancialSummary(@Req() req) {
+    // req.user.id virá do payload do token JWT após a validação
+    const userId = req.user.id;
+    return this.usersService.getFinancialSummary(userId);
+  }
+
   @UseGuards(AuthGuard('jwt'))
   @Patch('me')
   updateMe(@Req() req, @Body() updateUserDto: UpdateUserDto) {

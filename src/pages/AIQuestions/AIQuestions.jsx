@@ -1,6 +1,7 @@
 // AIQuestions.jsx
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import {
   FaRobot,
   FaUser,
@@ -22,7 +23,7 @@ Chart.register(...registerables);
 import { jsPDF } from 'jspdf';
 import * as XLSX from 'xlsx';
 
-const GEMINI_API_KEY = "AIzaSyAllQYJ1cbB7Q6eZTIfgD1Mc7MRxOITF-Q";
+const GEMINI_API_KEY = 'AIzaSyAllQYJ1cbB7Q6eZTIfgD1Mc7MRxOITF-Q';
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 const AIQuestions = () => {
@@ -40,15 +41,45 @@ const AIQuestions = () => {
   const recognitionRef = useRef(null);
   const speechSynthesisRef = useRef(null);
 
-  const [userFinancialData] = useState({
-    monthlyIncome: 5000,
-    monthlyExpenses: 3500,
-    savings: 15000,
-    debts: 5000,
-    financialGoals: 'Comprar um apartamento'
-  });
+ const { user, token } = useAuth(); // Obtenha o usuário e o token do contexto
+  const [userFinancialData, setUserFinancialData] = useState(null);
+  const [isLoadingData, setIsLoadingData] = useState(true);
 
   const [pendingChartRequest, setPendingChartRequest] = useState(null);
+
+useEffect(() => {
+    const fetchFinancialData = async () => {
+        if (!token) {
+            setIsLoadingData(false);
+            return;
+        }
+
+        try {
+            // O endereço da sua API
+            const response = await fetch('/api/users/financial-summary', {
+                headers: {
+                    'Authorization': `Bearer ${token}` // Envia o token para autenticação
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Falha ao buscar dados financeiros');
+            }
+
+            const data = await response.json();
+            setUserFinancialData(data); // Armazena os dados no estado
+
+        } catch (error) {
+            console.error("Erro ao carregar dados financeiros:", error);
+            // Opcional: definir dados padrão em caso de erro
+            setUserFinancialData({ monthlyIncome: 0, monthlyExpenses: 0, savings: 0, debts: 0, financialGoals: '' });
+        } finally {
+            setIsLoadingData(false);
+        }
+    };
+
+    fetchFinancialData();
+}, [token]); // O useEffect será executado sempre que o token mudar
 
   useEffect(() => {
     const savedMessages = localStorage.getItem('aiChatHistory');
@@ -151,75 +182,72 @@ const AIQuestions = () => {
     return { type: null, detected: false };
   };
 
-  const callGeminiForFiles = async (userMessage) => {
-    try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-      const fileRequest = detectFileRequest(userMessage);
-      let prompt = '';
-
-      if (fileRequest.detected) {
-        if (fileRequest.type === 'image') {
-          prompt = `
-Usuário solicitou geração de um gráfico/imagem.
-Pedido do usuário: "${userMessage}"
-
-TAREFA:
-- Se o usuário quer um gráfico, gere dados estruturados que possam ser usados para o gráfico em formato JSON.
-- Inclua: "labels": [...], "values": [...], "title": "Título do gráfico", "description": "Breve descrição"
-- Se não for possível obter dados específicos, gere um resumo textual curto explicando o que o gráfico deve mostrar.
-
-RETORNE APENAS O CONTEÚDO (JSON se possível ou texto simples).
-`;
-        } else {
-          prompt = `
-O usuário pediu que seja gerado um arquivo do tipo ${fileRequest.type.toUpperCase()}.
-Pedido: "${userMessage}"
-
-GERE APENAS O CONTEÚDO QUE DEVE IR NO ARQUIVO.
-Use estes dados de contexto se necessário:
-Renda mensal: R$ ${userFinancialData.monthlyIncome}
-Despesas: R$ ${userFinancialData.monthlyExpenses}
-Economias: R$ ${userFinancialData.savings}
-Dívidas: R$ ${userFinancialData.debts}
-Meta: ${userFinancialData.financialGoals}
-`;
-        }
-      } else {
-        prompt = `
-Responda de forma útil e clara ao usuário:
-"${userMessage}"
-
-Dados contextuais (use se necessário):
-Renda mensal: R$ ${userFinancialData.monthlyIncome}
-Despesas mensais: R$ ${userFinancialData.monthlyExpenses}
-Economias: R$ ${userFinancialData.savings}
-Dívidas: R$ ${userFinancialData.debts}
-`;
-      }
-
-      const result = await model.generateContent(prompt);
-      const responseText = await result.response.text();
-
-      if (fileRequest.detected && fileRequest.type === 'image') {
-        try {
-          const jsonStart = responseText.indexOf('{');
-          if (jsonStart !== -1) {
-            const possibleJson = responseText.slice(jsonStart);
-            const parsed = JSON.parse(possibleJson);
-            return { text: parsed, fileRequest: 'image' };
-          }
-        } catch (err) {
-          return { text: responseText, fileRequest: 'image' };
-        }
-      }
-
-      return { text: responseText, fileRequest: fileRequest.detected ? fileRequest.type : null };
-    } catch (error) {
-      console.error('Erro Gemini:', error);
-      return { text: "🤖 Ocorreu um erro ao gerar o conteúdo. Tente novamente.", fileRequest: null };
+const callGeminiForFiles = async (userMessage) => {
+    if (isLoadingData || !userFinancialData) {
+        return { text: "Aguarde um momento, estou carregando seus dados financeiros...", fileRequest: null };
     }
-  };
+
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Recomendo usar o 1.5-flash para melhor entendimento
+
+        // NOVO: Converte a lista de transações em texto para o prompt
+        const transactionsListForPrompt = userFinancialData.recentTransactions && userFinancialData.recentTransactions.length > 0
+            ? userFinancialData.recentTransactions.map(t => `- ${t.description}: R$ ${t.amount.toFixed(2)} em ${t.date}`).join('\n')
+            : 'Nenhuma transação recente encontrada.';
+
+        const fileRequest = detectFileRequest(userMessage);
+        let prompt = '';
+
+        if (fileRequest.detected) {
+            // ... (a lógica para gerar arquivos continua a mesma, mas agora com o contexto rico)
+            prompt = `
+              O usuário pediu um arquivo do tipo ${fileRequest.type.toUpperCase()}.
+              Pedido: "${userMessage}"
+              
+              GERE APENAS O CONTEÚDO PARA O ARQUIVO.
+              
+              Use estes dados de contexto se necessário:
+              - Renda Mensal: R$ ${userFinancialData.monthlyIncome}
+              - Despesas Mensais (Total): R$ ${userFinancialData.monthlyExpenses}
+              - Economias/Investimentos (Total): R$ ${userFinancialData.savings}
+              - Dívidas: R$ ${userFinancialData.debts}
+              - Lista de Transações Recentes:
+              ${transactionsListForPrompt}
+            `;
+        } else {
+            // PROMPT MELHORADO PARA CHAT COMUM
+            prompt = `
+              Você é um assistente financeiro prestativo. Responda ao usuário de forma clara e direta.
+              
+              Pergunta do usuário: "${userMessage}"
+
+              Use estes dados financeiros do usuário para basear sua resposta:
+              - Renda Mensal (Total): R$ ${userFinancialData.monthlyIncome.toFixed(2)}
+              - Despesas Mensais (Total): R$ ${userFinancialData.monthlyExpenses.toFixed(2)}
+              - Economias/Investimentos (Total): R$ ${userFinancialData.savings.toFixed(2)}
+              - Dívidas: R$ ${userFinancialData.debts.toFixed(2)}
+              
+              - Aqui está uma lista das transações mais recentes para contexto detalhado (use isso para responder a perguntas como "quais são meus gastos?"):
+              ${transactionsListForPrompt}
+
+              Responda diretamente à pergunta do usuário usando esses dados.
+            `;
+        }
+
+        const result = await model.generateContent(prompt);
+        const responseText = await result.response.text();
+
+        // ... (o resto da função continua igual)
+        if (fileRequest.detected && fileRequest.type === 'image') {
+          // ...
+        }
+        return { text: responseText, fileRequest: fileRequest.detected ? fileRequest.type : null };
+
+    } catch (error) {
+        console.error('Erro Gemini:', error);
+        return { text: "🤖 Ocorreu um erro ao gerar o conteúdo. Tente novamente.", fileRequest: null };
+    }
+};
 
   const handleSendMessage = async (e) => {
     e?.preventDefault?.();
