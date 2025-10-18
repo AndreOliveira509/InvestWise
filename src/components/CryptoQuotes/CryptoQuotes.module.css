@@ -1,0 +1,143 @@
+/* src/components/CryptoQuotes/CryptoQuotes.module.css */
+.cryptoHeader {
+  background-color: var(--background-secondary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-color);
+}
+
+.cryptoHeaderTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.cryptoTitle {
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cryptoTitleIcon {
+  margin-right: 0.75rem;
+  color: var(--primary-color);
+}
+
+.refreshBtn {
+  margin-left: 1rem;
+  background-color: var(--background-tertiary);
+  color: var(--text-secondary);
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+}
+
+.refreshBtn:hover {
+  background-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.refreshBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.toggleBtn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: transform 0.3s ease-in-out;
+}
+
+.toggleBtn.rotated {
+  transform: rotate(180deg);
+}
+
+.cryptoContent {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-in-out;
+}
+
+.cryptoContent.show {
+  max-height: 500px; /* Ajuste conforme necessário */
+}
+
+.cryptoGridHorizontal {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.cryptoItemHorizontal {
+  display: flex;
+  align-items: center;
+  background-color: var(--background-tertiary);
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+
+.cryptoIconHorizontal {
+  background-color: var(--primary-color-light);
+  color: var(--primary-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 1rem;
+}
+
+.cryptoInfoHorizontal {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cryptoNameHorizontal {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.cryptoPriceHorizontal {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.changeHorizontal {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.positive {
+  color: var(--success-color);
+}
+
+.negative {
+  color: var(--danger-color);
+}

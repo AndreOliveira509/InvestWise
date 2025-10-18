@@ -205,8 +205,7 @@ export default function Home() {
                 <span>Bem-vindo de volta, {user.name || 'Investidor'}!</span>
               </div>
               <h1 className={styles.heroTitle}>
-                Transforme sua 
-                <span className={styles.highlight}> Vida Financeira</span>
+                Transforme sua Vida Financeira
               </h1>
               <p className={styles.heroDescription}>
                 Controle total sobre seus gastos, investimentos e metas financeiras. 
