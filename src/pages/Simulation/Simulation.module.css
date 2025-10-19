@@ -749,7 +749,7 @@
   align-items: center;
   gap: 0.75rem;
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 .tip svg {
