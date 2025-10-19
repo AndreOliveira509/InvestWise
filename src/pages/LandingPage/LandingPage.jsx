@@ -153,7 +153,7 @@ const LandingPage = () => {
       <header className={styles.header}>
         <div className={styles.navbar}>
           <div className={styles.logo}>
-            <div className={styles.logoText}>InvestiWise</div>
+            <div className={styles.logoText}><h1>InvestiWise</h1></div>
           </div>
 
           <nav className={`${styles.nav} ${isMenuOpen ? styles.active : ''}`}>

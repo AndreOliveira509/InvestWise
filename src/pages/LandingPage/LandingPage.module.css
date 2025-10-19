@@ -1,11 +1,11 @@
 /* pages/LandingPage/LandingPage.module.css */
 
 /* =========================================================
-   Variáveis principais (usadas pelo JS via setProperty)
-   JS altera: --bg-primary, --bg-secondary, --bg-card,
-              --text-primary, --text-secondary,
-              --border-color, --shadow-color
-   ========================================================= */
+  Variáveis principais (usadas pelo JS via setProperty)
+  JS altera: --bg-primary, --bg-secondary, --bg-card,
+             --text-primary, --text-secondary,
+             --border-color, --shadow-color
+  ========================================================= */
 :root {
   /* valores padrão (modo claro) - idênticos ao que você já tinha */
   --bg-primary: #f4f6fa;       /* fundo geral */
@@ -17,7 +17,8 @@
   --shadow-color: rgba(0, 0, 0, 0.1);
 
   /* cores auxiliares originais que seu CSS já usava */
-
+  --primary-color: #007bff;
+  --secondary-color: #333;
   --secondary-background: #fff;
   --text-light: #ffffff;
 
@@ -60,6 +61,48 @@ body.darkMode {
   --shadow-light: 0 4px 10px var(--shadow-color);
   --shadow-medium: 0 8px 20px var(--shadow-color);
 }
+
+/* =========================================================
+   ================== ANIMAÇÕES ==================
+   ========================================================= */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes subtlePop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes backgroundShine {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* Classe utilitária para aplicar a animação */
+.animatedCard {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+
 h2{
   text-align: center;
 }
@@ -106,10 +149,9 @@ body.darkMode .header {
   margin: 0 auto;
 }
 
-.logoText {
+.logoText h1{
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--secondary-color);
 }
 
 .nav {
@@ -182,6 +224,7 @@ body.darkMode .header {
   line-height: 1.2;
   margin-bottom: 1.5rem;
   color: white;
+  animation: fadeInUp 0.8s ease-out;
 }
 
 .heroContent p {
@@ -189,12 +232,17 @@ body.darkMode .header {
   color: white;
   margin-bottom: 2rem;
   line-height: 1.6;
+  animation: fadeInUp 0.8s ease-out 0.2s;
+  animation-fill-mode: backwards;
 }
+
 
 .heroButtons {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
+  animation: fadeInUp 0.8s ease-out 0.4s;
+  animation-fill-mode: backwards;
 }
 
 .heroVisual {
@@ -211,6 +259,8 @@ body.darkMode .header {
   border: 1px solid var(--border-color);
   min-width: 300px;
   transition: background var(--transition-speed), border-color var(--transition-speed), box-shadow var(--transition-speed);
+  animation: fadeInUp 0.8s ease-out 0.6s;
+  animation-fill-mode: backwards;
 }
 
 .chartContainer {
@@ -253,7 +303,7 @@ body.darkMode .header {
 /* Features Section */
 .features {
   padding: 80px 0;
- --bg-secondary: #2d2d2d;
+  --bg-secondary: #2d2d2d;
 }
 
 .features h2 {
@@ -280,17 +330,23 @@ body.darkMode .header {
 }
 
 .featureCard {
-  background: var(--background-color);
+  background: var(--background-card);
   padding: 40px 30px;
   border-radius: 10px;
   text-align: center;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
 }
 
 .featureCard:hover {
   transform: translateY(-10px);
+  box-shadow: var(--shadow-medium);
 }
+.featureCard:nth-child(1) { animation-delay: 0.1s; }
+.featureCard:nth-child(2) { animation-delay: 0.2s; }
+.featureCard:nth-child(3) { animation-delay: 0.3s; }
 
 .featureIcon {
   display: inline-flex;
@@ -337,12 +393,17 @@ body.darkMode .header {
   text-align: left;
   border-top: 4px solid var(--primary-color);
   transition: all var(--transition-speed) ease;
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
 }
 
 .benefitCard:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-medium);
 }
+.benefitCard:nth-child(1) { animation-delay: 0.1s; }
+.benefitCard:nth-child(2) { animation-delay: 0.2s; }
+.benefitCard:nth-child(3) { animation-delay: 0.3s; }
 
 .benefitIcon {
   color: var(--primary-color);
@@ -377,13 +438,19 @@ body.darkMode .header {
 .step {
   text-align: center;
   position: relative;
---background-card: var(--bg-card);
+  --background-card: var(--bg-card);
   border-radius: 10px;
   padding: 2rem 1rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
   cursor: pointer;
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
 }
+.step:nth-child(1) { animation-delay: 0.1s; }
+.step:nth-child(2) { animation-delay: 0.2s; }
+.step:nth-child(3) { animation-delay: 0.3s; }
+
 
 .step:hover {
   box-shadow: 0 12px 25px rgba(0, 0, 0, 0.35);
@@ -434,11 +501,16 @@ body.darkMode .header {
 }
 
 .testimonialCard {
-  background: var(--surface-color);
+  background: var(--background-card);
   padding: 35px;
   border-radius: var(--border-radius);
   border-left: 5px solid var(--primary-color);
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
 }
+
+.testimonialCard:nth-child(1) { animation-delay: 0.1s; }
+.testimonialCard:nth-child(2) { animation-delay: 0.2s; }
 
 .testimonialContent p {
   font-size: 18px;
@@ -520,7 +592,25 @@ body.darkMode .header {
   color: white;
   text-align: center;
   padding: 80px 0;
+  position: relative;
+  overflow: hidden;
 }
+
+.cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+.cta:hover::before {
+  left: 100%;
+}
+
 
 .cta h2 {
   color: white;
@@ -538,6 +628,25 @@ body.darkMode .header {
   display: flex;
   justify-content: center;
 }
+/* Estilo para o botão no CTA */
+.ctaButton {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  padding: 15px 30px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 8px;
+  transition: transform 0.3s ease, background-color 0.3s;
+  background-size: 200% auto;
+  background-image: linear-gradient(to right, var(--primary-color) 0%, #0056b3 50%, var(--primary-color) 100%);
+}
+
+.ctaButton:hover {
+  background-position: right center; /* Muda a posição do gradiente */
+  animation: backgroundShine 1.5s linear infinite;
+}
+
 
 /* Footer */
 .footer {

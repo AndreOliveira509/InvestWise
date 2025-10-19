@@ -100,8 +100,40 @@
 .inputGroup input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
 }
+
+/* --- ESTADOS DE VALIDAÇÃO --- */
+.inputGroup.inputError input {
+  border-color: #e74c3c; /* Vermelho para erro */
+  background-color: rgba(231, 76, 60, 0.05);
+}
+
+.inputGroup.inputError input:focus {
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
+}
+
+.inputGroup.inputSuccess input {
+  border-color: #2ecc71; /* Verde para sucesso */
+  background-color: rgba(46, 204, 113, 0.05);
+}
+
+.inputGroup.inputSuccess input:focus {
+  box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.2);
+}
+
+.errorMessage {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 500;
+  animation: shake 0.5s ease;
+}
+/* --------------------------- */
+
 
 .passwordInput {
   position: relative;
@@ -229,6 +261,13 @@
 @keyframes slideInFromRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3); } 50% { opacity: 1; transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes shake {
+  10%, 90% { transform: translateX(-5px); }
+  20%, 80% { transform: translateX(5px); }
+  30%, 50%, 70% { transform: translateX(-3px); }
+  40%, 60% { transform: translateX(3px); }
+}
+
 
 /* ---------- RESPONSIVO ---------- */
 @media (max-width: 480px) {
