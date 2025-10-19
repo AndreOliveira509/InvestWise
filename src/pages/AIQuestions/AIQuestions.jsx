@@ -13,7 +13,11 @@ import {
   FaFilePdf,
   FaFileImage,
   FaFileWord,
-  FaFileAlt
+  FaFileAlt,
+  FaChartBar,
+  FaMoneyBillWave,
+  FaPiggyBank,
+  FaCreditCard
 } from "react-icons/fa";
 import styles from "./AIQuestions.module.css";
 import Header from '../../components/Header/Header';
@@ -182,9 +186,129 @@ useEffect(() => {
     return { type: null, detected: false };
   };
 
-const callGeminiForFiles = async (userMessage) => {
-    if (isLoadingData || !userFinancialData) {
-        return { text: "Aguarde um momento, estou carregando seus dados financeiros...", fileRequest: null };
+  const cleanMarkdown = (text) => {
+    if (typeof text !== 'string') return text;
+    
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove **bold**
+      .replace(/\*(.*?)\*/g, '$1')     // Remove *italic*
+      .replace(/_(.*?)_/g, '$1')       // Remove _italic_
+      .replace(/~~(.*?)~~/g, '$1')     // Remove ~~strikethrough~~
+      .replace(/`(.*?)`/g, '$1')       // Remove `code`
+      .replace(/```[\s\S]*?```/g, '')  // Remove code blocks
+      .replace(/#{1,6}\s?/g, '')       // Remove headers (# ## ###)
+      .replace(/\-\s/g, '• ')          // Replace - with •
+      .replace(/\*\s/g, '• ')          // Replace * with •
+      .replace(/\+\s/g, '• ')          // Replace + with •
+      .replace(/\n{3,}/g, '\n\n')      // Replace multiple newlines with double
+      .trim();
+  };
+
+  const cleanAllMarkdownFromResponse = (text) => {
+    if (typeof text !== 'string') return text;
+    
+    return text
+      // Remove markdown de formatação
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/\*(.*?)\*/g, '$1')
+      .replace(/_(.*?)_/g, '$1')
+      .replace(/~~(.*?)~~/g, '$1')
+      .replace(/`(.*?)`/g, '$1')
+      .replace(/```[\s\S]*?```/g, '')
+      // Remove headers
+      .replace(/#{1,6}\s?/g, '')
+      // Transforma listas com * - + em listas com •
+      .replace(/^[\*\-+]\s/gm, '• ')
+      // Remove markdown de links
+      .replace(/\[(.*?)\]\(.*?\)/g, '$1')
+      // Limpa espaços extras
+      .replace(/\n{3,}/g, '\n\n')
+      .replace(/^\s+|\s+$/gm, '')
+      .trim();
+  };
+
+  const callGeminiForFiles = async (userMessage) => {
+    try {
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+      const fileRequest = detectFileRequest(userMessage);
+      let prompt = '';
+
+      if (fileRequest.detected) {
+        if (fileRequest.type === 'image') {
+          prompt = `
+Solicitou geração de um gráfico/imagem.
+Pedido: "${userMessage}"
+
+TAREFA:
+- Se quer um gráfico, gere dados estruturados que possam ser usados para o gráfico em formato JSON.
+- Inclua: "labels": [...], "values": [...], "title": "Título do gráfico", "description": "Breve descrição"
+- Se não for possível obter dados específicos, gere um resumo textual curto explicando o que o gráfico deve mostrar.
+
+IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa.
+`;
+        } else {
+          prompt = `
+Foi pedido que seja gerado um arquivo do tipo ${fileRequest.type.toUpperCase()}.
+Pedido: "${userMessage}"
+
+GERE UM CONTEÚDO DETALHADO E BEM ESTRUTURADO PARA O ARQUIVO.
+NÃO USE MARKDOWN (* # -). Use formatação limpa e profissional.
+
+Use estes dados de contexto se necessário:
+Renda mensal: R$ ${userFinancialData.monthlyIncome}
+Despesas: R$ ${userFinancialData.monthlyExpenses}
+Economias: R$ ${userFinancialData.savings}
+Dívidas: R$ ${userFinancialData.debts}
+Meta: ${userFinancialData.financialGoals}
+
+Gere um conteúdo completo com:
+- Introdução
+- Análise detalhada
+- Recomendações
+- Próximos passos
+
+IMPORTANTE: NÃO USE MARKDOWN NA RESPOSTA.
+`;
+        }
+      } else {
+        prompt = `
+Responda de forma útil e clara:
+"${userMessage}"
+
+Dados contextuais (use se necessário):
+Renda mensal: R$ ${userFinancialData.monthlyIncome}
+Despesas mensais: R$ ${userFinancialData.monthlyExpenses}
+Economias: R$ ${userFinancialData.savings}
+Dívidas: R$ ${userFinancialData.debts}
+
+IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natural.
+`;
+      }
+
+      const result = await model.generateContent(prompt);
+      let responseText = await result.response.text();
+
+      // Limpa o markdown da resposta
+      responseText = cleanAllMarkdownFromResponse(responseText);
+
+      if (fileRequest.detected && fileRequest.type === 'image') {
+        try {
+          const jsonStart = responseText.indexOf('{');
+          if (jsonStart !== -1) {
+            const possibleJson = responseText.slice(jsonStart);
+            const parsed = JSON.parse(possibleJson);
+            return { text: parsed, fileRequest: 'image' };
+          }
+        } catch (err) {
+          return { text: responseText, fileRequest: 'image' };
+        }
+      }
+
+      return { text: responseText, fileRequest: fileRequest.detected ? fileRequest.type : null };
+    } catch (error) {
+      console.error('Erro Gemini:', error);
+      return { text: "Ocorreu um erro ao gerar o conteúdo. Tente novamente.", fileRequest: null };
     }
 
     try {
@@ -287,7 +411,7 @@ const callGeminiForFiles = async (userMessage) => {
         const blob = await createChartImage(chartTypeInput, dataObj, darkMode);
         const aiMessage = {
           id: Date.now() + 1,
-          text: `✅ Gráfico (${chartTypeInput}) gerado com sucesso!`,
+          text: `Gráfico (${chartTypeInput}) gerado com sucesso!`,
           sender: 'ai',
           timestamp: new Date(),
           fileData: {
@@ -304,7 +428,7 @@ const callGeminiForFiles = async (userMessage) => {
         console.error('Erro criando gráfico:', err);
         const aiMessage = {
           id: Date.now() + 2,
-          text: '❌ Falha ao gerar o gráfico. Tente outro tipo ou peça novamente.',
+          text: 'Falha ao gerar o gráfico. Tente outro tipo ou peça novamente.',
           sender: 'ai',
           timestamp: new Date()
         };
@@ -331,9 +455,12 @@ const callGeminiForFiles = async (userMessage) => {
     const response = await callGeminiForFiles(userMessage.text);
 
     if (response.fileRequest === 'image') {
-      const descText = (typeof response.text === 'string')
-        ? `Detectei que você quer uma imagem/gráfico. Descrição: ${response.text}`
-        : `Detectei que você quer uma imagem/gráfico. Dados prontos para gráfico recebidos.`;
+      let descText = '';
+      if (typeof response.text === 'string') {
+        descText = `Detectei que você quer uma imagem/gráfico. Descrição: ${cleanAllMarkdownFromResponse(response.text)}`;
+      } else {
+        descText = `Detectei que você quer uma imagem/gráfico. Dados prontos para gráfico recebidos.`;
+      }
 
       const aiMessage = {
         id: Date.now() + 1,
@@ -363,12 +490,13 @@ const callGeminiForFiles = async (userMessage) => {
     if (response.fileRequest) {
       aiMessage.fileData = {
         type: response.fileRequest,
-        content: response.text,
+        content: cleanMarkdown(response.text),
         userRequest: userMessage.text,
-        filename: `relatorio-${Date.now()}`
+        filename: `relatorio-financeiro-${Date.now()}`
       };
     } else {
-      aiMessage.text = response.text;
+      // Garante que o texto normal também seja limpo
+      aiMessage.text = cleanAllMarkdownFromResponse(response.text);
     }
 
     setMessages(prev => [...prev, aiMessage]);
@@ -520,102 +648,212 @@ const callGeminiForFiles = async (userMessage) => {
     }
   };
 
-  const generatePDF = (content, filename = 'relatorio', userRequest = '') => {
+  const generatePDF = (content, filename = 'relatorio-financeiro', userRequest = '') => {
     try {
-      const doc = new jsPDF({
-        unit: 'pt',
-        format: 'a4'
-      });
+      const doc = new jsPDF({ unit: 'pt', format: 'a4' });
 
-      doc.setFontSize(18);
-      doc.setTextColor(40, 40, 40);
-      doc.text('Relatório Gerado pela Assistente IA', 40, 60);
+      const pageWidth = doc.internal.pageSize.width;
+      const margin = 50;
+      const contentWidth = pageWidth - margin * 2;
 
+      // === Cabeçalho ===
+      doc.setFillColor(25, 25, 25);
+      doc.rect(0, 0, pageWidth, 80, 'F');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(20);
+      doc.setTextColor(255, 255, 255);
+      doc.text('RELATÓRIO FINANCEIRO', pageWidth / 2, 35, { align: 'center' });
+
+      doc.setFontSize(10);
+      doc.setTextColor(200, 200, 200);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Gerado pela InvestiWise', pageWidth / 2, 55, { align: 'center' });
+
+      // === Informações do relatório ===
+      let y = 120;
       doc.setFontSize(11);
-      doc.setTextColor(100);
-      doc.text(`Solicitação: ${userRequest}`, 40, 85);
-      doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 40, 100);
-
-      doc.setDrawColor(220);
-      doc.line(40, 110, 555, 110);
-
-      doc.setFontSize(12);
-      doc.setTextColor(20);
-      const lines = doc.splitTextToSize(typeof content === 'object' ? JSON.stringify(content, null, 2) : String(content), 515);
-      let y = 130;
-      lines.forEach(line => {
-        if (y > 750) {
-          doc.addPage();
-          y = 40;
-        }
-        doc.text(line, 40, y);
-        y += 14;
-      });
+      doc.setTextColor(60, 60, 60);
+      doc.setFont('helvetica', 'bold');
+      doc.text('INFORMAÇÕES DO RELATÓRIO', margin, y);
+      y += 15;
 
       doc.setFontSize(9);
-      doc.setTextColor(120);
-      doc.text('Gerado por Assistente IA - confidencial', 40, 780);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Solicitação: ${userRequest}`, margin, y);
+      y += 12;
+      doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, margin, y);
+      y += 25;
+
+      // === Resumo Financeiro ===
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(13);
+      doc.text('RESUMO FINANCEIRO', margin, y);
+      y += 18;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      const summary = [
+        `Renda Mensal: R$ ${userFinancialData.monthlyIncome}`,
+        `Despesas Mensais: R$ ${userFinancialData.monthlyExpenses}`,
+        `Economias: R$ ${userFinancialData.savings}`,
+        `Dívidas: R$ ${userFinancialData.debts}`,
+        `Meta Financeira: ${userFinancialData.financialGoals}`
+      ];
+      summary.forEach((line) => {
+        doc.text(line, margin, y);
+        y += 12;
+      });
+      y += 15;
+
+      // === Conteúdo principal (com formatação e espaçamento) ===
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(13);
+      doc.text('ANÁLISE E RECOMENDAÇÕES', margin, y);
+      y += 20;
+
+      const cleanText = String(content)
+        .replace(/\r\n/g, '\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .replace(/^\s+|\s+$/g, '');
+
+      const paragraphs = cleanText.split(/\n\s*\n/);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(40, 40, 40);
+
+      paragraphs.forEach((paragraph) => {
+        if (!paragraph.trim()) return;
+
+        // Detecta se é título
+        if (
+          paragraph.match(/^\s*[A-Z].*[:.!?]?$/) &&
+          paragraph.length < 80
+        ) {
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(11);
+        } else {
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(10);
+        }
+
+        const lines = doc.splitTextToSize(paragraph.trim(), contentWidth);
+        lines.forEach((line) => {
+          if (y > 750) {
+            doc.addPage();
+            y = 60;
+          }
+          doc.text(line, margin, y);
+          y += 14;
+        });
+
+        y += 8; // Espaço entre parágrafos
+      });
+
+      // === Rodapé ===
+      const footerY = 780;
+      doc.setDrawColor(220, 220, 220);
+      doc.line(margin, footerY, pageWidth - margin, footerY);
+      doc.setFontSize(8);
+      doc.setTextColor(130, 130, 130);
+      doc.text('Documento gerado automaticamente pela InvestiWise', pageWidth / 2, footerY + 15, { align: 'center' });
 
       doc.save(`${filename}.pdf`);
     } catch (err) {
-      console.error('Erro jsPDF:', err);
-      alert('Erro ao gerar PDF. Veja o console.');
+      console.error('Erro ao gerar PDF:', err);
+      alert('Erro ao gerar PDF. Verifique o console.');
     }
   };
 
-  const generateTXT = (content, filename = 'relatorio', userRequest = '') => {
+  const generateTXT = (content, filename = 'relatorio-financeiro', userRequest = '') => {
     try {
-      const header = `RELATÓRIO\nSolicitação: ${userRequest}\nGerado em: ${new Date().toLocaleString('pt-BR')}\n\n`;
+      const header = `RELATÓRIO FINANCEIRO\n${'='.repeat(50)}\n\n`;
+      const info = `Solicitação: ${userRequest}\nGerado em: ${new Date().toLocaleString('pt-BR')}\n\n`;
+      const financialSummary = `RESUMO FINANCEIRO:\n${'-'.repeat(30)}\n`;
+      const data = `• Renda Mensal: R$ ${userFinancialData.monthlyIncome}\n• Despesas Mensais: R$ ${userFinancialData.monthlyExpenses}\n• Economias: R$ ${userFinancialData.savings}\n• Dívidas: R$ ${userFinancialData.debts}\n• Meta: ${userFinancialData.financialGoals}\n\n`;
       const body = typeof content === 'object' ? JSON.stringify(content, null, 2) : String(content);
-      const blob = new Blob([header + body + '\n\nGerado por Assistente IA'], { type: 'text/plain;charset=utf-8' });
+      const footer = `\n\n${'='.repeat(50)}\nGerado pela InvestiWise - Confidencial`;
+      
+      const fullContent = header + info + financialSummary + data + body + footer;
+      const blob = new Blob([fullContent], { type: 'text/plain;charset=utf-8' });
       downloadBlob(blob, `${filename}.txt`, 'text/plain');
     } catch (err) {
-      console.error('Erro gerar TXT:', err);
-      alert('Erro ao gerar TXT.');
+      console.error('Erro ao gerar TXT:', err);
+      alert('Erro ao gerar arquivo de texto.');
     }
   };
 
-  const generateDOC = (content, filename = 'relatorio', userRequest = '') => {
+  const generateDOC = (content, filename = 'relatorio-financeiro', userRequest = '') => {
     try {
-      const header = `Relatório Gerado pela Assistente IA\n\nSolicitação: ${userRequest}\nGerado em: ${new Date().toLocaleString('pt-BR')}\n\n`;
+      const header = `RELATÓRIO FINANCEIRO\n\n`;
+      const info = `Solicitação: ${userRequest}\nGerado em: ${new Date().toLocaleString('pt-BR')}\n\n`;
+      const financialSummary = `RESUMO FINANCEIRO:\n`;
+      const data = `Renda Mensal: R$ ${userFinancialData.monthlyIncome}\nDespesas Mensais: R$ ${userFinancialData.monthlyExpenses}\nEconomias: R$ ${userFinancialData.savings}\nDívidas: R$ ${userFinancialData.debts}\nMeta: ${userFinancialData.financialGoals}\n\n`;
       const body = typeof content === 'object' ? JSON.stringify(content, null, 2) : String(content);
-      const fullContent = header + body + '\n\nGerado por Assistente IA';
+      const footer = `\n\nGerado pela InvestiWise - Confidencial`;
+      
+      const fullContent = header + info + financialSummary + data + body + footer;
       const blob = new Blob([fullContent], { type: 'application/msword' });
       downloadBlob(blob, `${filename}.doc`, 'application/msword');
     } catch (err) {
-      console.error('Erro DOC:', err);
-      alert('Erro ao gerar DOC.');
+      console.error('Erro ao gerar DOC:', err);
+      alert('Erro ao gerar documento Word.');
     }
   };
 
-  const generateXLSX = (content, filename = 'planilha', userRequest = '') => {
+  const generateXLSX = (content, filename = 'planilha-financeira', userRequest = '') => {
     try {
-      let wsData = [];
+      const wb = XLSX.utils.book_new();
       
-      if (typeof content === 'object' && content.labels && content.values) {
-        wsData.push(['Categoria', 'Valor']);
-        for (let i = 0; i < content.labels.length; i++) {
-          wsData.push([content.labels[i], content.values[i]]);
-        }
-      } else if (Array.isArray(content)) {
-        wsData = content;
-      } else {
-        wsData = [
-          ['Relatório Gerado pela Assistente IA'],
-          ['Solicitação:', userRequest],
-          ['Gerado em:', new Date().toLocaleString('pt-BR')],
-          [''],
-          ['Conteúdo:'],
-          [typeof content === 'object' ? JSON.stringify(content, null, 2) : String(content)]
-        ];
+      const summaryData = [
+        ['RELATÓRIO FINANCEIRO'],
+        ['Solicitação:', userRequest],
+        ['Gerado em:', new Date().toLocaleString('pt-BR')],
+        [''],
+        ['RESUMO FINANCEIRO'],
+        ['Categoria', 'Valor'],
+        ['Renda Mensal', `R$ ${userFinancialData.monthlyIncome}`],
+        ['Despesas Mensais', `R$ ${userFinancialData.monthlyExpenses}`],
+        ['Economias', `R$ ${userFinancialData.savings}`],
+        ['Dívidas', `R$ ${userFinancialData.debts}`],
+        ['Meta Financeira', userFinancialData.financialGoals],
+        [''],
+        ['Saldo Mensal', `R$ ${userFinancialData.monthlyIncome - userFinancialData.monthlyExpenses}`],
+        ['Patrimônio Líquido', `R$ ${userFinancialData.savings - userFinancialData.debts}`],
+        [''],
+        ['ANÁLISE E RECOMENDAÇÕES']
+      ];
+
+      if (typeof content === 'string') {
+        const lines = content.split('\n').filter(line => line.trim());
+        lines.forEach(line => {
+          summaryData.push([line]);
+        });
       }
 
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet(wsData);
-      XLSX.utils.book_append_sheet(wb, ws, 'Relatório');
+      const ws = XLSX.utils.aoa_to_sheet(summaryData);
+      
+      // Estilo da planilha
+      const range = XLSX.utils.decode_range(ws['!ref']);
+      for (let R = range.s.r; R <= range.e.r; R++) {
+        for (let C = range.s.c; C <= range.e.c; C++) {
+          const cell_address = { c: C, r: R };
+          const cell_ref = XLSX.utils.encode_cell(cell_address);
+          if (!ws[cell_ref]) continue;
+          
+          if (R === 0) {
+            ws[cell_ref].s = { font: { bold: true, sz: 14 } };
+          } else if (R >= 5 && R <= 10) {
+            ws[cell_ref].s = { font: { bold: R === 5 } };
+          }
+        }
+      }
+
+      XLSX.utils.book_append_sheet(wb, ws, 'Relatório Financeiro');
       XLSX.writeFile(wb, `${filename}.xlsx`);
     } catch (err) {
-      console.error('Erro XLSX:', err);
+      console.error('Erro ao gerar XLSX:', err);
       alert('Erro ao gerar planilha Excel.');
     }
   };
