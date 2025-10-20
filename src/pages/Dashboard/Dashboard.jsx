@@ -236,13 +236,10 @@ const handleAdd = async (e) => {
   return (
     <div className={styles.mainContent}>
       <main className={styles.main}>
+        <section className={styles.investmentsSection}>
         <div className={styles.pageHeader}>
           <h1>Dashboard Financeiro</h1>
-          <p>Sua visão geral de gastos e investimentos.</p>
         </div>
-        <hr />
-
-        <section className={styles.investmentsSection}>
           <div className={styles.sectionHeader}><h2 className={styles.sectionTitle}>Meus Investimentos</h2></div>
           <FormCard onSubmit={handleAddInvestment}>
             <input type="text" placeholder="Nome do Ativo" value={investmentForm.name} onChange={e => setInvestmentForm({ ...investmentForm, name: e.target.value })} required />

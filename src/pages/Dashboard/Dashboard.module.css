@@ -15,20 +15,13 @@
 }
 
 .pageHeader {
-  padding: 0.5rem 0;
   text-align: center;
 }
 
 .pageHeader h1 {
-  font-size: 2.25rem;
-  font-weight: 600;
+  font-size: 2rem;
+  font-weight: 700;
   color: var(--text-primary);
-}
-
-.pageHeader p {
-  font-size: 1rem;
-  color: var(--text-secondary);
-  margin-top: 0.25rem;
 }
 
 /* --- SEÇÕES PRINCIPAIS (INVESTIMENTOS E GASTOS) --- */
@@ -38,12 +31,11 @@
   gap: 1.5rem; /* Espaçamento interno da seção */
 }
 
-.sectionHeader {}
 
 .sectionTitle {
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--text-secondary);
 }
 
 /* --- CARDS DE MÉTRICAS --- */
