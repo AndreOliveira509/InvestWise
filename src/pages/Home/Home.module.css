@@ -59,7 +59,7 @@
   to { transform: rotate(360deg); }
 }
 
-/* CRYPTO SECTION - ATUALIZADO SEM BOTÃO */
+/* CRYPTO SECTION - COM IMAGENS */
 .cryptoSection {
   margin: 2rem 0;
 }
@@ -86,12 +86,6 @@
   font-size: 1.1rem;
 }
 
-/* REMOVIDAS AS REGRAS DO BOTÃO REFRESH */
-/* .refreshBtn { ... } */
-/* .refreshBtn:hover { ... } */
-/* .refreshBtn:disabled { ... } */
-/* .spinning { ... } */
-
 .cryptoGrid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -115,19 +109,41 @@
 
 .cryptoHeaderMini {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  align-items: center;
+  gap: 0.75rem;
   margin-bottom: 0.75rem;
+}
+
+.cryptoImageWrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.cryptoImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cryptoInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  text-align: left;
+  flex: 1;
 }
 
 .cryptoSymbol {
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--text-primary);
 }
 
 .cryptoName {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--text-secondary);
 }
 
@@ -139,7 +155,7 @@
 
 .price {
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--text-primary);
 }
 
@@ -148,7 +164,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
   padding: 0.3rem 0.6rem;
   border-radius: 20px;
@@ -391,7 +407,7 @@
   color: #10b981;
 }
 
-/* FEATURES */
+/* FEATURES - APENAS 2 CARDS */
 .features {
   margin: 4rem 0;
 }
@@ -424,6 +440,8 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .featureCard {
@@ -628,6 +646,7 @@
   
   .featuresGrid {
     grid-template-columns: 1fr;
+    max-width: 500px;
   }
   
   .ctaCard {
@@ -682,5 +701,9 @@
   
   .ctaCard {
     padding: 2rem 1.5rem;
+  }
+  
+  .featuresGrid {
+    grid-template-columns: 1fr;
   }
 }
