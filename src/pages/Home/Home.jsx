@@ -20,12 +20,33 @@ import {
   Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 
+// Configuração das criptomoedas com imagens
 const cryptocurrencies = [
-  { symbol: 'BTC', name: 'Bitcoin' },
-  { symbol: 'ETH', name: 'Ethereum' },
-  { symbol: 'BNB', name: 'Binance Coin' },
-  { symbol: 'SOL', name: 'Solana' },
-  { symbol: 'XRP', name: 'Ripple' }
+  { 
+    symbol: 'BTC', 
+    name: 'Bitcoin',
+    image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/bitcoin.png'
+  },
+  { 
+    symbol: 'ETH', 
+    name: 'Ethereum',
+    image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/ethereum.png'
+  },
+  { 
+    symbol: 'BNB', 
+    name: 'Binance Coin',
+    image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/binance-coin.png'
+  },
+  { 
+    symbol: 'SOL', 
+    name: 'Solana',
+    image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/solana.png'
+  },
+  { 
+    symbol: 'XRP', 
+    name: 'Ripple',
+    image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/ripple.png'
+  }
 ];
 
 export default function Home() {
@@ -101,26 +122,19 @@ export default function Home() {
     setChartData(data);
   };
 
+  // APENAS DASHBOARD E SIMULAÇÃO DE INVESTIMENTOS
   const features = [
     {
       icon: <FaChartLine />,
       title: "Dashboard Inteligente",
-      description: "Visualize toda sua situação financeira com gráficos interativos e métricas em tempo real"
-    },
-    {
-      icon: <FaPiggyBank />,
-      title: "Controle de Orçamento",
-      description: "Defina metas e receba alertas inteligentes sobre seus gastos e investimentos"
+      description: "Visualize toda sua situação financeira com gráficos interativos e métricas em tempo real",
+      action: () => navigate('/dashboard')
     },
     {
       icon: <FaMoneyBillWave />,
       title: "Simulação de Investimentos",
-      description: "Projete seu crescimento financeiro com diferentes cenários de investimento"
-    },
-    {
-      icon: <FaChartPie />,
-      title: "Análise Detalhada",
-      description: "Relatórios completos com insights sobre seus hábitos financeiros"
+      description: "Projete seu crescimento financeiro com diferentes cenários de investimento",
+      action: () => navigate('/simulation')
     }
   ];
 
@@ -160,7 +174,7 @@ export default function Home() {
   return (
     <div className={styles.home}>    
       <div className={styles.mainContent}>
-        {/* COTAÇÕES SEM BOTÃO ATUALIZAR */}
+        {/* COTAÇÕES COM IMAGENS */}
         <section className={styles.cryptoSection}>
           <div className={styles.cryptoHeader}>
             <div className={styles.cryptoTitle}>
@@ -173,8 +187,17 @@ export default function Home() {
                 return (
                   <div key={crypto.symbol} className={styles.cryptoCard}>
                     <div className={styles.cryptoHeaderMini}>
-                      <span className={styles.cryptoSymbol}>{crypto.symbol}</span>
-                      <span className={styles.cryptoName}>{crypto.name}</span>
+                      <div className={styles.cryptoImageWrapper}>
+                        <img 
+                          src={crypto.image} 
+                          alt={crypto.name}
+                          className={styles.cryptoImage}
+                        />
+                      </div>
+                      <div className={styles.cryptoInfo}>
+                        <span className={styles.cryptoSymbol}>{crypto.symbol}</span>
+                        <span className={styles.cryptoName}>{crypto.name}</span>
+                      </div>
                     </div>
                     <div className={styles.cryptoPrice}>
                       <span className={styles.price}>
@@ -319,7 +342,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FEATURES SECTION */}
+        {/* FEATURES SECTION - APENAS 2 CARDS */}
         <section className={styles.features}>
           <div className={styles.container}>
             <div className={styles.sectionHeader}>
@@ -341,7 +364,7 @@ export default function Home() {
                   <p className={styles.featureDescription}>{feature.description}</p>
                   <button 
                     className={styles.featureButton}
-                    onClick={index === 2 ? handleGoToSimulation : handleGoToDashboard}
+                    onClick={feature.action}
                   >
                     Explorar
                     <FaArrowRight />
