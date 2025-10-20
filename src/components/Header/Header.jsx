@@ -80,19 +80,6 @@ export default function Header() {
     }
   });
 
-  /* Menu items atualizado */
-  const menuItems = [
-    { path: "/home", icon: <FaHome />, label: "Home" },
-    { path: "/dashboard", icon: <FaChartPie />, label: "Dashboard" },
-    { path: "/simulation", icon: <IoAnalytics />, label: "Simulações" },
-    { path: "/aiquestions", icon: <RiRobot2Fill />, label: "IA Financeira" },
-  ];
-
-  const userMenuItems = [
-    { path: "/profile", icon: <FaUser />, label: "Meu Perfil" },
-    { path: "/settings", icon: <FaCog />, label: "Configurações" }
-  ];
-
   return (
     <>
       <header className={styles.header}>
@@ -105,20 +92,34 @@ export default function Header() {
             <span className={styles.logoText}>InvestiWise</span>
           </div>
 
-          {/* Menu de Navegação */}
           <nav className={styles.nav}>
-            {menuItems.map((item) => (
-              <button
-                key={item.path}
-                className={`${styles.navItem} ${
-                  location.pathname === item.path ? styles.active : ''
-                }`}
-                onClick={() => handleNavigation(item.path)}
-              >
-                <span className={styles.navIcon}>{item.icon}</span>
-                <span className={styles.navLabel}>{item.label}</span>
-              </button>
-            ))}
+            <button
+              className={`${styles.navItem} ${location.pathname === '/home' ? styles.active : ''}`}
+              onClick={() => navigate('/home')}
+            >
+              <FaHome /> Home
+            </button>
+
+            <button
+              className={`${styles.navItem} ${location.pathname === '/dashboard' ? styles.active : ''}`}
+              onClick={() => navigate('/dashboard')}
+            >
+              <FaChartPie /> Dashboard
+            </button>
+
+            <button
+              className={`${styles.navItem} ${location.pathname === '/simulation' ? styles.active : ''}`}
+              onClick={() => navigate('/simulation')}
+            >
+              <IoAnalytics /> Simulações
+            </button>
+
+            <button
+              className={`${styles.navItem} ${location.pathname === '/aiquestions' ? styles.active : ''}`}
+              onClick={() => navigate('/aiquestions')}
+            >
+              <RiRobot2Fill /> IA Financeira
+            </button>
           </nav>
 
           {/* User Actions */}

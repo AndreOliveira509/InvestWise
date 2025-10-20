@@ -16,10 +16,7 @@ import {
   FaChartBar,
   FaMoneyBillWave,
   FaPiggyBank,
-  FaCreditCard,
-  FaBars,
-  FaPlus,
-  FaTrash
+  FaCreditCard
 } from "react-icons/fa";
 import styles from "./AIQuestions.module.css";
 import Header from '../../components/Header/Header';
@@ -37,17 +34,13 @@ const AIQuestions = () => {
   const messagesEndRef = useRef(null);
   const hiddenCanvasRef = useRef(null);
 
-  // Estados para a sidebar
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [chatHistory, setChatHistory] = useState([]);
-  const [currentChatId, setCurrentChatId] = useState(null);
-
-  // Inicializa mensagens a partir do localStorage
+  // Inicializa mensagens a partir do localStorage (preserva histórico ao trocar de rota)
   const [messages, setMessages] = useState(() => {
     try {
       const savedMessages = localStorage.getItem('aiChatHistory');
       if (savedMessages) {
         const parsed = JSON.parse(savedMessages);
+        // Reconstrói timestamps como Date
         return parsed.map(msg => ({ ...msg, timestamp: new Date(msg.timestamp) }));
       }
     } catch (err) {
@@ -76,122 +69,8 @@ const AIQuestions = () => {
 
   const [pendingChartRequest, setPendingChartRequest] = useState(null);
 
-  // Carrega o histórico de conversas
   useEffect(() => {
-    loadChatHistory();
-  }, []);
-
-  const loadChatHistory = () => {
-    try {
-      const savedHistory = localStorage.getItem('aiChatHistoryList');
-      if (savedHistory) {
-        const history = JSON.parse(savedHistory);
-        setChatHistory(history);
-        
-        // Se não há chat atual, usa o mais recente ou cria um novo
-        if (!currentChatId && history.length > 0) {
-          setCurrentChatId(history[0].id);
-        }
-      }
-    } catch (err) {
-      console.error('Erro ao carregar histórico:', err);
-    }
-  };
-
-  const saveChatToHistory = (messages, title = 'Nova Conversa') => {
-    if (messages.length === 0) return;
-
-    const chatId = currentChatId || Date.now().toString();
-    const firstUserMessage = messages.find(msg => msg.sender === 'user');
-    const chatTitle = firstUserMessage ? firstUserMessage.text.slice(0, 30) + (firstUserMessage.text.length > 30 ? '...' : '') : title;
-    
-    const chatData = {
-      id: chatId,
-      title: chatTitle,
-      messages: messages,
-      lastUpdated: new Date().toISOString(),
-      createdAt: new Date().toISOString()
-    };
-
-    setChatHistory(prev => {
-      const filtered = prev.filter(chat => chat.id !== chatId);
-      const updated = [chatData, ...filtered].slice(0, 20); // Mantém apenas os 20 mais recentes
-      
-      localStorage.setItem('aiChatHistoryList', JSON.stringify(updated));
-      return updated;
-    });
-
-    setCurrentChatId(chatId);
-  };
-
-  const startNewChat = () => {
-    // Salva a conversa atual antes de iniciar nova
-    if (messages.length > 0) {
-      saveChatToHistory(messages);
-    }
-    
-    setMessages([]);
-    setCurrentChatId(null);
-    localStorage.removeItem('aiChatHistory');
-    setSidebarOpen(false);
-  };
-
-  const loadChat = (chatId) => {
-    const chat = chatHistory.find(c => c.id === chatId);
-    if (chat) {
-      setMessages(chat.messages.map(msg => ({
-        ...msg,
-        timestamp: new Date(msg.timestamp)
-      })));
-      setCurrentChatId(chatId);
-      localStorage.setItem('aiChatHistory', JSON.stringify(chat.messages));
-      setSidebarOpen(false);
-    }
-  };
-
-  const deleteChat = (chatId, e) => {
-    e.stopPropagation();
-    const updatedHistory = chatHistory.filter(chat => chat.id !== chatId);
-    setChatHistory(updatedHistory);
-    localStorage.setItem('aiChatHistoryList', JSON.stringify(updatedHistory));
-    
-    if (currentChatId === chatId) {
-      startNewChat();
-    }
-  };
-
-  // Agrupa conversas por data
-  const groupChatsByDate = () => {
-    const groups = {};
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    chatHistory.forEach(chat => {
-      const chatDate = new Date(chat.lastUpdated);
-      let groupName;
-
-      if (chatDate.toDateString() === today.toDateString()) {
-        groupName = 'Hoje';
-      } else if (chatDate.toDateString() === yesterday.toDateString()) {
-        groupName = 'Ontem';
-      } else if (chatDate.getFullYear() === today.getFullYear()) {
-        groupName = chatDate.toLocaleDateString('pt-BR', { month: 'long', day: 'numeric' });
-        groupName = groupName.charAt(0).toUpperCase() + groupName.slice(1);
-      } else {
-        groupName = chatDate.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
-      }
-
-      if (!groups[groupName]) {
-        groups[groupName] = [];
-      }
-      groups[groupName].push(chat);
-    });
-
-    return groups;
-  };
-
-  useEffect(() => {
+    // Se não houver histórico carregado via useState, cria mensagens iniciais
     if (!messages || messages.length === 0) {
       const savedMessages = localStorage.getItem('aiChatHistory');
       if (savedMessages) {
@@ -237,19 +116,14 @@ const AIQuestions = () => {
       if (speechSynthesisRef.current) speechSynthesisRef.current.cancel();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, []); // mantém same as original: roda apenas uma vez na montagem
 
   useEffect(() => {
-    // Salva mensagens no localStorage e no histórico
+    // Mantém o histórico salvo sempre que mensagens mudarem
     try {
       localStorage.setItem('aiChatHistory', JSON.stringify(messages));
-      
-      // Salva no histórico se há mensagens significativas
-      if (messages.length > 2) { // Mais que as mensagens iniciais
-        saveChatToHistory(messages);
-      }
     } catch (err) {
-      console.error('Erro ao salvar histórico:', err);
+      console.error('Erro ao salvar aiChatHistory:', err);
     }
   }, [messages]);
 
@@ -1010,73 +884,10 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
   return (
     <div className={styles.aiQuestions}>
       <Header />
-      
-      {/* Sidebar de Histórico */}
-      <div className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
-        <div className={styles.sidebarHeader}>
-          <button className={styles.newChatButton} onClick={startNewChat}>
-            <FaPlus /> Novo chat
-          </button>
-          <button 
-            className={styles.closeSidebarButton}
-            onClick={() => setSidebarOpen(false)}
-          >
-            ×
-          </button>
-        </div>
-        
-        <div className={styles.chatHistory}>
-          {Object.entries(groupChatsByDate()).map(([date, chats]) => (
-            <div key={date} className={styles.dateGroup}>
-              <div className={styles.dateLabel}>{date}</div>
-              {chats.map(chat => (
-                <div
-                  key={chat.id}
-                  className={`${styles.chatItem} ${currentChatId === chat.id ? styles.activeChat : ''}`}
-                  onClick={() => loadChat(chat.id)}
-                >
-                  <span className={styles.chatIcon}></span>
-                  <span className={styles.chatTitle}>{chat.title}</span>
-                  <button
-                    className={styles.deleteChatButton}
-                    onClick={(e) => deleteChat(chat.id, e)}
-                    title="Excluir conversa"
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-              ))}
-            </div>
-          ))}
-          
-          {chatHistory.length === 0 && (
-            <div className={styles.emptyHistory}>
-              <p>Nenhuma conversa anterior</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Overlay para fechar sidebar em mobile */}
-      {sidebarOpen && (
-        <div 
-          className={styles.sidebarOverlay}
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
       <main className={styles.main}>
         <div className={styles.container}>
           <section className={styles.aiHeader}>
             <div className={styles.headerContent}>
-              <div className={styles.headerLeft}>
-                <button 
-                  className={styles.menuButton}
-                  onClick={() => setSidebarOpen(!sidebarOpen)}
-                >
-                  <FaBars />
-                </button>
-              </div>
               <div className={styles.titleSection}>
                 <h1 className={styles.title}>
                   <FaRobot className={styles.titleIcon} />
@@ -1084,7 +895,6 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
                 </h1>
                 <p className={styles.subtitle}>Consultoria inteligente com Gemini 2.5</p>
               </div>
-              <div className={styles.headerRight}></div>
             </div>
           </section>
 
