@@ -59,12 +59,33 @@ const investmentTypes = [
   }
 ];
 
+// Configuração das criptomoedas com imagens
 const cryptocurrencies = [
-  { symbol: 'BTC', name: 'Bitcoin' },
-  { symbol: 'ETH', name: 'Ethereum' },
-  { symbol: 'BNB', name: 'Binance Coin' },
-  { symbol: 'SOL', name: 'Solana' },
-  { symbol: 'XRP', name: 'Ripple' }
+  { 
+    symbol: 'BTC', 
+    name: 'Bitcoin',
+    image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/bitcoin.png'
+  },
+  { 
+    symbol: 'ETH', 
+    name: 'Ethereum',
+    image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/ethereum.png'
+  },
+  { 
+    symbol: 'BNB', 
+    name: 'Binance Coin',
+    image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/binance-coin.png'
+  },
+  { 
+    symbol: 'SOL', 
+    name: 'Solana',
+    image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/solana.png'
+  },
+  { 
+    symbol: 'XRP', 
+    name: 'Ripple',
+    image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/ripple.png'
+  }
 ];
 
 export default function Simulation() {
@@ -159,21 +180,21 @@ export default function Simulation() {
       simulationData.push({
         name: i === 0 ? 'Início' : `M${i}`,
         mes: i,
-        acumulado: total,
-        investido: initial + (monthly * i),
-        ganhos: total - (initial + (monthly * i))
+        acumulado: parseFloat(total.toFixed(2)),
+        investido: parseFloat((initial + (monthly * i)).toFixed(2)),
+        ganhos: parseFloat((total - (initial + (monthly * i))).toFixed(2))
       });
     }
 
-    const totalContributions = initial + (monthly * months);
-    const totalEarnings = total - totalContributions;
+    const totalContributions = parseFloat((initial + (monthly * months)).toFixed(2));
+    const totalEarnings = parseFloat((total - totalContributions).toFixed(2));
 
     return {
-      finalAmount: total,
+      finalAmount: parseFloat(total.toFixed(2)),
       totalContributions,
       totalEarnings,
       simulationData,
-      roi: totalContributions > 0 ? (totalEarnings / totalContributions) * 100 : 0
+      roi: totalContributions > 0 ? parseFloat(((totalEarnings / totalContributions) * 100).toFixed(1)) : 0
     };
   }, [simulationForm, showResults, cryptoPrices]);
 
@@ -211,7 +232,10 @@ export default function Simulation() {
           <p className={styles.tooltipLabel}>{label}</p>
           {payload.map((entry, index) => (
             <p key={index} className={styles.tooltipValue} style={{ color: entry.color }}>
-              {entry.name}: R$ {entry.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              {entry.name}: R$ {entry.value.toLocaleString('pt-BR', { 
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: 2 
+              })}
             </p>
           ))}
         </div>
@@ -252,7 +276,11 @@ export default function Simulation() {
                 return (
                   <div key={crypto.symbol} className={styles.cryptoItemHorizontal}>
                     <div className={styles.cryptoIconHorizontal}>
-                      <span>{crypto.symbol}</span>
+                      <img 
+                        src={crypto.image} 
+                        alt={crypto.name}
+                        className={styles.cryptoImage}
+                      />
                     </div>
                     <div className={styles.cryptoInfoHorizontal}>
                       <span className={styles.cryptoNameHorizontal}>{crypto.name}</span>
@@ -278,7 +306,6 @@ export default function Simulation() {
           </div>
         </div>
 
-        {/* RESTANTE DO CÓDIGO PERMANECE IGUAL... */}
         <div className={styles.grid}>
           {/* SIDEBAR */}
           <div className={styles.sidebar}>
@@ -450,7 +477,10 @@ export default function Simulation() {
                     <div className={styles.metricContent}>
                       <span className={styles.metricLabel}>Valor Final</span>
                       <span className={styles.metricValue}>
-                        R$ {simulationResults.finalAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        R$ {simulationResults.finalAmount.toLocaleString('pt-BR', { 
+                          minimumFractionDigits: 2, 
+                          maximumFractionDigits: 2 
+                        })}
                       </span>
                       <div className={`${styles.metricChange} ${simulationResults.roi >= 0 ? styles.positive : styles.negative}`}>
                         <FaArrowUp />
@@ -466,7 +496,10 @@ export default function Simulation() {
                     <div className={styles.metricContent}>
                       <span className={styles.metricLabel}>Total Investido</span>
                       <span className={styles.metricValue}>
-                        R$ {simulationResults.totalContributions.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        R$ {simulationResults.totalContributions.toLocaleString('pt-BR', { 
+                          minimumFractionDigits: 2, 
+                          maximumFractionDigits: 2 
+                        })}
                       </span>
                     </div>
                   </div>
@@ -478,7 +511,10 @@ export default function Simulation() {
                     <div className={styles.metricContent}>
                       <span className={styles.metricLabel}>Ganhos Líquidos</span>
                       <span className={styles.metricValue}>
-                        R$ {simulationResults.totalEarnings.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        R$ {simulationResults.totalEarnings.toLocaleString('pt-BR', { 
+                          minimumFractionDigits: 2, 
+                          maximumFractionDigits: 2 
+                        })}
                       </span>
                       <div className={`${styles.metricChange} ${simulationResults.totalEarnings >= 0 ? styles.positive : styles.negative}`}>
                         <FaArrowUp />
