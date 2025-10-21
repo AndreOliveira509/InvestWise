@@ -3,7 +3,7 @@
 
 :root {
   /* Paleta de Cores */
-  --primary-color: #FFC107; /* Amarelo um pouco mais vibrante */
+  --primary-color: #00B894; /* <<< COR ALTERADA DE AMARELO PARA VERDE */
   --secondary-color: #090909; /* Preto suave */
   --background-color: #FFFFFF;
   --surface-color: #f8f9fa; /* Cor para seções com fundo diferente */
