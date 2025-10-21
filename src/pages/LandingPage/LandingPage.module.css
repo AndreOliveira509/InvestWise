@@ -17,7 +17,7 @@
   --shadow-color: rgba(0, 0, 0, 0.1);
 
   /* cores auxiliares originais que seu CSS já usava */
-  --primary-color: #00B894; /* <<< COR ALTERADA DE AZUL PARA VERDE */
+  --primary-color: #007bff;
   --secondary-color: #333;
   --secondary-background: #fff;
   --text-light: #ffffff;
@@ -273,8 +273,7 @@ body.darkMode .header {
 
 .chartBar {
   flex: 1;
-  /* <<< GRADIENTE ALTERADO PARA REMOVER O AMARELO */
-  background: linear-gradient(135deg, var(--primary-color), #00DBC2);
+  background: linear-gradient(135deg, var(--primary-color), #ffed4e);
   border-radius: 4px 4px 0 0;
   min-height: 20px;
 }
@@ -357,7 +356,7 @@ body.darkMode .header {
   height: 70px;
   border-radius: 50%;
   background: var(--primary-color);
-  color: white; /* <<< Alterado para branco para melhor contraste com o novo verde */
+  color: var(--secondary-color);
   margin-bottom: 20px;
   font-size: 1.5rem;
 }
@@ -462,7 +461,7 @@ body.darkMode .header {
   width: 40px;
   height: 40px;
   background: var(--primary-color);
-  color: white; /* <<< Alterado para branco */
+  color: var(--secondary-color);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -640,7 +639,7 @@ body.darkMode .header {
   border-radius: 8px;
   transition: transform 0.3s ease, background-color 0.3s;
   background-size: 200% auto;
-  background-image: linear-gradient(to right, var(--primary-color) 0%, #008f7a 50%, var(--primary-color) 100%); /* <<< Gradiente do botão ajustado */
+  background-image: linear-gradient(to right, var(--primary-color) 0%, #0056b3 50%, var(--primary-color) 100%);
 }
 
 .ctaButton:hover {
