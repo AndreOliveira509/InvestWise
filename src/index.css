@@ -1,24 +1,42 @@
 /* src/index.css */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Paleta de Cores */
-  --primary-color: #FFC107; /* Amarelo um pouco mais vibrante */
+  /* Paleta de Cores - Verde */
+  --primary-color: #14e3a8; /* Verde principal */
+  --primary-hover: #10c993; /* Verde mais escuro para hover */
   --secondary-color: #090909; /* Preto suave */
   --background-color: #FFFFFF;
   --surface-color: #f8f9fa; /* Cor para seções com fundo diferente */
 
+  /* Cores para modo escuro */
+  --bg-primary: #f8fafc;
+  --bg-card: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border-color: #e2e8f0;
+  --shadow-color: rgba(0, 0, 0, 0.06);
+
   /* Tipografia */
-  --text-primary: #212529;
-  --text-secondary: #5a5a5a;
   --font-main: 'Poppins', sans-serif;
 
   /* Outros */
   --container-width: 1140px;
   --border-radius: 12px;
-  --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.06);
-  --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.1);
+  --shadow-light: 0 4px 15px rgba(20, 227, 168, 0.1);
+  --shadow-medium: 0 8px 30px rgba(20, 227, 168, 0.15);
   --transition-speed: 0.3s;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0f172a;
+  --bg-card: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --border-color: #334155;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --background-color: #0f172a;
+  --surface-color: #1e293b;
 }
 
 * {
@@ -36,6 +54,7 @@ body {
   background-color: var(--background-color);
   color: var(--text-primary);
   line-height: 1.7;
+  transition: all 0.3s ease;
 }
 
 .container {
@@ -44,13 +63,15 @@ body {
   padding: 0 20px;
 }
 
-
 .section-title {
   font-size: 42px;
   font-weight: 700;
   text-align: center;
   margin-bottom: 20px;
-  color: var(--secondary-color);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .section-subtitle {
@@ -62,7 +83,10 @@ body {
 }
 
 .btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   background: var(--primary-color);
   color: var(--secondary-color);
   padding: 14px 35px;
@@ -73,11 +97,42 @@ body {
   border: 2px solid transparent;
   cursor: pointer;
   transition: all var(--transition-speed) ease;
+  font-family: var(--font-main);
+  box-shadow: var(--shadow-light);
 }
 
 .btn:hover {
+  background: var(--primary-hover);
   transform: translateY(-4px);
   box-shadow: var(--shadow-medium);
+}
+
+.btn:active {
+  transform: translateY(-2px);
+}
+
+/* Variantes do botão */
+.btn-secondary {
+  background: transparent;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+}
+
+.btn-secondary:hover {
+  background: rgba(20, 227, 168, 0.1);
+  color: var(--primary-color);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+}
+
+.btn-outline:hover {
+  background: var(--primary-color);
+  color: var(--secondary-color);
+  border-color: var(--primary-color);
 }
 
 /* Classe para animação de fade-in */
@@ -90,4 +145,35 @@ body {
 .fade-in-section.is-visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Utilitários com cores verdes */
+.text-accent {
+  color: var(--primary-color);
+}
+
+.bg-accent {
+  background: var(--primary-color);
+}
+
+.border-accent {
+  border-color: var(--primary-color);
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
 }

@@ -43,13 +43,15 @@ const PositiveAndNegativeBarChart = ({ data }) => {
           barGap={8}
         >
           <defs>
-            <linearGradient id="colorGastosBar" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#FFC107" stopOpacity={0.9}/>
-              <stop offset="100%" stopColor="#FFA000" stopOpacity={0.8}/>
-            </linearGradient>
+            {/* Gradiente verde para Saldo Positivo */}
             <linearGradient id="colorSaldoBar" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#45B7D1" stopOpacity={0.8}/>
-              <stop offset="100%" stopColor="#4ECDC4" stopOpacity={0.7}/>
+              <stop offset="0%" stopColor="#14e3a8" stopOpacity={0.9}/>
+              <stop offset="100%" stopColor="#10c993" stopOpacity={0.8}/>
+            </linearGradient>
+            {/* Gradiente cinza/vermelho para Gastos */}
+            <linearGradient id="colorGastosBar" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#ef4444" stopOpacity={0.8}/>
+              <stop offset="100%" stopColor="#dc2626" stopOpacity={0.7}/>
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.08)" />
@@ -67,7 +69,7 @@ const PositiveAndNegativeBarChart = ({ data }) => {
             axisLine={false}
             tickFormatter={(value) => `R$${value.toLocaleString('pt-BR')}`}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255, 193, 7, 0.05)' }} />
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(20, 227, 168, 0.05)' }} />
           <Legend wrapperStyle={{fontSize: "14px", paddingTop: '10px'}}/>
           <Bar
             dataKey="lucro"
