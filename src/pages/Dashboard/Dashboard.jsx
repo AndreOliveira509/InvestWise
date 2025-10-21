@@ -116,7 +116,7 @@ export default function Dashboard() {
   }, [user]);
 
   // --- Métricas Financeiras (Gastos) ---
-  const monthlyBudget = useMemo(() => (user ? parseFloat(user.patrimonio) : 0), [user]);
+  const monthlyBudget = useMemo(() => (user ? parseFloat(user.renda_mensal) : 0), [user]);
   const totalExpenses = useMemo(() => expenses.reduce((s, e) => s + parseFloat(e.amount || 0), 0), [expenses]);
   const remaining = useMemo(() => monthlyBudget - totalExpenses, [monthlyBudget, totalExpenses]);
   const usedPercent = useMemo(() => (monthlyBudget > 0 ? (totalExpenses / monthlyBudget) * 100 : 0), [monthlyBudget, totalExpenses]);
@@ -202,11 +202,11 @@ export default function Dashboard() {
       date.setDate(date.getDate() - i);
       
       // Projeção linear simples baseada no ganho/perda total atual
-      const simulatedPatrimonio = totalInvested + (totalChange / (days - 1)) * (days - 1 - i);
+      const simulatedrenda_mensal = totalInvested + (totalChange / (days - 1)) * (days - 1 - i);
       
       history.push({
         date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-        patrimonio: parseFloat(simulatedPatrimonio.toFixed(2)),
+        renda_mensal: parseFloat(simulatedrenda_mensal.toFixed(2)),
       });
     }
     return history;
@@ -423,7 +423,7 @@ export default function Dashboard() {
             {/* Cards de Métricas de Gastos (Dinâmicos) */}
             <section className={styles.metricsGrid}>
               <div className={styles.metricCard}>
-                <h3 className={styles.metricTitle}>Orçamento Mensal</h3>
+                <h3 className={styles.metricTitle}>Renda Mensal</h3>
                 <div className={styles.metricValueWrapper}>
                   <span className={styles.metricValue}>R$ {monthlyBudget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                 </div>

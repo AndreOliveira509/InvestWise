@@ -12,7 +12,7 @@ const ProfileModal = ({ onClose }) => {
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
-    patrimonio: user ? parseFloat(user.patrimonio) : 0,
+    renda_mensal: user ? parseFloat(user.renda_mensal) : 0,
     // Adicione outros campos se eles existirem no seu modelo de usuário
   });
 
@@ -23,7 +23,7 @@ const ProfileModal = ({ onClose }) => {
       setFormData({
         name: user.name,
         email: user.email,
-        patrimonio: parseFloat(user.patrimonio),
+        renda_mensal: parseFloat(user.renda_mensal),
       });
     }
 
@@ -74,7 +74,7 @@ const handleSaveChanges = async () => {
     const dataToUpdate = {
       name: formData.name,
       email: formData.email, // Se você permitir a edição do e-mail
-      patrimonio: parseFloat(formData.patrimonio),
+      renda_mensal: parseFloat(formData.renda_mensal),
     };
 
     const response = await axios.patch(
@@ -105,7 +105,7 @@ const handleSaveChanges = async () => {
     setFormData({ // Reseta para os dados originais do usuário
         name: user.name,
         email: user.email,
-        patrimonio: parseFloat(user.patrimonio),
+        renda_mensal: parseFloat(user.renda_mensal),
     });
     setIsEditing(false);
   };
@@ -171,7 +171,7 @@ const handleSaveChanges = async () => {
                     <span className={styles.statLabel}>Meses</span>
                   </div>
                   <div className={styles.stat}>
-                    <span className={styles.statNumber}>R$ {user?.patrimonio}</span>
+                    <span className={styles.statNumber}>R$ {user?.renda_mensal}</span>
                     <span className={styles.statLabel}>Orçamento</span>
                   </div>
                   <div className={styles.stat}>
@@ -253,16 +253,16 @@ const handleSaveChanges = async () => {
                   </div>
 
                   <div className={styles.infoGroup}>
-                    <label>Orçamento</label>
+                    <label>Renda Mensal</label>
                     {isEditing ? (
                       <input
                         type="number"
-                        value={formData.patrimonio}
-                        onChange={(e) => handleInputChange('patrimonio', e.target.value)}
+                        value={formData.renda_mensal}
+                        onChange={(e) => handleInputChange('renda_mensal', e.target.value)}
                         className={styles.input}
                       />
                     ) : (
-                      <div className={styles.infoValue}>{user?.patrimonio}</div>
+                      <div className={styles.infoValue}>{user?.renda_mensal}</div>
                     )}
                   </div>
                 </div>

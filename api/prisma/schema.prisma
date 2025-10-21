@@ -21,7 +21,7 @@ model User {
   email     String   @unique
   name      String
   password  String
-  patrimonio Decimal @default(0)
+  renda_mensal Decimal @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
