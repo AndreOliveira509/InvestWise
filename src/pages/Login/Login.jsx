@@ -1,6 +1,7 @@
 // src/pages/Login/Login.jsx
 import { useState } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { FaEye, FaEyeSlash, FaUser, FaLock } from 'react-icons/fa';
 import styles from './Login.module.css';
 import Button from '../../components/Button/Button';
@@ -8,6 +9,7 @@ import axios from 'axios';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { setToken, setUser } = useAuth();
   const [searchParams] = useSearchParams();
   const successMessage = searchParams.get('success');
 
@@ -42,7 +44,8 @@ const Login = () => {
       const { access_token } = response.data;
       
       if (access_token) {
-        localStorage.setItem('investiwise_token', access_token);
+        setToken(access_token);
+        setUser(null);
         navigate('/home');
       } else {
         setError('Token não recebido da API.');

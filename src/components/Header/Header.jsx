@@ -16,7 +16,7 @@ import Logo from '../../assets/logoiw.png';
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, setUser, setToken } = useAuth();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
@@ -27,11 +27,11 @@ export default function Header() {
     navigate(path);
   };
 
-  const handleLogout = () => {
-    // Limpa o token e redireciona para o login
-    localStorage.removeItem('investiwise_token');
-    navigate('/login');
-  };
+  const handleLogout = () => {
+    setUser(null);
+    setToken(null);
+    navigate('/login');
+  };
 
   const toggleUserMenu = () => {
     setIsUserMenuOpen(!isUserMenuOpen);

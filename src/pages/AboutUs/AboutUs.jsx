@@ -52,7 +52,6 @@ export default function AboutUs() {
 
   return (
     <div className={styles.aboutUsPage}>
-      <Header />
       <main className={styles.mainContent}>
         <div className={styles.pageHeader}>
           <h1 className={styles.title}>Conheça a Nossa Equipe</h1>
