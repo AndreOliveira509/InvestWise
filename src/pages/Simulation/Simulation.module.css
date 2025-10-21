@@ -10,6 +10,10 @@
   --text-secondary: #64748b;
   --border-color: #e2e8f0;
   --shadow-color: rgba(0, 0, 0, 0.06);
+  --accent-color: #14e3a8;
+  --accent-hover: #10c993;
+  --accent-light: rgba(20, 227, 168, 0.1);
+  --accent-medium: rgba(20, 227, 168, 0.15);
 }
 
 [data-theme="dark"] {
@@ -20,6 +24,10 @@
   --text-secondary: #94a3b8;
   --border-color: #334155;
   --shadow-color: rgba(0, 0, 0, 0.3);
+  --accent-color: #14e3a8;
+  --accent-hover: #10c993;
+  --accent-light: rgba(20, 227, 168, 0.1);
+  --accent-medium: rgba(20, 227, 168, 0.15);
 }
 
 .simulation {
@@ -56,7 +64,7 @@
 }
 
 .cryptoHeaderTop:hover {
-  background: rgba(255, 193, 7, 0.05);
+  background: var(--accent-light);
 }
 
 .cryptoTitle {
@@ -69,7 +77,7 @@
 }
 
 .cryptoTitleIcon {
-  color: #FFC107;
+  color: var(--accent-color);
   font-size: 1.1rem;
 }
 
@@ -91,8 +99,8 @@
 }
 
 .refreshBtn:hover {
-  border-color: #FFC107;
-  color: #FFC107;
+  border-color: var(--accent-color);
+  color: var(--accent-color);
 }
 
 .toggleBtn {
@@ -110,8 +118,8 @@
 }
 
 .toggleBtn:hover {
-  background: rgba(255, 193, 7, 0.1);
-  color: #FFC107;
+  background: var(--accent-light);
+  color: var(--accent-color);
   transform: scale(1.1);
 }
 
@@ -157,7 +165,7 @@
 }
 
 .cryptoItemHorizontal:hover {
-  border-color: #FFC107;
+  border-color: var(--accent-color);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px var(--shadow-color);
 }
@@ -240,7 +248,7 @@
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
-  background: var(--text-primary);
+  background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -298,7 +306,7 @@
 }
 
 .cardIcon {
-  color: #FFC107;
+  color: var(--accent-color);
   font-size: 1.25rem;
   margin-top: 0.25rem;
 }
@@ -330,8 +338,8 @@
 }
 
 .refreshBtn:hover {
-  border-color: #FFC107;
-  color: #FFC107;
+  border-color: var(--accent-color);
+  color: var(--accent-color);
 }
 
 .spinning {
@@ -372,7 +380,7 @@
 }
 
 .inputIcon {
-  color: #FFC107;
+  color: var(--accent-color);
   font-size: 0.8rem;
 }
 
@@ -390,8 +398,8 @@
 
 .input:focus, .select:focus {
   outline: none;
-  border-color: #FFC107;
-  box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.1);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px var(--accent-light);
 }
 
 /* INVESTMENT GRID */
@@ -433,7 +441,7 @@
   width: 44px;
   height: 44px;
   border-radius: 10px;
-  background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+  background: var(--accent-light);
   color: var(--accent-color);
   display: flex;
   align-items: center;
@@ -469,7 +477,7 @@
 
 .primaryBtn {
   flex: 1;
-  background: #FFC107;
+  background: var(--accent-color);
   color: #1a1a1a;
   border: none;
   padding: 1rem 1.5rem;
@@ -485,9 +493,9 @@
 }
 
 .primaryBtn:hover {
-  background: #FFA000;
+  background: var(--accent-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3);
+  box-shadow: 0 6px 20px rgba(20, 227, 168, 0.3);
 }
 
 .secondaryBtn {
@@ -532,7 +540,7 @@
 }
 
 .investmentBadge {
-  background: #FFC107;
+  background: var(--accent-color);
   color: #1a1a1a;
   padding: 0.5rem 1rem;
   border-radius: 20px;
@@ -572,7 +580,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #FFC107, #FFA000);
+  background: linear-gradient(90deg, var(--accent-color), var(--accent-hover));
 }
 
 .metric:hover {
@@ -725,7 +733,7 @@
 
 .placeholderIcon {
   font-size: 4rem;
-  color: #FFC107;
+  color: var(--accent-color);
   margin-bottom: 1.5rem;
   opacity: 0.5;
 }
@@ -759,7 +767,7 @@
 }
 
 .tip svg {
-  color: #FFC107;
+  color: var(--accent-color);
   font-size: 1rem;
 }
 

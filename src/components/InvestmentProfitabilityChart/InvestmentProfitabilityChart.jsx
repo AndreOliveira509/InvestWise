@@ -33,8 +33,8 @@ const InvestmentProfitabilityChart = ({ data }) => {
         {/* Define um gradiente de cor para ser usado na área abaixo da linha */}
         <defs>
           <linearGradient id="colorPatrimonio" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#34D399" stopOpacity={0.8}/>
-            <stop offset="95%" stopColor="#34D399" stopOpacity={0}/>
+            <stop offset="5%" stopColor="#14e3a8" stopOpacity={0.8}/>
+            <stop offset="95%" stopColor="#14e3a8" stopOpacity={0}/>
           </linearGradient>
         </defs>
         
@@ -44,7 +44,7 @@ const InvestmentProfitabilityChart = ({ data }) => {
         {/* Eixo X (horizontal), que mostrará as datas */}
         <XAxis 
           dataKey="date" 
-          stroke="#888" 
+          stroke="#94a3b8" 
           fontSize={12} 
           tickLine={false} 
           axisLine={false} 
@@ -52,7 +52,7 @@ const InvestmentProfitabilityChart = ({ data }) => {
         
         {/* Eixo Y (vertical), que mostrará os valores */}
         <YAxis 
-          stroke="#888" 
+          stroke="#94a3b8" 
           fontSize={12} 
           tickLine={false} 
           axisLine={false} 
@@ -60,7 +60,7 @@ const InvestmentProfitabilityChart = ({ data }) => {
         />
         
         {/* Tooltip customizado que criamos lá em cima */}
-        <Tooltip content={<CustomTooltip />} />
+        <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#14e3a8', strokeWidth: 1, strokeDasharray: '3 3' }} />
         
         {/* A área preenchida com o gradiente */}
         <Area type="monotone" dataKey="patrimonio" stroke={false} fill="url(#colorPatrimonio)" />
@@ -69,10 +69,15 @@ const InvestmentProfitabilityChart = ({ data }) => {
         <Line 
           type="monotone" 
           dataKey="patrimonio" 
-          stroke="#34D399" // Cor da linha
-          strokeWidth={2}
+          stroke="#14e3a8" // Cor da linha - verde principal
+          strokeWidth={3}
           dot={false} // Esconde os pontinhos em cada data
-          activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }} // Estiliza o ponto ativo (no hover)
+          activeDot={{ 
+            r: 6, 
+            stroke: '#fff', 
+            strokeWidth: 2,
+            fill: '#14e3a8'
+          }} // Estiliza o ponto ativo (no hover)
         />
       </LineChart>
     </ResponsiveContainer>

@@ -44,13 +44,15 @@ const SynchronizedLineChart = ({ data }) => {
           margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
         >
           <defs>
+            {/* Gradiente verde para Gastos */}
             <linearGradient id="colorGastos" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#FFC107" stopOpacity={0.8}/>
-              <stop offset="95%" stopColor="#FFC107" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#14e3a8" stopOpacity={0.8}/>
+              <stop offset="95%" stopColor="#14e3a8" stopOpacity={0}/>
             </linearGradient>
+            {/* Gradiente cinza para Orçamento */}
             <linearGradient id="colorOrcamento" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#8884d8" stopOpacity={0.4}/>
-              <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.4}/>
+              <stop offset="95%" stopColor="#94a3b8" stopOpacity={0}/>
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
@@ -68,23 +70,23 @@ const SynchronizedLineChart = ({ data }) => {
             axisLine={false}
             tickFormatter={(value) => `R$${value.toLocaleString('pt-BR')}`}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#FFC107', strokeWidth: 1, strokeDasharray: '3 3' }} />
+          <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#14e3a8', strokeWidth: 1, strokeDasharray: '3 3' }} />
           <Legend wrapperStyle={{fontSize: "14px", paddingTop: '10px'}}/>
           <Area 
             type="monotone" 
             dataKey="gastos" 
             name="Gastos"
-            stroke="#FFC107"
+            stroke="#14e3a8"
             strokeWidth={3}
             fillOpacity={1}
             fill="url(#colorGastos)"
-            activeDot={{ r: 8, strokeWidth: 2, fill: '#FFC107' }}
+            activeDot={{ r: 8, strokeWidth: 2, fill: '#14e3a8' }}
           />
           <Area 
             type="monotone" 
             dataKey="orcamento" 
             name="Orçamento Diário"
-            stroke="#A9A9A9"
+            stroke="#94a3b8"
             strokeWidth={2}
             strokeDasharray="5 5"
             fillOpacity={1}
