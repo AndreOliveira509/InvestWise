@@ -1,7 +1,6 @@
 // AIQuestions.jsx
-import { useState, useRef, useEffect, useContext } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 import {
   FaRobot,
   FaUser,
@@ -17,10 +16,7 @@ import {
   FaChartBar,
   FaMoneyBillWave,
   FaPiggyBank,
-  FaCreditCard,
-  FaBars,
-  FaPlus,
-  FaTrash
+  FaCreditCard
 } from "react-icons/fa";
 import styles from "./AIQuestions.module.css";
 import Header from '../../components/Header/Header';
@@ -30,7 +26,7 @@ Chart.register(...registerables);
 import { jsPDF } from 'jspdf';
 import * as XLSX from 'xlsx';
 
-const GEMINI_API_KEY = 'AIzaSyAllQYJ1cbB7Q6eZTIfgD1Mc7MRxOITF-Q';
+const GEMINI_API_KEY = "AIzaSyAllQYJ1cbB7Q6eZTIfgD1Mc7MRxOITF-Q";
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 const AIQuestions = () => {
@@ -38,17 +34,13 @@ const AIQuestions = () => {
   const messagesEndRef = useRef(null);
   const hiddenCanvasRef = useRef(null);
 
-  // Estados para a sidebar
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [chatHistory, setChatHistory] = useState([]);
-  const [currentChatId, setCurrentChatId] = useState(null);
-
-  // Inicializa mensagens a partir do localStorage
+  // Inicializa mensagens a partir do localStorage (preserva histórico ao trocar de rota)
   const [messages, setMessages] = useState(() => {
     try {
       const savedMessages = localStorage.getItem('aiChatHistory');
       if (savedMessages) {
         const parsed = JSON.parse(savedMessages);
+        // Reconstrói timestamps como Date
         return parsed.map(msg => ({ ...msg, timestamp: new Date(msg.timestamp) }));
       }
     } catch (err) {
@@ -67,162 +59,18 @@ const AIQuestions = () => {
   const recognitionRef = useRef(null);
   const speechSynthesisRef = useRef(null);
 
- const { user, token } = useAuth(); // Obtenha o usuário e o token do contexto
-  const [userFinancialData, setUserFinancialData] = useState(null);
-  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [userFinancialData] = useState({
+    monthlyIncome: 5000,
+    monthlyExpenses: 3500,
+    savings: 15000,
+    debts: 5000,
+    financialGoals: 'Comprar um apartamento'
+  });
 
   const [pendingChartRequest, setPendingChartRequest] = useState(null);
 
-useEffect(() => {
-    const fetchFinancialData = async () => {
-        if (!token) {
-            setIsLoadingData(false);
-            return;
-        }
-
-        try {
-            // O endereço da sua API
-            const response = await fetch('/api/users/financial-summary', {
-                headers: {
-                    'Authorization': `Bearer ${token}` // Envia o token para autenticação
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Falha ao buscar dados financeiros');
-            }
-
-            const data = await response.json();
-            setUserFinancialData(data); // Armazena os dados no estado
-
-        } catch (error) {
-            console.error("Erro ao carregar dados financeiros:", error);
-            // Opcional: definir dados padrão em caso de erro
-            setUserFinancialData({ monthlyIncome: 0, monthlyExpenses: 0, savings: 0, debts: 0, financialGoals: '' });
-        } finally {
-            setIsLoadingData(false);
-        }
-    };
-
-    fetchFinancialData();
-}, [token]); // O useEffect será executado sempre que o token mudar
-
-  // Carrega o histórico de conversas
   useEffect(() => {
-    loadChatHistory();
-  }, []);
-
-  const loadChatHistory = () => {
-    try {
-      const savedHistory = localStorage.getItem('aiChatHistoryList');
-      if (savedHistory) {
-        const history = JSON.parse(savedHistory);
-        setChatHistory(history);
-        
-        // Se não há chat atual, usa o mais recente ou cria um novo
-        if (!currentChatId && history.length > 0) {
-          setCurrentChatId(history[0].id);
-        }
-      }
-    } catch (err) {
-      console.error('Erro ao carregar histórico:', err);
-    }
-  };
-
-  const saveChatToHistory = (messages, title = 'Nova Conversa') => {
-    if (messages.length === 0) return;
-
-    const chatId = currentChatId || Date.now().toString();
-    const firstUserMessage = messages.find(msg => msg.sender === 'user');
-    const chatTitle = firstUserMessage ? firstUserMessage.text.slice(0, 30) + (firstUserMessage.text.length > 30 ? '...' : '') : title;
-    
-    const chatData = {
-      id: chatId,
-      title: chatTitle,
-      messages: messages,
-      lastUpdated: new Date().toISOString(),
-      createdAt: new Date().toISOString()
-    };
-
-    setChatHistory(prev => {
-      const filtered = prev.filter(chat => chat.id !== chatId);
-      const updated = [chatData, ...filtered].slice(0, 20); // Mantém apenas os 20 mais recentes
-      
-      localStorage.setItem('aiChatHistoryList', JSON.stringify(updated));
-      return updated;
-    });
-
-    setCurrentChatId(chatId);
-  };
-
-  const startNewChat = () => {
-    // Salva a conversa atual antes de iniciar nova
-    if (messages.length > 0) {
-      saveChatToHistory(messages);
-    }
-    
-    setMessages([]);
-    setCurrentChatId(null);
-    localStorage.removeItem('aiChatHistory');
-    setSidebarOpen(false);
-  };
-
-  const loadChat = (chatId) => {
-    const chat = chatHistory.find(c => c.id === chatId);
-    if (chat) {
-      setMessages(chat.messages.map(msg => ({
-        ...msg,
-        timestamp: new Date(msg.timestamp)
-      })));
-      setCurrentChatId(chatId);
-      localStorage.setItem('aiChatHistory', JSON.stringify(chat.messages));
-      setSidebarOpen(false);
-    }
-  };
-
-  const deleteChat = (chatId, e) => {
-    e.stopPropagation();
-    const updatedHistory = chatHistory.filter(chat => chat.id !== chatId);
-    setChatHistory(updatedHistory);
-    localStorage.setItem('aiChatHistoryList', JSON.stringify(updatedHistory));
-    
-    if (currentChatId === chatId) {
-      startNewChat();
-    }
-  };
-
-  // Agrupa conversas por data
-  const groupChatsByDate = () => {
-    const groups = {};
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    chatHistory.forEach(chat => {
-      const chatDate = new Date(chat.lastUpdated);
-      let groupName;
-
-      if (chatDate.toDateString() === today.toDateString()) {
-        groupName = 'Hoje';
-      } else if (chatDate.toDateString() === yesterday.toDateString()) {
-        groupName = 'Ontem';
-      } else if (chatDate.getFullYear() === today.getFullYear()) {
-        groupName = chatDate.toLocaleDateString('pt-BR', { month: 'long', day: 'numeric' });
-        groupName = groupName.charAt(0).toUpperCase() + groupName.slice(1);
-      } else {
-        groupName = chatDate.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
-      }
-
-      if (!groups[groupName]) {
-        groups[groupName] = [];
-      }
-      groups[groupName].push(chat);
-    });
-
-    return groups;
-  };
-
-  useEffect(() => {
+    // Se não houver histórico carregado via useState, cria mensagens iniciais
     if (!messages || messages.length === 0) {
       const savedMessages = localStorage.getItem('aiChatHistory');
       if (savedMessages) {
@@ -268,19 +116,14 @@ useEffect(() => {
       if (speechSynthesisRef.current) speechSynthesisRef.current.cancel();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, []); // mantém same as original: roda apenas uma vez na montagem
 
   useEffect(() => {
-    // Salva mensagens no localStorage e no histórico
+    // Mantém o histórico salvo sempre que mensagens mudarem
     try {
       localStorage.setItem('aiChatHistory', JSON.stringify(messages));
-      
-      // Salva no histórico se há mensagens significativas
-      if (messages.length > 2) { // Mais que as mensagens iniciais
-        saveChatToHistory(messages);
-      }
     } catch (err) {
-      console.error('Erro ao salvar histórico:', err);
+      console.error('Erro ao salvar aiChatHistory:', err);
     }
   }, [messages]);
 
@@ -464,68 +307,7 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
       console.error('Erro Gemini:', error);
       return { text: "Ocorreu um erro ao gerar o conteúdo. Tente novamente.", fileRequest: null };
     }
-
-    try {
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Recomendo usar o 1.5-flash para melhor entendimento
-
-        // NOVO: Converte a lista de transações em texto para o prompt
-        const transactionsListForPrompt = userFinancialData.recentTransactions && userFinancialData.recentTransactions.length > 0
-            ? userFinancialData.recentTransactions.map(t => `- ${t.description}: R$ ${t.amount.toFixed(2)} em ${t.date}`).join('\n')
-            : 'Nenhuma transação recente encontrada.';
-
-        const fileRequest = detectFileRequest(userMessage);
-        let prompt = '';
-
-        if (fileRequest.detected) {
-            // ... (a lógica para gerar arquivos continua a mesma, mas agora com o contexto rico)
-            prompt = `
-              O usuário pediu um arquivo do tipo ${fileRequest.type.toUpperCase()}.
-              Pedido: "${userMessage}"
-              
-              GERE APENAS O CONTEÚDO PARA O ARQUIVO.
-              
-              Use estes dados de contexto se necessário:
-              - Renda Mensal: R$ ${userFinancialData.monthlyIncome}
-              - Despesas Mensais (Total): R$ ${userFinancialData.monthlyExpenses}
-              - Economias/Investimentos (Total): R$ ${userFinancialData.savings}
-              - Dívidas: R$ ${userFinancialData.debts}
-              - Lista de Transações Recentes:
-              ${transactionsListForPrompt}
-            `;
-        } else {
-            // PROMPT MELHORADO PARA CHAT COMUM
-            prompt = `
-              Você é um assistente financeiro prestativo. Responda ao usuário de forma clara e direta.
-              
-              Pergunta do usuário: "${userMessage}"
-
-              Use estes dados financeiros do usuário para basear sua resposta:
-              - Renda Mensal (Total): R$ ${userFinancialData.monthlyIncome.toFixed(2)}
-              - Despesas Mensais (Total): R$ ${userFinancialData.monthlyExpenses.toFixed(2)}
-              - Economias/Investimentos (Total): R$ ${userFinancialData.savings.toFixed(2)}
-              - Dívidas: R$ ${userFinancialData.debts.toFixed(2)}
-              
-              - Aqui está uma lista das transações mais recentes para contexto detalhado (use isso para responder a perguntas como "quais são meus gastos?"):
-              ${transactionsListForPrompt}
-
-              Responda diretamente à pergunta do usuário usando esses dados.
-            `;
-        }
-
-        const result = await model.generateContent(prompt);
-        const responseText = await result.response.text();
-
-        // ... (o resto da função continua igual)
-        if (fileRequest.detected && fileRequest.type === 'image') {
-          // ...
-        }
-        return { text: responseText, fileRequest: fileRequest.detected ? fileRequest.type : null };
-
-    } catch (error) {
-        console.error('Erro Gemini:', error);
-        return { text: "🤖 Ocorreu um erro ao gerar o conteúdo. Tente novamente.", fileRequest: null };
-    }
-};
+  };
 
   const handleSendMessage = async (e) => {
     e?.preventDefault?.();
@@ -1101,72 +883,11 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
 
   return (
     <div className={styles.aiQuestions}>
-      {/* Sidebar de Histórico */}
-      <div className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
-        <div className={styles.sidebarHeader}>
-          <button className={styles.newChatButton} onClick={startNewChat}>
-            <FaPlus /> Novo chat
-          </button>
-          <button 
-            className={styles.closeSidebarButton}
-            onClick={() => setSidebarOpen(false)}
-          >
-            ×
-          </button>
-        </div>
-        
-        <div className={styles.chatHistory}>
-          {Object.entries(groupChatsByDate()).map(([date, chats]) => (
-            <div key={date} className={styles.dateGroup}>
-              <div className={styles.dateLabel}>{date}</div>
-              {chats.map(chat => (
-                <div
-                  key={chat.id}
-                  className={`${styles.chatItem} ${currentChatId === chat.id ? styles.activeChat : ''}`}
-                  onClick={() => loadChat(chat.id)}
-                >
-                  <span className={styles.chatIcon}></span>
-                  <span className={styles.chatTitle}>{chat.title}</span>
-                  <button
-                    className={styles.deleteChatButton}
-                    onClick={(e) => deleteChat(chat.id, e)}
-                    title="Excluir conversa"
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-              ))}
-            </div>
-          ))}
-          
-          {chatHistory.length === 0 && (
-            <div className={styles.emptyHistory}>
-              <p>Nenhuma conversa anterior</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Overlay para fechar sidebar em mobile */}
-      {sidebarOpen && (
-        <div 
-          className={styles.sidebarOverlay}
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
+      <Header />
       <main className={styles.main}>
         <div className={styles.container}>
           <section className={styles.aiHeader}>
             <div className={styles.headerContent}>
-              <div className={styles.headerLeft}>
-                <button 
-                  className={styles.menuButton}
-                  onClick={() => setSidebarOpen(!sidebarOpen)}
-                >
-                  <FaBars />
-                </button>
-              </div>
               <div className={styles.titleSection}>
                 <h1 className={styles.title}>
                   <FaRobot className={styles.titleIcon} />
@@ -1174,7 +895,6 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
                 </h1>
                 <p className={styles.subtitle}>Consultoria inteligente com Gemini 2.5</p>
               </div>
-              <div className={styles.headerRight}></div>
             </div>
           </section>
 

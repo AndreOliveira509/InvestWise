@@ -85,48 +85,47 @@ export default function Header() {
     }
   });
 
-  /* Menu items atualizado */
-  const menuItems = [
-    { path: "/home", icon: <FaHome />, label: "Home" },
-    { path: "/dashboard", icon: <FaChartPie />, label: "Dashboard" },
-    { path: "/simulation", icon: <IoAnalytics />, label: "Simulações" },
-    { path: "/aiquestions", icon: <RiRobot2Fill />, label: "IA Financeira" },
-  ];
+  return (
+    <>
+      <header className={styles.header}>
+        <div className={styles.headerContent}>
+          {/* Logo */}
+          <div className={styles.logo} onClick={() => navigate('/home')}>
+            <div className={styles.logoIcon}>
+              <FaPiggyBank />
+            </div>
+            <span className={styles.logoText}>InvestiWise</span>
+          </div>
 
-  return (
-    <>
-      <header className={styles.header}>
-        <div className={styles.headerContent}>
-          {/* Logo */}
-          <div className={styles.logo} onClick={() => navigate('/home')}>
-            <div className={styles.logoIcon}>
-              <img src={Logo} alt="Logo" />
-            </div>
-            <span className={styles.logoText}>InvestWise</span>
-          </div>
+          <nav className={styles.nav}>
+            <button
+              className={`${styles.navItem} ${location.pathname === '/home' ? styles.active : ''}`}
+              onClick={() => navigate('/home')}
+            >
+              <FaHome /> Home
+            </button>
 
-          {/* Menu de Navegação */}
-          <nav className={styles.nav}>
-            {menuItems.map((item) => (
-              <button
-                key={item.path}
-                className={`${styles.navItem} ${
-                  location.pathname === item.path ? styles.active : ''
-                }`}
-                onClick={() => handleNavigation(item.path)}
-              >
-                <span className={styles.navIcon}>{item.icon}</span>
-                <span className={styles.navLabel}>{item.label}</span>
-              </button>
-            ))}
-          </nav>
+            <button
+              className={`${styles.navItem} ${location.pathname === '/dashboard' ? styles.active : ''}`}
+              onClick={() => navigate('/dashboard')}
+            >
+              <FaChartPie /> Dashboard
+            </button>
 
-          {/* User Actions */}
-          <div className={styles.userSection}>
-            {/* Dark Mode Toggle */}
-            <button className={styles.darkModeToggle} onClick={toggleDarkMode}>
-              {darkMode ? <FaSun /> : <FaMoon />}
-            </button>
+            <button
+              className={`${styles.navItem} ${location.pathname === '/simulation' ? styles.active : ''}`}
+              onClick={() => navigate('/simulation')}
+            >
+              <IoAnalytics /> Simulações
+            </button>
+
+            <button
+              className={`${styles.navItem} ${location.pathname === '/aiquestions' ? styles.active : ''}`}
+              onClick={() => navigate('/aiquestions')}
+            >
+              <RiRobot2Fill /> IA Financeira
+            </button>
+          </nav>
 
             <div className={styles.userInfo} onClick={toggleUserMenu}>
               <div className={styles.userAvatar}>
@@ -171,7 +170,6 @@ export default function Header() {
               </div>
             )}
           </div>
-        </div>
       </header>
 
       {/* Modal de Perfil */}
