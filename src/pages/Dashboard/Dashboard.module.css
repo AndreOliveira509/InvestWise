@@ -142,8 +142,9 @@
   padding: 0.2rem 0.6rem;
   border-radius: 50px;
   align-self: flex-start;
+  background-color: var(--border-color); 
+  color: var(--text-primary);
 }
-
 .investmentValues {
   display: flex;
   flex-direction: column;
