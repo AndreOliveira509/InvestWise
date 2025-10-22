@@ -104,7 +104,7 @@ useEffect(() => {
         }
     };
 
-    fetchFinancialData();
+    fetchFinancialData(); 
 }, [token]); // O useEffect será executado sempre que o token mudar
 
   // Carrega o histórico de conversas
@@ -410,7 +410,7 @@ GERE UM CONTEÚDO DETALHADO E BEM ESTRUTURADO PARA O ARQUIVO.
 NÃO USE MARKDOWN (* # -). Use formatação limpa e profissional.
 
 Use estes dados de contexto se necessário:
-Renda mensal: R$ ${userFinancialData.monthlyIncome}
+Renda mensal: R$ ${user?.renda_mensal || 'Não informada'}
 Despesas: R$ ${userFinancialData.monthlyExpenses}
 Economias: R$ ${userFinancialData.savings}
 Dívidas: R$ ${userFinancialData.debts}

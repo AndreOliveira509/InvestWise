@@ -1,11 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {} // Injete o PrismaService
-
+  constructor(private prisma: PrismaService) {}
   async update(id: number, updateUserDto: UpdateUserDto) {
     const data = {
       ...updateUserDto,
@@ -18,30 +17,42 @@ export class UsersService {
     });
   }
 
-async getFinancialSummary(userId: number) {
+
+  async getFinancialSummary(userId: number) {
+    
+    // 1. BUSCAR O USUÁRIO
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        renda_mensal: true,
+      }
+    });
+
+    // Esta verificação é importante
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+    
+    // 2. BUSCAR AS OUTRAS INFORMAÇÕES
     const userTransactions = await this.prisma.transaction.findMany({
       where: { userId: userId },
-      orderBy: { date: 'desc' }, // Ordena da mais recente para a mais antiga
+      orderBy: { date: 'desc' }, 
     });
 
     const userInvestments = await this.prisma.investment.findMany({
       where: { userId: userId },
     });
 
-    // LÓGICA CORRIGIDA E MAIS FLEXÍVEL
-    const monthlyIncome = userTransactions
-      .filter(t => t.type.toUpperCase() === 'INCOME') // Compara em maiúsculo
-      .reduce((sum, t) => sum + parseFloat(t.amount.toString()), 0);
-
+    // 3. FAZER OS CÁLCULOS
+    const profileMonthlyIncome = parseFloat(user?.renda_mensal?.toString() || '0');
     const monthlyExpenses = userTransactions
-      .filter(t => t.type.toUpperCase() === 'EXPENSE') // Compara em maiúsculo
+      .filter(t => t.type.toUpperCase() === 'EXPENSE')
       .reduce((sum, t) => sum + parseFloat(t.amount.toString()), 0);
 
     const totalInvestments = userInvestments.reduce(
       (sum, i) => sum + parseFloat(i.value.toString()), 0
     );
     
-    // NOVO: Prepara a lista das últimas 10 transações para a IA
     const recentTransactions = userTransactions.slice(0, 10).map(t => ({
       description: t.description,
       amount: parseFloat(t.amount.toString()),
@@ -49,13 +60,14 @@ async getFinancialSummary(userId: number) {
       type: t.type
     }));
 
+    // 4. RETORNAR OS DADOS
     return {
-      monthlyIncome,
+      monthlyIncome: profileMonthlyIncome, // Agora seguro
       monthlyExpenses,
       savings: totalInvestments,
       debts: 0,
       financialGoals: 'Não definida',
-      recentTransactions, // ADICIONA A LISTA DE TRANSAÇÕES NA RESPOSTA
+      recentTransactions, 
     };
   }
 }
