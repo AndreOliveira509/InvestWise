@@ -21,11 +21,7 @@
 .pageHeader h1 {
   font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #14e3a8 0%, #10c993 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-primary);
 }
 
 /* --- SEÇÕES PRINCIPAIS (INVESTIMENTOS E GASTOS) --- */
@@ -54,23 +50,11 @@
   border-radius: 16px;
   border: 1px solid var(--border-color);
   transition: all 0.2s ease-in-out;
-  position: relative;
-  overflow: hidden;
-}
-
-.metricCard::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #14e3a8, #10c993);
 }
 
 .metricCard:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 30px var(--shadow-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .metricTitle {
@@ -97,21 +81,20 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.3rem 0.6rem;
-  border-radius: 20px;
+  padding: 0.2rem 0.5rem;
+  border-radius: 50px;
   font-size: 0.8rem;
-  font-weight: 600;
-  width: fit-content;
+  font-weight: 500;
 }
 
 .metricChange.positive {
-  background: rgba(20, 227, 168, 0.15);
+  background-color: rgba(20, 227, 168, 0.1);
   color: #14e3a8;
 }
 
 .metricChange.negative {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #B91C1C;
 }
 
 /* --- LISTA DE INVESTIMENTOS --- */
@@ -120,7 +103,6 @@
   border-radius: 16px;
   padding: 1.5rem 2rem;
   border: 1px solid var(--border-color);
-  box-shadow: 0 4px 20px var(--shadow-color);
 }
 
 .investmentList {
@@ -136,11 +118,6 @@
   gap: 1rem;
   padding: 1rem 0;
   border-bottom: 1px solid var(--border-color);
-  transition: all 0.3s ease;
-}
-
-.investmentItem:hover {
-  background: rgba(20, 227, 168, 0.05);
 }
 
 .investmentItem:last-child {
@@ -164,8 +141,8 @@
   padding: 0.2rem 0.6rem;
   border-radius: 50px;
   align-self: flex-start;
-  background: rgba(20, 227, 168, 0.1);
-  color: #14e3a8;
+  background-color: var(--border-color); 
+  color: var(--text-primary);
 }
 
 .investmentValues {
@@ -184,18 +161,10 @@
 .investmentChange {
   font-size: 0.8rem;
   font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
 }
 
-.investmentChange.positive { 
-  color: #14e3a8; 
-}
-
-.investmentChange.negative { 
-  color: #F87171; 
-}
+.investmentChange.positive { color: #14e3a8; }
+.investmentChange.negative { color: #F87171; }
 
 .deleteBtn {
   background: transparent;
@@ -223,7 +192,6 @@
   border-radius: 16px;
   padding: 1.5rem 2rem;
   border: 1px solid var(--border-color);
-  box-shadow: 0 4px 20px var(--shadow-color);
 }
 
 /* --- LAYOUT INFERIOR (OUTROS GRÁFICOS E GASTOS RECENTES) --- */
@@ -245,13 +213,6 @@
   border-radius: 16px;
   padding: 1.5rem 2rem;
   border: 1px solid var(--border-color);
-  box-shadow: 0 4px 20px var(--shadow-color);
-  transition: all 0.3s ease;
-}
-
-.chartCard:hover {
-  box-shadow: 0 8px 35px var(--shadow-color);
-  transform: translateY(-2px);
 }
 
 .chartCard.large {
@@ -270,56 +231,13 @@
   height: 350px; /* Altura fixa para garantir a renderização */
 }
 
-/* ESTILOS PARA OS GRÁFICOS */
-.chartContainer :global(.recharts-line-curve) {
-  stroke: #14e3a8;
-}
-
-.chartContainer :global(.recharts-area) {
-  fill: rgba(20, 227, 168, 0.1);
-}
-
-.chartContainer :global(.recharts-bar-rectangle) {
-  fill: #14e3a8;
-}
-
-.chartContainer :global(.recharts-pie-sector) {
-  stroke: var(--bg-card);
-}
-
-.chartContainer :global(.recharts-tooltip-wrapper) {
-  background: var(--bg-card) !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: 8px !important;
-  box-shadow: 0 4px 20px var(--shadow-color) !important;
-}
-
-.chartContainer :global(.recharts-legend-wrapper) {
-  color: var(--text-primary) !important;
-}
-
-/* Cores específicas para diferentes datasets */
-.chartContainer :global(.recharts-line[dataKey="bitcoin"]),
-.chartContainer :global(.recharts-area[dataKey="bitcoin"]) {
-  stroke: #14e3a8;
-  fill: rgba(20, 227, 168, 0.1);
-}
-
-.chartContainer :global(.recharts-line[dataKey="ethereum"]) {
-  stroke: #10c993;
-}
-
-.chartContainer :global(.recharts-bar[dataKey="volume"]) {
-  fill: rgba(20, 227, 168, 0.6);
-}
-
 /* ÁREA DE GASTOS RECENTES */
+
 .transactionsCard {
   background: var(--bg-card);
   border-radius: 16px;
   padding: 1.5rem;
   border: 1px solid var(--border-color);
-  box-shadow: 0 4px 20px var(--shadow-color);
 }
 
 .transactionControls {
@@ -347,14 +265,6 @@
   border-radius: 10px;
   background: var(--bg-primary);
   font-size: 0.9rem;
-  transition: all 0.3s ease;
-  font-family: 'Poppins', sans-serif;
-}
-
-.searchInput:focus {
-  outline: none;
-  border-color: #14e3a8;
-  box-shadow: 0 0 0 3px rgba(20, 227, 168, 0.1);
 }
 
 .transactionList {
@@ -370,14 +280,11 @@
   gap: 1rem;
   padding: 0.75rem 0.5rem;
   border-bottom: 1px solid var(--border-color);
-  transition: all 0.3s ease;
-  border-radius: 8px;
 }
 
 .transactionItem:hover {
   background-color: rgba(20, 227, 168, 0.1);
   border-bottom: none;
-  transform: translateX(4px);
 }
 
 .transactionIcon {
@@ -388,8 +295,6 @@
   align-items: center;
   justify-content: center;
   font-size: 1.2rem;
-  background: rgba(20, 227, 168, 0.1);
-  color: #14e3a8;
 }
 
 .transactionDetails {
@@ -435,25 +340,15 @@
 }
 
 @media (max-width: 768px) {
-  .mainContent { 
-    padding: 1rem; 
-  }
-  .metricsGrid { 
-    grid-template-columns: 1fr; 
-  }
-  .chartCard {
-    padding: 1.25rem;
-  }
-  .investmentListCard {
-    padding: 1.25rem;
-  }
+  .mainContent { padding: 1rem; }
+  .metricsGrid { grid-template-columns: 1fr; }
 }
 
 .contentLoading {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 50vh;
+  min-height: 50vh; /* Ajuste conforme necessário */
   font-size: 1.2rem;
   color: var(--text-secondary);
 }
@@ -464,7 +359,7 @@
 .transactionMeta {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 8px; /* Espaço entre a data e o ponto de status */
   margin-top: 4px;
 }
 
@@ -474,44 +369,13 @@
   border: none;
   color: #aeb8c4;
   cursor: pointer;
-  opacity: 1;
-  visibility: visible;
-  transition: all 0.2s ease;
+  opacity: 1; /* Garante que não está transparente */
+  visibility: visible; /* Garante que não está invisível */
+  transition: color 0.2s ease;
   font-size: 1rem;
   padding: 8px;
-  border-radius: 6px;
 }
 
 .deleteBtn:hover {
-  background: rgba(239, 68, 68, 0.1);
-  color: #e74c3c;
-}
-
-/* Status point para transações */
-.statusPoint {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: #14e3a8;
-}
-
-/* Error Banner */
-.errorBanner {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  font-weight: 500;
-}
-
-/* Section Header */
-.sectionHeader {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 0.5rem;
+  color: #e74c3c; /* Cor vermelha ao passar o mouse */
 }

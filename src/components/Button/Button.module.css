@@ -1,78 +1,30 @@
+/* components/Button/Button.module.css */
 .button {
   padding: 12px 24px;
   border: none;
-  border-radius: 12px;
+  border-radius: 6px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: 'Poppins', sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
 }
 
 .primary {
-  background: #14e3a8;
-  color: #1a1a1a;
-  box-shadow: 0 2px 8px rgba(20, 227, 168, 0.3);
+  background: var(--primary-color);
+  color: white;
 }
 
 .primary:hover {
-  background: #10c993;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(20, 227, 168, 0.4);
-}
-
-.primary:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 5px rgba(20, 227, 168, 0.3);
+  background: var(--secondary-color);
 }
 
 .secondary {
   background: transparent;
-  color: #14e3a8;
-  border: 2px solid #14e3a8;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
 }
 
 .secondary:hover {
-  background: rgba(20, 227, 168, 0.1);
-  color: #14e3a8;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(20, 227, 168, 0.2);
-}
-
-.secondary:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 5px rgba(20, 227, 168, 0.1);
-}
-
-/* Variante de botão pequeno */
-.small {
-  padding: 8px 16px;
-  font-size: 14px;
-  border-radius: 8px;
-}
-
-/* Variante de botão grande */
-.large {
-  padding: 16px 32px;
-  font-size: 18px;
-  border-radius: 16px;
-}
-
-/* Estado desabilitado */
-.button:disabled {
-  background: #cbd5e1;
-  color: #64748b;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.button:disabled:hover {
-  background: #cbd5e1;
-  transform: none;
-  box-shadow: none;
+  background: var(--primary-color);
+  color: white;
 }

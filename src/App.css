@@ -7,9 +7,9 @@
  * ---------------------------------------------------------------------------
  */
 :root {
-  /* Cores Principais (Accent Colors) - VERDE */
-  --primary-color: #14e3a8;      /* Verde vibrante, usado para botões, links e destaques */
-  --primary-color-hover: #10c993; /* Tom mais escuro de verde para efeitos hover */
+  /* Cores Principais (Accent Colors) */
+  --primary-color: #FFC107;      /* Amarelo vibrante, usado para botões, links e destaques */
+  --primary-color-hover: #FFA000; /* Tom mais escuro de amarelo para efeitos hover */
   --secondary-color: #090909;    /* Preto suave, usado como cor de contraste para textos e fundos */
 
   /* Cores de Fundo (Background Colors) */
@@ -25,14 +25,12 @@
 
   /* Cores de Borda e Sombra (Borders & Shadows) */
   --border-color: #e2e8f0;       /* Cor para bordas sutis */
-  --shadow-color: rgba(20, 227, 168, 0.06); /* Sombra suave com tom verde */
-  --shadow-light: 0 4px 15px rgba(20, 227, 168, 0.1);
-  --shadow-medium: 0 8px 30px rgba(20, 227, 168, 0.15);
+  --shadow-color: rgba(0, 0, 0, 0.06); /* Sombra suave para elevação de elementos */
 
   /* Cores de Feedback */
-  --positive-color: #14e3a8;        /* Verde para sucesso e valores positivos */
+  --positive-color: #10b981;        /* Verde para sucesso e valores positivos */
   --negative-color: #ef4444;        /* Vermelho para alertas e valores negativos */
-  --positive-bg: rgba(20, 227, 168, 0.15);
+  --positive-bg: rgba(16, 185, 129, 0.15);
   --negative-bg: rgba(239, 68, 68, 0.15);
 
   /* Outros */
@@ -47,10 +45,10 @@
  * Ativado quando o atributo `data-theme="dark"` está presente no elemento <html> ou <body>.
  */
 [data-theme="dark"] {
-  /* Cores Principais - VERDE */
-  --primary-color: #14e3a8;
-  --primary-color-hover: #10c993; /* Verde mais escuro para hover */
-  --secondary-color: #1a1a1a;     /* Preto para contraste com texto claro */
+  /* Cores Principais */
+  --primary-color: #FFC107;
+  --primary-color-hover: #ffca28; /* Amarelo um pouco mais claro para melhor contraste */
+  --secondary-color: #f1f5f9;     /* Cor de contraste (branco suave) */
 
   /* Cores de Fundo */
   --bg-primary: #0f172a;          /* Fundo principal (azul escuro) */
@@ -65,14 +63,12 @@
 
   /* Cores de Borda e Sombra */
   --border-color: #334155;        /* Bordas com baixo contraste */
-  --shadow-color: rgba(20, 227, 168, 0.15); /* Sombra com tom verde */
-  --shadow-light: 0 4px 15px rgba(20, 227, 168, 0.1);
-  --shadow-medium: 0 8px 30px rgba(20, 227, 168, 0.2);
+  --shadow-color: rgba(0, 0, 0, 0.3); /* Sombra mais visível no escuro */
 
   /* Cores de Feedback */
-  --positive-color: #14e3a8;
+  --positive-color: #34D399;
   --negative-color: #F87171;
-  --positive-bg: rgba(20, 227, 168, 0.2);
+  --positive-bg: rgba(16, 185, 129, 0.2);
   --negative-bg: rgba(239, 68, 68, 0.2);
 }
 
@@ -91,7 +87,7 @@ html {
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Poppins', sans-serif; /* Certifique-se de importar a fonte Poppins */
   background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.7;
@@ -103,19 +99,17 @@ body {
   margin: 0 auto;
   padding: 0 20px;
 }
-
 /* Estilos globais para modo escuro */
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
-
 /* src/components/Button/Button.module.css */
 .button {
   padding: 12px 24px;
   border: none;
-  border-radius: 12px;
+  border-radius: 6px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -123,24 +117,18 @@ body {
   background: var(--primary-color);
   color: var(--secondary-color);
   text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  display: inline-block;
   text-align: center;
-  font-family: 'Poppins', sans-serif;
-  box-shadow: var(--shadow-light);
 }
 
 .button:hover {
-  background: var(--primary-color-hover);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-medium);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+  background: #ffed4e;
 }
 
 .button:active {
   transform: translateY(0);
-  box-shadow: var(--shadow-light);
 }
 
 .secondary {
@@ -150,62 +138,7 @@ body {
 }
 
 .secondary:hover {
-  background: rgba(20, 227, 168, 0.1);
-  color: var(--primary-color);
-  box-shadow: 0 4px 12px rgba(20, 227, 168, 0.2);
-}
-
-/* Utilitários com cores verdes */
-.text-accent {
-  color: var(--primary-color);
-}
-
-.bg-accent {
   background: var(--primary-color);
-}
-
-.border-accent {
-  border-color: var(--primary-color);
-}
-
-/* Scrollbar personalizada */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-primary);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--primary-color);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-color-hover);
-}
-
-/* Animações de fade-in */
-.fade-in-section {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-
-.fade-in-section.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Gradientes verdes */
-.gradient-text {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-hover) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.gradient-bg {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-hover) 100%);
+  color: var(--secondary-color);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
 }

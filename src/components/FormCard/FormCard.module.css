@@ -1,15 +1,8 @@
 .formCard {
   background: var(--bg-card);
-  padding: 1.5rem;
+  padding: 1rem 1.5rem;
   border-radius: 16px;
   border: 1px solid var(--border-color);
-  box-shadow: 0 4px 20px var(--shadow-color);
-  transition: all 0.3s ease;
-}
-
-.formCard:hover {
-  box-shadow: 0 8px 35px var(--shadow-color);
-  transform: translateY(-2px);
 }
 
 .formGrid {
@@ -22,35 +15,30 @@
 /* Estilos unificados para inputs e selects dentro do form */
 .formGrid > input,
 .formGrid > select {
-  padding: 0.875rem 1rem;
+  padding: 0.75rem 1rem;
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 10px;
   font-size: 0.9rem;
   transition: all 0.3s ease;
   width: 100%;
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-family: 'Poppins', sans-serif;
-}
-
-.formGrid > input::placeholder {
-  color: var(--text-secondary);
 }
 
 .formGrid > input:focus,
 .formGrid > select:focus {
   outline: none;
-  border-color: #14e3a8;
-  box-shadow: 0 0 0 3px rgba(20, 227, 168, 0.1);
+  border-color: #FFC107;
+  box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
 }
 
 /* Estilos unificados para o botão de submit */
 .formGrid > button {
-  background: #14e3a8;
+  background: #FFC107;
   color: #1a1a1a;
   border: none;
-  padding: 0.875rem 1.5rem;
-  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -60,41 +48,16 @@
   gap: 0.5rem;
   transition: all 0.3s ease;
   white-space: nowrap; /* Impede que o texto quebre */
-  font-family: 'Poppins', sans-serif;
-  box-shadow: 0 2px 8px rgba(20, 227, 168, 0.3);
 }
 
 .formGrid > button:hover {
-  background: #10c993;
+  background: #FFA000;
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(20, 227, 168, 0.4);
-}
-
-.formGrid > button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 5px rgba(20, 227, 168, 0.3);
 }
 
 /* Responsividade */
 @media (max-width: 992px) {
   .formGrid {
     grid-template-columns: 1fr;
-    gap: 0.75rem;
   }
-  
-  .formCard {
-    padding: 1.25rem;
-  }
-}
-
-/* Estados de erro para inputs */
-.formGrid > input:invalid:not(:focus):not(:placeholder-shown) {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-}
-
-/* Estados de sucesso para inputs */
-.formGrid > input:valid:not(:focus):not(:placeholder-shown) {
-  border-color: #14e3a8;
-  box-shadow: 0 0 0 3px rgba(20, 227, 168, 0.1);
 }

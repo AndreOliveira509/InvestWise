@@ -24,7 +24,6 @@
   margin: 0 auto;
   gap: 1rem; /* Adiciona um espaço entre os elementos */
 }
-
 /* Adicione isso ao seu arquivo Header.module.css */
 
 .logoIcon img {
@@ -32,7 +31,6 @@
   height: 100%;     /* Faz a imagem ocupar toda a altura do container */
   object-fit: cover; /* Garante que a imagem cubra o espaço sem distorcer */
 }
-
 /* Logo */
 .logo {
   padding: 0.5rem;
@@ -55,18 +53,18 @@
   width: 35px;
   height: 35px;
   border-radius: 8px;
-  background: #14e3a8;
+  background: var(--primary-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1a1a1a;
+  color: var(--secondary-color);
   font-size: 1.2rem;
 }
 
 .logoText {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #14e3a8;
+  color: var(--primary-color);
 }
 
 /* Navegação */
@@ -99,16 +97,16 @@
 }
 
 .navItem:hover {
-  background: rgba(20, 227, 168, 0.1);
-  color: #14e3a8;
+  background: rgba(255, 193, 7, 0.1);
+  color: var(--primary-color);
   transform: translateY(-1px);
 }
 
 .navItem.active {
-  background: rgba(20, 227, 168, 0.15);
-  color: #14e3a8;
-  border: 1px solid #14e3a8;
-  box-shadow: 0 2px 8px rgba(20, 227, 168, 0.2);
+  background: rgba(255, 193, 7, 0.15);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.2);
 }
 
 .navIcon {
@@ -135,8 +133,8 @@
 }
 
 .darkModeToggle:hover {
-  background: rgba(20, 227, 168, 0.1);
-  color: #14e3a8;
+  background: rgba(255, 193, 7, 0.1);
+  color: var(--primary-color);
   transform: scale(1.1);
 }
 
@@ -153,16 +151,16 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem 0.75rem;
-  background: rgba(20, 227, 168, 0.1);
+  background: rgba(255, 193, 7, 0.1);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px solid #14e3a8;
+  border: 1px solid var(--primary-color);
 }
 
 .userInfo:hover {
-  background: rgba(20, 227, 168, 0.15);
-  border-color: rgba(20, 227, 168, 0.3);
+  background: rgba(255, 193, 7, 0.15);
+  border-color: rgba(255, 193, 7, 0.3);
   transform: translateY(-1px);
 }
 
@@ -170,11 +168,11 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #14e3a8, #10c993);
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-color-hover));
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1a1a1a;
+  color: var(--secondary-color);
   font-size: 0.9rem;
   border: 2px solid var(--bg-card);
 }
@@ -194,8 +192,8 @@
 
 .userPlan {
   font-size: 0.75rem;
-  color: #14e3a8;
-  background: rgba(20, 227, 168, 0.1);
+  color: var(--primary-color);
+  background: rgba(255, 193, 7, 0.1);
   padding: 0.2rem 0.5rem;
   border-radius: 12px;
   margin-top: 0.1rem;
@@ -246,8 +244,8 @@
 }
 
 .userMenuItem:hover {
-  background: rgba(20, 227, 168, 0.1);
-  color: #14e3a8;
+  background: rgba(255, 193, 7, 0.1);
+  color: var(--primary-color);
   transform: translateX(4px);
 }
 
