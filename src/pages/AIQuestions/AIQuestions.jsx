@@ -19,7 +19,8 @@ import {
   FaCreditCard,
   FaBars,
   FaPlus,
-  FaTrash
+  FaTrash,
+  FaTimes
 } from "react-icons/fa";
 import styles from "./AIQuestions.module.css";
 import Header from '../../components/Header/Header';
@@ -38,7 +39,7 @@ const AIQuestions = () => {
   const hiddenCanvasRef = useRef(null);
 
   // Estados para a sidebar
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [chatHistory, setChatHistory] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
 
@@ -115,7 +116,7 @@ const AIQuestions = () => {
 
     setChatHistory(prev => {
       const filtered = prev.filter(chat => chat.id !== chatId);
-      const updated = [chatData, ...filtered].slice(0, 20); // Mantém apenas os 20 mais recentes
+      const updated = [chatData, ...filtered].slice(0, 20); //20 mais recentes
       
       localStorage.setItem('aiChatHistoryList', JSON.stringify(updated));
       return updated;
@@ -133,7 +134,6 @@ const AIQuestions = () => {
     setMessages([]);
     setCurrentChatId(null);
     localStorage.removeItem('aiChatHistory');
-    setSidebarOpen(false);
   };
 
   const loadChat = (chatId) => {
@@ -145,7 +145,6 @@ const AIQuestions = () => {
       })));
       setCurrentChatId(chatId);
       localStorage.setItem('aiChatHistory', JSON.stringify(chat.messages));
-      setSidebarOpen(false);
     }
   };
 
@@ -235,8 +234,7 @@ const AIQuestions = () => {
 
     return () => {
       if (speechSynthesisRef.current) speechSynthesisRef.current.cancel();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    };s
   }, []);
 
   useEffect(() => {
@@ -244,8 +242,7 @@ const AIQuestions = () => {
     try {
       localStorage.setItem('aiChatHistory', JSON.stringify(messages));
       
-      // Salva no histórico se há mensagens significativas
-      if (messages.length > 2) { // Mais que as mensagens iniciais
+      if (messages.length > 1) { 
         saveChatToHistory(messages);
       }
     } catch (err) {
@@ -313,17 +310,17 @@ const AIQuestions = () => {
     if (typeof text !== 'string') return text;
     
     return text
-      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove **bold**
-      .replace(/\*(.*?)\*/g, '$1')     // Remove *italic*
-      .replace(/_(.*?)_/g, '$1')       // Remove _italic_
-      .replace(/~~(.*?)~~/g, '$1')     // Remove ~~strikethrough~~
-      .replace(/`(.*?)`/g, '$1')       // Remove `code`
-      .replace(/```[\s\S]*?```/g, '')  // Remove code blocks
-      .replace(/#{1,6}\s?/g, '')       // Remove headers (# ## ###)
-      .replace(/\-\s/g, '• ')          // Replace - with •
-      .replace(/\*\s/g, '• ')          // Replace * with •
-      .replace(/\+\s/g, '• ')          // Replace + with •
-      .replace(/\n{3,}/g, '\n\n')      // Replace multiple newlines with double
+      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove **negrito**
+      .replace(/\*(.*?)\*/g, '$1')     // Remove *itálico*
+      .replace(/_(.*?)_/g, '$1')       // Remove _itálico_
+      .replace(/~~(.*?)~~/g, '$1')     // Remove ~~tachado~~
+      .replace(/`(.*?)`/g, '$1')       // Remove `código`
+      .replace(/```[\s\S]*?```/g, '')  // Remove blocos de código
+      .replace(/#{1,6}\s?/g, '')       // Remove títulos (#, ##, ###)
+      .replace(/\-\s/g, '• ')          // Troca - por •
+      .replace(/\*\s/g, '• ')          // Troca * por •
+      .replace(/\+\s/g, '• ')          // Troca + por •
+      .replace(/\n{3,}/g, '\n\n')      // Deixa no máximo duas quebras de linha seguidas
       .trim();
   };
 
@@ -412,7 +409,7 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
       const result = await model.generateContent(prompt);
       let responseText = await result.response.text();
 
-      // Limpa o markdown da resposta
+    
       responseText = cleanAllMarkdownFromResponse(responseText);
 
       if (fileRequest.detected && fileRequest.type === 'image') {
@@ -557,7 +554,6 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
         filename: `relatorio-financeiro-${Date.now()}`
       };
     } else {
-      // Garante que o texto normal também seja limpo
       aiMessage.text = cleanAllMarkdownFromResponse(response.text);
     }
 
@@ -768,7 +764,7 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
       });
       y += 15;
 
-      // === Conteúdo principal (com formatação e espaçamento) ===
+      // === Conteúdo principal dos arquivos===
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(13);
       doc.text('ANÁLISE E RECOMENDAÇÕES', margin, y);
@@ -994,35 +990,24 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
     }
   };
 
-  const quickSuggestions = [
-    "Gere um PDF com análise financeira",
-    "Crie uma imagem com resumo das finanças",
-    "Exporte meus dados para Word",
-    "Baixe um relatório em texto",
-    "Como posso economizar mais?",
-    "Dicas para quitar dívidas"
-  ];
 
-  const handleQuickSuggestion = (suggestion) => {
-    setInputMessage(suggestion);
+
+
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
   };
 
   return (
     <div className={styles.aiQuestions}>
       <Header />
       
-      {/* Sidebar de Histórico */}
-      <div className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
+      <div className={`${styles.sidebar} ${!sidebarOpen ? styles.sidebarCollapsed : ''}`}>
         <div className={styles.sidebarHeader}>
           <button className={styles.newChatButton} onClick={startNewChat}>
             <FaPlus /> Novo chat
           </button>
-          <button 
-            className={styles.closeSidebarButton}
-            onClick={() => setSidebarOpen(false)}
-          >
-            ×
-          </button>
+
         </div>
         
         <div className={styles.chatHistory}>
@@ -1057,22 +1042,15 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
         </div>
       </div>
 
-      {/* Overlay para fechar sidebar em mobile */}
-      {sidebarOpen && (
-        <div 
-          className={styles.sidebarOverlay}
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      <main className={styles.main}>
+      <main className={`${styles.main} ${!sidebarOpen ? styles.mainExpanded : ''}`}>
         <div className={styles.container}>
           <section className={styles.aiHeader}>
             <div className={styles.headerContent}>
               <div className={styles.headerLeft}>
                 <button 
                   className={styles.menuButton}
-                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                  onClick={toggleSidebar}
+                  title={sidebarOpen ? "Fechar sidebar" : "Abrir sidebar"}
                 >
                   <FaBars />
                 </button>
@@ -1152,17 +1130,7 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
               <div ref={messagesEndRef} />
             </div>
 
-            <div className={styles.quickSuggestions}>
-              <div className={styles.suggestionsGrid}>
-                {quickSuggestions.map((sugg, idx) => (
-                  <button key={idx} className={styles.suggestionChip} onClick={() => handleQuickSuggestion(sugg)}>
-                    {sugg}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <form onSubmit={handleSendMessage} className={styles.inputContainer}>
+            <form onSubmit={handleSendMessage} className={`${styles.inputContainer} ${!sidebarOpen ? styles.inputContainerExpanded : ''}`}>
               <div className={styles.inputWrapper}>
                 <button
                   type="button"
