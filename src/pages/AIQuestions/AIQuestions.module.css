@@ -223,7 +223,7 @@
   display: flex;
   justify-content: center;
   background: var(--bg-primary);
-  margin-left: 260px; /* empurra o conteúdo para o lado da sidebar */
+  margin-left: 260px; 
 }
 .mainExpanded {
   margin-left: 0;
@@ -279,7 +279,7 @@
 .messagesContainer {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem 2rem 130px; /* espaço para não cobrir as mensagens */
+  padding: 1rem 2rem 5rem; 
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
@@ -473,13 +473,6 @@
   }
 }
 
-.quickSuggestions {
-  background: var(--bg-card);
-  padding: 1rem 2rem 0.5rem;
-  border-top: 1px solid var(--border-color);
-  margin: 0;
-}
-
 .suggestionsGrid {
   display: flex;
   flex-wrap: wrap;
@@ -507,14 +500,15 @@
 .inputContainer {
   position: fixed;
   bottom: 0;
-  left: 260px; /* mesma largura da sidebar */
-  right: 0;
+  left: 25%; 
+  right: 25%;
   padding: 1rem 2rem;
-  border-top: 1px solid var(--border-color);
+  border-radius: 45px ;
   background: var(--bg-card);
   display: flex;
   justify-content: center;
   z-index: 999;
+  margin: 0;
 }
 
 .inputWrapper {
