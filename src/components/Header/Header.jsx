@@ -124,9 +124,7 @@ export default function Header() {
           {/* User Actions */}
           <div className={styles.userSection}>
             {/* Dark Mode Toggle */}
-            <button className={styles.darkModeToggle} onClick={toggleDarkMode}>
-              {darkMode ? <FaSun /> : <FaMoon />}
-            </button>
+
 
             <div className={styles.userInfo} onClick={toggleUserMenu}>
               <div className={styles.userAvatar}>
@@ -161,6 +159,22 @@ export default function Header() {
                   <span className={styles.userMenuIcon}><FaUsers /></span>
                   <span className={styles.userMenuLabel}>Sobre Nós</span>
                 </button>
+            
+                <button
+                  className={`${styles.userMenuItem} ${styles.darkModeToggle}`}
+                  onClick={() => {
+                    toggleDarkMode();
+                  }}
+                  aria-label={darkMode ? 'Ativar modo claro' : 'Ativar modo escuro'}
+                >
+                  <span className={styles.userMenuIcon}>
+                    {darkMode ? <FaSun /> : <FaMoon />}
+                  </span>
+                  <span className={styles.userMenuLabel}>
+                    {darkMode ? 'Modo Claro' : 'Modo Escuro'}
+                  </span>
+                </button>
+                
                 <button
                   className={`${styles.userMenuItem} ${styles.logoutItem}`}
                   onClick={handleLogout}
