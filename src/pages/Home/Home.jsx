@@ -6,11 +6,7 @@ import {
   FaMoneyBillWave, 
   FaChartPie, 
   FaRocket,
-  FaArrowRight,
-  FaDatabase,
-  FaSync,
-  FaArrowUp,
-  FaArrowDown
+  FaArrowRight
 } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext'
 import styles from './Home.module.css';
@@ -20,80 +16,19 @@ import {
   Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 
-// Configuração das criptomoedas com imagens
-const cryptocurrencies = [
-  { 
-    symbol: 'BTC', 
-    name: 'Bitcoin',
-    image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/bitcoin.png'
-  },
-  { 
-    symbol: 'ETH', 
-    name: 'Ethereum',
-    image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/ethereum.png'
-  },
-  { 
-    symbol: 'BNB', 
-    name: 'Binance Coin',
-    image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/binance-coin.png'
-  },
-  { 
-    symbol: 'SOL', 
-    name: 'Solana',
-    image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/solana.png'
-  },
-  { 
-    symbol: 'XRP', 
-    name: 'Ripple',
-    image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/ripple.png'
-  }
-];
-
 export default function Home() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [cryptoPrices, setCryptoPrices] = useState({});
   const [chartData, setChartData] = useState([]);
-  const [cryptoLoading, setCryptoLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      await fetchCryptoPrices();
       generateChartData();
-      setCryptoLoading(false);
+      setLoading(false);
     };
     fetchData();
   }, []); 
-
-  const fetchCryptoPrices = async () => {
-    setCryptoLoading(true);
-    try {
-      const prices = {};
-      
-      for (const crypto of cryptocurrencies) {
-        try {
-          const response = await fetch(`https://economia.awesomeapi.com.br/json/last/${crypto.symbol}-BRL`);
-          const data = await response.json();
-          const key = `${crypto.symbol}BRL`;
-          if (data[key]) {
-            prices[crypto.symbol] = {
-              price: parseFloat(data[key].bid),
-              change: parseFloat(data[key].pctChange),
-              timestamp: data[key].timestamp
-            };
-          }
-        } catch (err) {
-          console.warn(`Failed to fetch ${crypto.symbol}:`, err);
-        }
-      }
-      
-      setCryptoPrices(prices);
-    } catch (err) {
-      console.error('Error fetching crypto prices:', err);
-    } finally {
-      setCryptoLoading(false);
-    }
-  };
 
   const generateChartData = () => {
     const data = [];
@@ -162,7 +97,7 @@ export default function Home() {
     return null;
   };
 
-  if (cryptoLoading) {
+  if (loading) {
     return (
       <div className={styles.loading}>
         <div className={styles.spinner}></div>
@@ -174,51 +109,6 @@ export default function Home() {
   return (
     <div className={styles.home}>    
       <div className={styles.mainContent}>
-        {/* COTAÇÕES COM IMAGENS */}
-        <section className={styles.cryptoSection}>
-          <div className={styles.cryptoHeader}>
-            <div className={styles.cryptoTitle}>
-              <FaDatabase className={styles.cryptoIcon} />
-              <span>Cotações em Tempo Real</span>
-            </div>
-            <div className={styles.cryptoGrid}>
-              {cryptocurrencies.map(crypto => {
-                const priceData = cryptoPrices[crypto.symbol];
-                return (
-                  <div key={crypto.symbol} className={styles.cryptoCard}>
-                    <div className={styles.cryptoHeaderMini}>
-                      <div className={styles.cryptoImageWrapper}>
-                        <img 
-                          src={crypto.image} 
-                          alt={crypto.name}
-                          className={styles.cryptoImage}
-                        />
-                      </div>
-                      <div className={styles.cryptoInfo}>
-                        <span className={styles.cryptoSymbol}>{crypto.symbol}</span>
-                        <span className={styles.cryptoName}>{crypto.name}</span>
-                      </div>
-                    </div>
-                    <div className={styles.cryptoPrice}>
-                      <span className={styles.price}>
-                        {priceData ? `R$ ${priceData.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '---'}
-                      </span>
-                      <span className={`${styles.change} ${priceData?.change >= 0 ? styles.positive : styles.negative}`}>
-                        {priceData ? (
-                          <>
-                            {priceData.change >= 0 ? <FaArrowUp /> : <FaArrowDown />}
-                            {Math.abs(priceData.change).toFixed(2)}%
-                          </>
-                        ) : '---'}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
         {/* HERO SECTION */}
         <section className={styles.hero}>
           <div className={styles.heroContent}>
@@ -271,7 +161,7 @@ export default function Home() {
             <div className={styles.heroCharts}>
               <div className={styles.chartCard}>
                 <div className={styles.chartHeader}>
-                  <h3>Variação das Criptomoedas (7 dias)</h3>
+                  <h3>Variação de Mercado (7 dias)</h3>
                   <p>Desempenho do mercado em tempo real</p>
                 </div>
                 <div className={styles.chartContainer}>
@@ -282,9 +172,9 @@ export default function Home() {
                       <Tooltip content={<CustomTooltip />} />
                       <Legend />
                       <CartesianGrid stroke="#f5f5f5" />
-                      <Area type="monotone" dataKey="btc" fill="#8884d8" stroke="#8884d8" name="Bitcoin (R$)" />
+                      <Area type="monotone" dataKey="btc" fill="#8884d8" stroke="#8884d8" name="Ativo A (R$)" />
                       <Bar dataKey="volume" barSize={20} fill="#413ea0" name="Volume" />
-                      <Line type="monotone" dataKey="eth" stroke="#ff7300" name="Ethereum (R$)" />
+                      <Line type="monotone" dataKey="eth" stroke="#ff7300" name="Ativo B (R$)" />
                     </ComposedChart>
                   </ResponsiveContainer>
                 </div>
@@ -307,7 +197,7 @@ export default function Home() {
                 <span className={styles.metricLabel}>Patrimônio Total</span>
               </div>
               <div className={styles.metricTrend}>
-                <FaArrowUp />
+                <FaArrowRight />
                 <span>+5.2%</span>
               </div>
             </div>
@@ -321,7 +211,7 @@ export default function Home() {
                 <span className={styles.metricLabel}>Economia Mensal</span>
               </div>
               <div className={styles.metricTrend}>
-                <FaArrowUp />
+                <FaArrowRight />
                 <span>+12%</span>
               </div>
             </div>
@@ -335,7 +225,7 @@ export default function Home() {
                 <span className={styles.metricLabel}>Metas Alcançadas</span>
               </div>
               <div className={styles.metricTrend}>
-                <FaArrowUp />
+                <FaArrowRight />
                 <span>+2 esta semana</span>
               </div>
             </div>

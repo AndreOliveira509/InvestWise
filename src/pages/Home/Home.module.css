@@ -59,132 +59,9 @@
   to { transform: rotate(360deg); }
 }
 
-/* CRYPTO SECTION - COM IMAGENS */
-.cryptoSection {
-  margin: 2rem 0;
-}
-
-.cryptoHeader {
-  background: var(--bg-card);
-  border-radius: 20px;
-  padding: 1.5rem;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 20px var(--shadow-color);
-}
-
-.cryptoTitle {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.cryptoIcon {
-  color: var(--accent-color);
-  font-size: 1.1rem;
-}
-
-.cryptoGrid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 1rem;
-}
-
-.cryptoCard {
-  background: var(--bg-primary);
-  border-radius: 12px;
-  padding: 1rem;
-  border: 1px solid var(--border-color);
-  transition: all 0.3s ease;
-  text-align: center;
-}
-
-.cryptoCard:hover {
-  border-color: var(--accent-color);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--shadow-color);
-}
-
-.cryptoHeaderMini {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
-}
-
-.cryptoImageWrapper {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.cryptoImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.cryptoInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  text-align: left;
-  flex: 1;
-}
-
-.cryptoSymbol {
-  font-weight: 700;
-  font-size: 0.8rem;
-  color: var(--text-primary);
-}
-
-.cryptoName {
-  font-size: 0.7rem;
-  color: var(--text-secondary);
-}
-
-.cryptoPrice {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.price {
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: var(--text-primary);
-}
-
-.change {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 0.3rem 0.6rem;
-  border-radius: 20px;
-  width: fit-content;
-  margin: 0 auto;
-}
-
-.change.positive {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
-}
-
-.change.negative {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
-}
-
 /* HERO SECTION */
 .hero {
-  margin: 3rem 0;
+  margin: 2rem 0 3rem 0;
 }
 
 .heroContent {
@@ -213,9 +90,6 @@
   font-weight: 700;
   line-height: 1.1;
   margin-bottom: 1.5rem;
-}
-
-.highlight {
   background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -360,6 +234,7 @@
   left: 0;
   right: 0;
   height: 3px;
+  background: linear-gradient(90deg, var(--accent-color), var(--accent-hover));
 }
 
 .metricCard:hover {
@@ -404,7 +279,7 @@
   gap: 0.25rem;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #10b981;
+  color: var(--accent-color);
 }
 
 /* FEATURES - APENAS 2 CARDS */
@@ -635,10 +510,6 @@
 
 /* RESPONSIVIDADE */
 @media (max-width: 1200px) {
-  .cryptoGrid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
   .heroContent {
     grid-template-columns: 1fr;
     gap: 2rem;
@@ -658,10 +529,6 @@
 @media (max-width: 768px) {
   .mainContent {
     padding: 0 1rem;
-  }
-  
-  .cryptoGrid {
-    grid-template-columns: repeat(2, 1fr);
   }
   
   .heroTitle {
@@ -687,10 +554,6 @@
 }
 
 @media (max-width: 480px) {
-  .cryptoGrid {
-    grid-template-columns: 1fr;
-  }
-  
   .heroTitle {
     font-size: 2rem;
   }
