@@ -1,4 +1,4 @@
-// AIQuestions.jsx
+// AIQuestions.jsx (Corrigido e Funcional)
 import { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -39,7 +39,8 @@ const AIQuestions = () => {
   const hiddenCanvasRef = useRef(null);
 
   // Estados para a sidebar
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  // CORREÇÃO: Inicia o estado com base na largura da tela
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
   const [chatHistory, setChatHistory] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
 
@@ -164,7 +165,11 @@ useEffect(() => {
     setMessages([]);
     setCurrentChatId(null);
     localStorage.removeItem('aiChatHistory');
-    setSidebarOpen(false);
+    
+    // CORREÇÃO: Só fecha a sidebar em telas pequenas
+    if (window.innerWidth <= 768) {
+      setSidebarOpen(false);
+    }
   };
 
   const loadChat = (chatId) => {
@@ -176,7 +181,11 @@ useEffect(() => {
       })));
       setCurrentChatId(chatId);
       localStorage.setItem('aiChatHistory', JSON.stringify(chat.messages));
-      setSidebarOpen(false);
+      
+      // CORREÇÃO: Só fecha a sidebar em telas pequenas
+      if (window.innerWidth <= 768) {
+        setSidebarOpen(false);
+      }
     }
   };
 
@@ -1086,23 +1095,12 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
     }
   };
 
-  const quickSuggestions = [
-    "Gere um PDF com análise financeira",
-    "Crie uma imagem com resumo das finanças",
-    "Exporte meus dados para Word",
-    "Baixe um relatório em texto",
-    "Como posso economizar mais?",
-    "Dicas para quitar dívidas"
-  ];
-
-  const handleQuickSuggestion = (suggestion) => {
-    setInputMessage(suggestion);
-  };
 
   return (
     <div className={styles.aiQuestions}>
       {/* Sidebar de Histórico */}
-      <div className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
+      {/* CORREÇÃO: Lógica de classe corrigida */}
+      <div className={`${styles.sidebar} ${!sidebarOpen ? styles.sidebarCollapsed : ''}`}>
         <div className={styles.sidebarHeader}>
           <button className={styles.newChatButton} onClick={startNewChat}>
             <FaPlus /> Novo chat
@@ -1148,6 +1146,7 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
       </div>
 
       {/* Overlay para fechar sidebar em mobile */}
+      {/* Esta parte estava correta, mas faltava o CSS */}
       {sidebarOpen && (
         <div 
           className={styles.sidebarOverlay}
@@ -1155,7 +1154,8 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
         />
       )}
 
-      <main className={styles.main}>
+      {/* CORREÇÃO: Lógica de classe corrigida */}
+      <main className={`${styles.main} ${!sidebarOpen ? styles.mainExpanded : ''}`}>
         <div className={styles.container}>
           <section className={styles.aiHeader}>
             <div className={styles.headerContent}>
@@ -1240,16 +1240,6 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
               )}
 
               <div ref={messagesEndRef} />
-            </div>
-
-            <div className={styles.quickSuggestions}>
-              <div className={styles.suggestionsGrid}>
-                {quickSuggestions.map((sugg, idx) => (
-                  <button key={idx} className={styles.suggestionChip} onClick={() => handleQuickSuggestion(sugg)}>
-                    {sugg}
-                  </button>
-                ))}
-              </div>
             </div>
 
             <form onSubmit={handleSendMessage} className={styles.inputContainer}>

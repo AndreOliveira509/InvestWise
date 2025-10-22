@@ -92,7 +92,7 @@ const LandingPage = () => {
     {
       name: "Ana Silva",
       role: "Estudante de Economia",
-      text: "O InvestiWise me mostrou como pequenos ajustes no orçamento podem gerar grandes resultados no longo prazo!"
+      text: "O InvestWise me mostrou como pequenos ajustes no orçamento podem gerar grandes resultados no longo prazo!"
     },
     {
       name: "Carlos Mendes",
@@ -103,7 +103,7 @@ const LandingPage = () => {
 
   const faqs = [
     {
-      question: "O InvestiWise é gratuito?",
+      question: "O InvestWise é gratuito?",
       answer: "Sim! Este é um projeto educacional desenvolvido para promover educação financeira e é 100% gratuito."
     },
     {
@@ -153,7 +153,7 @@ const LandingPage = () => {
       <header className={styles.header}>
         <div className={styles.navbar}>
           <div className={styles.logo}>
-            <div className={styles.logoText}><h1>InvestiWise</h1></div>
+            <div className={styles.logoText}><h1>InvestWise</h1></div>
           </div>
 
           <nav className={`${styles.nav} ${isMenuOpen ? styles.active : ''}`}>
@@ -165,9 +165,9 @@ const LandingPage = () => {
           </nav>
 
           <div className={`${styles.authButtons} ${isMenuOpen ? styles.active : ''}`}>
-            <button onClick={toggleDarkMode} className={styles.themeToggle}>
+            {/* <button onClick={toggleDarkMode} className={styles.themeToggle}>
               {isDarkMode ? <FaSun /> : <FaMoon />}
-            </button>
+            </button> */}
             <Button secondary onClick={handleLoginClick}>
               Entrar
             </Button>
@@ -264,7 +264,7 @@ const LandingPage = () => {
       {/* How It Works Section */}
       <section id="how-it-works" className={styles.howItWorks}>
         <div className={styles.container}>
-          <h2>Como o InvestiWise Funciona</h2>
+          <h2>Como o InvestWise Funciona</h2>
           <p className={styles.sectionSubtitle}>4 passos simples para transformar sua vida financeira</p>
           <div className={styles.steps}>
             {steps.map((step, index) => (
@@ -346,7 +346,7 @@ const LandingPage = () => {
           <div className={styles.footerContent}>
             <div className={styles.footerBrand}>
               <div className={styles.logo}>
-                <div className={styles.logoText}>InvestiWise</div>
+                <div className={styles.logoText}>InvestWise</div>
               </div>
               <p>Transformando a maneira como você cuida do seu dinheiro</p>
             </div>
@@ -372,7 +372,7 @@ const LandingPage = () => {
             </div>
           </div>
           <div className={styles.footerBottom}>
-            <p>&copy; 2025 InvestiWise. Um projeto para educação financeira. Todos os direitos reservados.</p>
+            <p>&copy; 2025 InvestWise. Um projeto para educação financeira. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>
