@@ -13,9 +13,9 @@
 /* Sidebar Styles */
 .sidebar {
   position: fixed;
-  top: 12.5%; /* Começa abaixo do header principal */
+  top: 12.5%;
   left: 0;
-  height: calc(100vh - 70px); /* Ajusta a altura total */
+  height: calc(100vh - 70px); 
   width: 260px;
   background: var(--bg-card);
   border-right: 1px solid var(--border-color);
