@@ -1,4 +1,4 @@
-// AIQuestions.jsx (Corrigido e Funcional)
+// AIQuestions.jsx (Corrigido com Prompts Seguros)
 import { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -38,13 +38,10 @@ const AIQuestions = () => {
   const messagesEndRef = useRef(null);
   const hiddenCanvasRef = useRef(null);
 
-  // Estados para a sidebar
-  // CORREÇÃO: Inicia o estado com base na largura da tela
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
   const [chatHistory, setChatHistory] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
 
-  // Inicializa mensagens a partir do localStorage
   const [messages, setMessages] = useState(() => {
     try {
       const savedMessages = localStorage.getItem('aiChatHistory');
@@ -68,7 +65,7 @@ const AIQuestions = () => {
   const recognitionRef = useRef(null);
   const speechSynthesisRef = useRef(null);
 
- const { user, token } = useAuth(); // Obtenha o usuário e o token do contexto
+ const { user, token } = useAuth();
   const [userFinancialData, setUserFinancialData] = useState(null);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
@@ -77,15 +74,23 @@ const AIQuestions = () => {
 useEffect(() => {
     const fetchFinancialData = async () => {
         if (!token) {
+            // Se não houver token, define dados padrão ou de "não logado"
+            setUserFinancialData({ 
+                monthlyIncome: 5000, 
+                monthlyExpenses: 3500, 
+                savings: 15000, 
+                debts: 5000, 
+                financialGoals: 'Comprar um apartamento',
+                recentTransactions: [] // Adicionado para consistência
+            });
             setIsLoadingData(false);
             return;
         }
 
         try {
-            // O endereço da sua API
             const response = await fetch('/api/users/financial-summary', {
                 headers: {
-                    'Authorization': `Bearer ${token}` // Envia o token para autenticação
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
@@ -94,19 +99,26 @@ useEffect(() => {
             }
 
             const data = await response.json();
-            setUserFinancialData(data); // Armazena os dados no estado
+            setUserFinancialData(data); 
 
         } catch (error) {
             console.error("Erro ao carregar dados financeiros:", error);
-            // Opcional: definir dados padrão em caso de erro
-            setUserFinancialData({ monthlyIncome: 0, monthlyExpenses: 0, savings: 0, debts: 0, financialGoals: '' });
+            // Define dados padrão em caso de erro
+            setUserFinancialData({ 
+                monthlyIncome: 0, 
+                monthlyExpenses: 0, 
+                savings: 0, 
+                debts: 0, 
+                financialGoals: '',
+                recentTransactions: []
+            });
         } finally {
             setIsLoadingData(false);
         }
     };
 
     fetchFinancialData(); 
-}, [token]); // O useEffect será executado sempre que o token mudar
+}, [token]);
 
   // Carrega o histórico de conversas
   useEffect(() => {
@@ -120,7 +132,6 @@ useEffect(() => {
         const history = JSON.parse(savedHistory);
         setChatHistory(history);
         
-        // Se não há chat atual, usa o mais recente ou cria um novo
         if (!currentChatId && history.length > 0) {
           setCurrentChatId(history[0].id);
         }
@@ -147,7 +158,7 @@ useEffect(() => {
 
     setChatHistory(prev => {
       const filtered = prev.filter(chat => chat.id !== chatId);
-      const updated = [chatData, ...filtered].slice(0, 20); // Mantém apenas os 20 mais recentes
+      const updated = [chatData, ...filtered].slice(0, 20); 
       
       localStorage.setItem('aiChatHistoryList', JSON.stringify(updated));
       return updated;
@@ -157,7 +168,6 @@ useEffect(() => {
   };
 
   const startNewChat = () => {
-    // Salva a conversa atual antes de iniciar nova
     if (messages.length > 0) {
       saveChatToHistory(messages);
     }
@@ -166,7 +176,6 @@ useEffect(() => {
     setCurrentChatId(null);
     localStorage.removeItem('aiChatHistory');
     
-    // CORREÇÃO: Só fecha a sidebar em telas pequenas
     if (window.innerWidth <= 768) {
       setSidebarOpen(false);
     }
@@ -182,7 +191,6 @@ useEffect(() => {
       setCurrentChatId(chatId);
       localStorage.setItem('aiChatHistory', JSON.stringify(chat.messages));
       
-      // CORREÇÃO: Só fecha a sidebar em telas pequenas
       if (window.innerWidth <= 768) {
         setSidebarOpen(false);
       }
@@ -280,17 +288,16 @@ useEffect(() => {
   }, []);
 
   useEffect(() => {
-    // Salva mensagens no localStorage e no histórico
     try {
       localStorage.setItem('aiChatHistory', JSON.stringify(messages));
       
-      // Salva no histórico se há mensagens significativas
-      if (messages.length > 2) { // Mais que as mensagens iniciais
+      if (messages.length > 2) { 
         saveChatToHistory(messages);
       }
     } catch (err) {
       console.error('Erro ao salvar histórico:', err);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages]);
 
   useEffect(() => {
@@ -353,17 +360,17 @@ useEffect(() => {
     if (typeof text !== 'string') return text;
     
     return text
-      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove **bold**
-      .replace(/\*(.*?)\*/g, '$1')     // Remove *italic*
-      .replace(/_(.*?)_/g, '$1')       // Remove _italic_
-      .replace(/~~(.*?)~~/g, '$1')     // Remove ~~strikethrough~~
-      .replace(/`(.*?)`/g, '$1')       // Remove `code`
-      .replace(/```[\s\S]*?```/g, '')  // Remove code blocks
-      .replace(/#{1,6}\s?/g, '')       // Remove headers (# ## ###)
-      .replace(/\-\s/g, '• ')          // Replace - with •
-      .replace(/\*\s/g, '• ')          // Replace * with •
-      .replace(/\+\s/g, '• ')          // Replace + with •
-      .replace(/\n{3,}/g, '\n\n')      // Replace multiple newlines with double
+      .replace(/\*\*(.*?)\*\*/g, '$1') 
+      .replace(/\*(.*?)\*/g, '$1')     
+      .replace(/_(.*?)_/g, '$1')       
+      .replace(/~~(.*?)~~/g, '$1')     
+      .replace(/`(.*?)`/g, '$1')       
+      .replace(/```[\s\S]*?```/g, '')  
+      .replace(/#{1,6}\s?/g, '')       
+      .replace(/\-\s/g, '• ')          
+      .replace(/\*\s/g, '• ')          
+      .replace(/\+\s/g, '• ')          
+      .replace(/\n{3,}/g, '\n\n')      
       .trim();
   };
 
@@ -371,82 +378,107 @@ useEffect(() => {
     if (typeof text !== 'string') return text;
     
     return text
-      // Remove markdown de formatação
       .replace(/\*\*(.*?)\*\*/g, '$1')
       .replace(/\*(.*?)\*/g, '$1')
       .replace(/_(.*?)_/g, '$1')
       .replace(/~~(.*?)~~/g, '$1')
       .replace(/`(.*?)`/g, '$1')
       .replace(/```[\s\S]*?```/g, '')
-      // Remove headers
       .replace(/#{1,6}\s?/g, '')
-      // Transforma listas com * - + em listas com •
       .replace(/^[\*\-+]\s/gm, '• ')
-      // Remove markdown de links
       .replace(/\[(.*?)\]\(.*?\)/g, '$1')
-      // Limpa espaços extras
       .replace(/\n{3,}/g, '\n\n')
       .replace(/^\s+|\s+$/gm, '')
       .trim();
   };
 
+  // =================================================================
+  // FUNÇÃO 'callGeminiForFiles' CORRIGIDA E COM PROMPTS SEGUROS
+  // =================================================================
   const callGeminiForFiles = async (userMessage) => {
+    // Garante que os dados financeiros estejam prontos
+    if (isLoadingData || !userFinancialData) {
+      return { text: "Estou carregando seus dados financeiros. Por favor, aguarde um momento antes de perguntar.", fileRequest: null };
+    }
+
+    // Lógica de transações (corrigida, movida de bloco inacessível)
+    const transactionsListForPrompt = userFinancialData.recentTransactions && userFinancialData.recentTransactions.length > 0
+        ? userFinancialData.recentTransactions.map(t => `- ${t.description}: R$ ${t.amount.toFixed(2)} em ${t.date}`).join('\n')
+        : 'Nenhuma transação recente encontrada.';
+
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
       const fileRequest = detectFileRequest(userMessage);
       let prompt = '';
+
+      // Dados financeiros para o prompt
+      const financialContext = `
+        - Renda Mensal: R$ ${userFinancialData.monthlyIncome.toFixed(2)}
+        - Despesas Mensais: R$ ${userFinancialData.monthlyExpenses.toFixed(2)}
+        - Economias/Investimentos: R$ ${userFinancialData.savings.toFixed(2)}
+        - Dívidas: R$ ${userFinancialData.debts.toFixed(2)}
+        - Meta Financeira: ${userFinancialData.financialGoals}
+        - Transações Recentes:
+        ${transactionsListForPrompt}
+      `;
+
+      // INSTRUÇÃO DE SISTEMA (GUARDRAIL)
+      const systemInstruction = `
+        --- INÍCIO DAS INSTRUÇÕES DE SISTEMA ---
+        Você é um assistente financeiro do site InvestWise.
+        Sua única função é analisar e responder perguntas sobre finanças, economia, investimentos e os dados financeiros do usuário fornecidos.
+        
+        REGRAS ESTRITAS:
+        1. TÓPICOS PERMITIDOS: Apenas finanças, economia, investimentos, planejamento financeiro, análise de orçamento, dicas de economia e dúvidas sobre o site InvestWise.
+        2. TÓPICOS PROIBIDOS: Você NÃO DEVE responder perguntas sobre QUALQUER outro tópico. Isso inclui, mas não se limita a: história (ex: "morte de Osama Bin Laden"), política, geografia, ciência, programação (HTML, CSS, JavaScript, etc.), biografias, ou qualquer assunto não-financeiro.
+        3. COMO RECUSAR: Se o usuário perguntar algo sobre um tópico proibido, você DEVE recusar educadamente.
+        4. TEXTO DA RECUSA: Use esta resposta: "Desculpe, como assistente financeiro da InvestWise, meu foco é exclusivamente em finanças e investimentos. Não posso fornecer informações sobre [TÓPICO PROIBIDO]."
+        5. NÃO GERE CÓDIGO: Nunca gere código de programação (HTML, Python, etc.), mesmo que o usuário peça.
+        6. FORMATAÇÃO: NÃO USE MARKDOWN (*, #, -, etc.). Responda com texto limpo e parágrafos.
+        --- FIM DAS INSTRUÇÕES DE SISTEMA ---
+      `;
 
       if (fileRequest.detected) {
         if (fileRequest.type === 'image') {
           prompt = `
-Solicitou geração de um gráfico/imagem.
-Pedido: "${userMessage}"
-
-TAREFA:
-- Se quer um gráfico, gere dados estruturados que possam ser usados para o gráfico em formato JSON.
-- Inclua: "labels": [...], "values": [...], "title": "Título do gráfico", "description": "Breve descrição"
-- Se não for possível obter dados específicos, gere um resumo textual curto explicando o que o gráfico deve mostrar.
-
-IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa.
-`;
+            ${systemInstruction}
+            
+            TAREFA:
+            1. Analise o pedido do usuário para um gráfico/imagem: "${userMessage}".
+            2. Se o pedido NÃO for sobre finanças (ex: "gráfico da população mundial", "imagem de um gato"), RECUSE usando o texto de recusa.
+            3. Se o pedido for financeiro (ex: "gráfico das minhas despesas", "imagem sobre investimentos"), gere dados estruturados para o gráfico em JSON.
+            
+            Use este contexto financeiro se o pedido for relevante:
+            ${financialContext}
+            
+            Formato JSON esperado (APENAS se for financeiro): { "labels": [...], "values": [...], "title": "...", "description": "..." }
+          `;
         } else {
           prompt = `
-Foi pedido que seja gerado um arquivo do tipo ${fileRequest.type.toUpperCase()}.
-Pedido: "${userMessage}"
-
-GERE UM CONTEÚDO DETALHADO E BEM ESTRUTURADO PARA O ARQUIVO.
-NÃO USE MARKDOWN (* # -). Use formatação limpa e profissional.
-
-Use estes dados de contexto se necessário:
-Renda mensal: R$ ${user?.renda_mensal || 'Não informada'}
-Despesas: R$ ${userFinancialData.monthlyExpenses}
-Economias: R$ ${userFinancialData.savings}
-Dívidas: R$ ${userFinancialData.debts}
-Meta: ${userFinancialData.financialGoals}
-
-Gere um conteúdo completo com:
-- Introdução
-- Análise detalhada
-- Recomendações
-- Próximos passos
-
-IMPORTANTE: NÃO USE MARKDOWN NA RESPOSTA.
-`;
+            ${systemInstruction}
+            
+            TAREFA:
+            1. Analise o pedido do usuário para um arquivo ${fileRequest.type.toUpperCase()}: "${userMessage}".
+            2. Se o pedido NÃO for sobre finanças (ex: "gere um PDF sobre a história do Brasil"), RECUSE usando o texto de recusa.
+            3. Se o pedido for financeiro, GERE UM CONTEÚDO DETALHADO E BEM ESTRUTURADO para o arquivo, usando os dados de contexto abaixo.
+            
+            Use este contexto financeiro se o pedido for relevante:
+            ${financialContext}
+            
+            Gere o conteúdo completo com Introdução, Análise, Recomendações e Próximos Passos.
+          `;
         }
       } else {
+        // Prompt para chat geral
         prompt = `
-Responda de forma útil e clara:
-"${userMessage}"
-
-Dados contextuais (use se necessário):
-Renda mensal: R$ ${userFinancialData.monthlyIncome}
-Despesas mensais: R$ ${userFinancialData.monthlyExpenses}
-Economias: R$ ${userFinancialData.savings}
-Dívidas: R$ ${userFinancialData.debts}
-
-IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natural.
-`;
+          ${systemInstruction}
+          
+          Dados contextuais do usuário (use APENAS para responder perguntas financeiras):
+          ${financialContext}
+          
+          Pergunta do usuário:
+          "${userMessage}"
+        `;
       }
 
       const result = await model.generateContent(prompt);
@@ -455,7 +487,13 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
       // Limpa o markdown da resposta
       responseText = cleanAllMarkdownFromResponse(responseText);
 
+      // Lógica para arquivos de imagem
       if (fileRequest.detected && fileRequest.type === 'image') {
+        // Verifica se a resposta foi uma recusa
+        if (responseText.toLowerCase().includes("desculpe, como assistente")) {
+           return { text: responseText, fileRequest: null }; // Retorna como chat normal
+        }
+        
         try {
           const jsonStart = responseText.indexOf('{');
           if (jsonStart !== -1) {
@@ -464,77 +502,30 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
             return { text: parsed, fileRequest: 'image' };
           }
         } catch (err) {
-          return { text: responseText, fileRequest: 'image' };
+          // Se falhar o JSON, mas for um pedido de imagem, retorna o texto de descrição
+          return { text: "Não consegui gerar os dados para o gráfico. Tente especificar melhor o que você precisa.", fileRequest: 'image' };
         }
       }
+      
+      // Verifica se a resposta foi uma recusa (para arquivos ou chat)
+      if (responseText.toLowerCase().includes("desculpe, como assistente")) {
+         return { text: responseText, fileRequest: null }; // Retorna como chat normal
+      }
 
-      return { text: responseText, fileRequest: fileRequest.detected ? fileRequest.type : null };
+      // Retorno padrão para arquivos (PDF, DOC, etc.) ou chat
+      return { 
+        text: responseText, 
+        fileRequest: fileRequest.detected ? fileRequest.type : null 
+      };
+
     } catch (error) {
       console.error('Erro Gemini:', error);
       return { text: "Ocorreu um erro ao gerar o conteúdo. Tente novamente.", fileRequest: null };
     }
-
-    try {
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Recomendo usar o 1.5-flash para melhor entendimento
-
-        // NOVO: Converte a lista de transações em texto para o prompt
-        const transactionsListForPrompt = userFinancialData.recentTransactions && userFinancialData.recentTransactions.length > 0
-            ? userFinancialData.recentTransactions.map(t => `- ${t.description}: R$ ${t.amount.toFixed(2)} em ${t.date}`).join('\n')
-            : 'Nenhuma transação recente encontrada.';
-
-        const fileRequest = detectFileRequest(userMessage);
-        let prompt = '';
-
-        if (fileRequest.detected) {
-            // ... (a lógica para gerar arquivos continua a mesma, mas agora com o contexto rico)
-            prompt = `
-              O usuário pediu um arquivo do tipo ${fileRequest.type.toUpperCase()}.
-              Pedido: "${userMessage}"
-              
-              GERE APENAS O CONTEÚDO PARA O ARQUIVO.
-              
-              Use estes dados de contexto se necessário:
-              - Renda Mensal: R$ ${userFinancialData.monthlyIncome}
-              - Despesas Mensais (Total): R$ ${userFinancialData.monthlyExpenses}
-              - Economias/Investimentos (Total): R$ ${userFinancialData.savings}
-              - Dívidas: R$ ${userFinancialData.debts}
-              - Lista de Transações Recentes:
-              ${transactionsListForPrompt}
-            `;
-        } else {
-            // PROMPT MELHORADO PARA CHAT COMUM
-            prompt = `
-              Você é um assistente financeiro prestativo. Responda ao usuário de forma clara e direta.
-              
-              Pergunta do usuário: "${userMessage}"
-
-              Use estes dados financeiros do usuário para basear sua resposta:
-              - Renda Mensal (Total): R$ ${userFinancialData.monthlyIncome.toFixed(2)}
-              - Despesas Mensais (Total): R$ ${userFinancialData.monthlyExpenses.toFixed(2)}
-              - Economias/Investimentos (Total): R$ ${userFinancialData.savings.toFixed(2)}
-              - Dívidas: R$ ${userFinancialData.debts.toFixed(2)}
-              
-              - Aqui está uma lista das transações mais recentes para contexto detalhado (use isso para responder a perguntas como "quais são meus gastos?"):
-              ${transactionsListForPrompt}
-
-              Responda diretamente à pergunta do usuário usando esses dados.
-            `;
-        }
-
-        const result = await model.generateContent(prompt);
-        const responseText = await result.response.text();
-
-        // ... (o resto da função continua igual)
-        if (fileRequest.detected && fileRequest.type === 'image') {
-          // ...
-        }
-        return { text: responseText, fileRequest: fileRequest.detected ? fileRequest.type : null };
-
-    } catch (error) {
-        console.error('Erro Gemini:', error);
-        return { text: "🤖 Ocorreu um erro ao gerar o conteúdo. Tente novamente.", fileRequest: null };
-    }
-};
+  };
+  // =================================================================
+  // FIM DA FUNÇÃO MODIFICADA
+  // =================================================================
 
   const handleSendMessage = async (e) => {
     e?.preventDefault?.();
@@ -658,7 +649,6 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
         filename: `relatorio-financeiro-${Date.now()}`
       };
     } else {
-      // Garante que o texto normal também seja limpo
       aiMessage.text = cleanAllMarkdownFromResponse(response.text);
     }
 
@@ -831,7 +821,7 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
       doc.setFontSize(10);
       doc.setTextColor(200, 200, 200);
       doc.setFont('helvetica', 'normal');
-      doc.text('Gerado pela InvestiWise', pageWidth / 2, 55, { align: 'center' });
+      doc.text('Gerado pela InvestWise', pageWidth / 2, 55, { align: 'center' });
 
       // === Informações do relatório ===
       let y = 120;
@@ -920,7 +910,7 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
       doc.line(margin, footerY, pageWidth - margin, footerY);
       doc.setFontSize(8);
       doc.setTextColor(130, 130, 130);
-      doc.text('Documento gerado automaticamente pela InvestiWise', pageWidth / 2, footerY + 15, { align: 'center' });
+      doc.text('Documento gerado automaticamente pela InvestWise', pageWidth / 2, footerY + 15, { align: 'center' });
 
       doc.save(`${filename}.pdf`);
     } catch (err) {
@@ -936,7 +926,7 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
       const financialSummary = `RESUMO FINANCEIRO:\n${'-'.repeat(30)}\n`;
       const data = `• Renda Mensal: R$ ${userFinancialData.monthlyIncome}\n• Despesas Mensais: R$ ${userFinancialData.monthlyExpenses}\n• Economias: R$ ${userFinancialData.savings}\n• Dívidas: R$ ${userFinancialData.debts}\n• Meta: ${userFinancialData.financialGoals}\n\n`;
       const body = typeof content === 'object' ? JSON.stringify(content, null, 2) : String(content);
-      const footer = `\n\n${'='.repeat(50)}\nGerado pela InvestiWise - Confidencial`;
+      const footer = `\n\n${'='.repeat(50)}\nGerado pela InvestWise - Confidencial`;
       
       const fullContent = header + info + financialSummary + data + body + footer;
       const blob = new Blob([fullContent], { type: 'text/plain;charset=utf-8' });
@@ -954,7 +944,7 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
       const financialSummary = `RESUMO FINANCEIRO:\n`;
       const data = `Renda Mensal: R$ ${userFinancialData.monthlyIncome}\nDespesas Mensais: R$ ${userFinancialData.monthlyExpenses}\nEconomias: R$ ${userFinancialData.savings}\nDívidas: R$ ${userFinancialData.debts}\nMeta: ${userFinancialData.financialGoals}\n\n`;
       const body = typeof content === 'object' ? JSON.stringify(content, null, 2) : String(content);
-      const footer = `\n\nGerado pela InvestiWise - Confidencial`;
+      const footer = `\n\nGerado pela InvestWise - Confidencial`;
       
       const fullContent = header + info + financialSummary + data + body + footer;
       const blob = new Blob([fullContent], { type: 'application/msword' });
@@ -997,7 +987,6 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
 
       const ws = XLSX.utils.aoa_to_sheet(summaryData);
       
-      // Estilo da planilha
       const range = XLSX.utils.decode_range(ws['!ref']);
       for (let R = range.s.r; R <= range.e.r; R++) {
         for (let C = range.s.c; C <= range.e.c; C++) {
@@ -1098,8 +1087,6 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
 
   return (
     <div className={styles.aiQuestions}>
-      {/* Sidebar de Histórico */}
-      {/* CORREÇÃO: Lógica de classe corrigida */}
       <div className={`${styles.sidebar} ${!sidebarOpen ? styles.sidebarCollapsed : ''}`}>
         <div className={styles.sidebarHeader}>
           <button className={styles.newChatButton} onClick={startNewChat}>
@@ -1145,8 +1132,6 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
         </div>
       </div>
 
-      {/* Overlay para fechar sidebar em mobile */}
-      {/* Esta parte estava correta, mas faltava o CSS */}
       {sidebarOpen && (
         <div 
           className={styles.sidebarOverlay}
@@ -1154,7 +1139,6 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
         />
       )}
 
-      {/* CORREÇÃO: Lógica de classe corrigida */}
       <main className={`${styles.main} ${!sidebarOpen ? styles.mainExpanded : ''}`}>
         <div className={styles.container}>
           <section className={styles.aiHeader}>
@@ -1188,7 +1172,7 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
                   <div className={styles.messageAvatar}>
                     {message.sender === 'user' ? <FaUser /> : <FaRobot />}
                   </div>
-                  <div className={styles.messageContent}>
+                  <div classNameclassName={styles.messageContent}>
                     <div className={styles.messageText}>
                       {String(message.text).split('\n').map((line, idx) => <p key={idx}>{line}</p>)}
                       {message.fileData && (
