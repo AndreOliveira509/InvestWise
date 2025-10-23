@@ -252,15 +252,15 @@ export default function Simulation() {
             <div className={styles.cryptoTitle}>
               <FaDatabase className={styles.cryptoTitleIcon} />
               <span>Cotações em Tempo Real</span>
-              <button 
-                onClick={fetchCryptoPrices} 
-                className={styles.refreshBtn}
-                disabled={loading}
-              >
-                <FaSync className={loading ? styles.spinning : ''} />
-                Atualizar
-              </button>
             </div>
+            <button 
+              onClick={fetchCryptoPrices} 
+              className={styles.refreshBtn}
+              disabled={loading}
+            >
+              <FaSync className={loading ? styles.spinning : ''} />
+              Atualizar
+            </button>
             <button 
               onClick={() => setShowCryptoQuotes(!showCryptoQuotes)}
               className={`${styles.toggleBtn} ${showCryptoQuotes ? styles.rotated : ''}`}
