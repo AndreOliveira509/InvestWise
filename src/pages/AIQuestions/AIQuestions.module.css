@@ -13,7 +13,7 @@
 /* Sidebar Styles */
 .sidebar {
   position: fixed;
-  top: 12.5%;
+  top: 12%;
   left: 0;
   height: calc(100vh - 70px); 
   width: 260px;
@@ -238,10 +238,17 @@
 }
 
 .aiHeader {
+  position: fixed;
+  top: 12%;
+  width: 100%;
   background: var(--bg-card);
   border-bottom: 1px solid var(--border-color);
   padding: 1rem 2rem;
   flex-shrink: 0;
+   z-index: 900;
+  display: flex;
+  flex-direction: column;
+  transition: left 0.3s ease;
 }
 
 .title {
