@@ -1,5 +1,6 @@
 // src/pages/Dashboard/Dashboard.jsx
 
+// (Importações existentes)
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { FaPlus, FaTrash, FaSearch, FaArrowUp, FaArrowDown, FaExclamationCircle } from 'react-icons/fa';
@@ -10,6 +11,10 @@ import PositiveAndNegativeBarChart from '../../components/PositiveAndNegativeBar
 import CustomActiveShapePieChart from '../../components/CustomActiveShapePieChart/CustomActiveShapePieChart';
 import SynchronizedLineChart from '../../components/SynchronizedLineChart/SynchronizedLineChart';
 import InvestmentProfitabilityChart from '../../components/InvestmentProfitabilityChart/InvestmentProfitabilityChart';
+
+// --- (NOVA IMPORTAÇÃO) ---
+// Importa o novo componente de modal
+import DeleteConfirmationModal from '../../components/DeleteConfirmationModal/DeleteConfirmationModal';
 
 // Definições de categorias de gastos e investimentos
 const categories = [
@@ -55,8 +60,15 @@ export default function Dashboard() {
   const [form, setForm] = useState({ description: '', amount: '', categoryId: 1, date: new Date().toISOString().split('T')[0] });
   const [investmentForm, setInvestmentForm] = useState({ name: '', value: '', category: 'fiis', date: new Date().toISOString().split('T')[0] });
 
+  // --- (NOVOS ESTADOS) ---
+  // Estados para controlar o modal de confirmação
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalConfig, setModalConfig] = useState({ type: null, id: null, title: '' });
+
+
   // Efeito para buscar transações (Gastos)
   useEffect(() => {
+    // ... (lógica existente - sem alteração)
     const fetchTransactions = async () => {
       if (!user) return; 
 
@@ -87,6 +99,7 @@ export default function Dashboard() {
   
   // Efeito para buscar investimentos
   useEffect(() => {
+    // ... (lógica existente - sem alteração)
     const fetchInvestments = async () => {
       if (!user) return;
 
@@ -116,12 +129,14 @@ export default function Dashboard() {
   }, [user]);
 
   // --- Métricas Financeiras (Gastos) ---
+  // ... (lógica existente - sem alteração)
   const monthlyBudget = useMemo(() => (user ? parseFloat(user.renda_mensal) : 0), [user]);
   const totalExpenses = useMemo(() => expenses.reduce((s, e) => s + parseFloat(e.amount || 0), 0), [expenses]);
   const remaining = useMemo(() => monthlyBudget - totalExpenses, [monthlyBudget, totalExpenses]);
   const usedPercent = useMemo(() => (monthlyBudget > 0 ? (totalExpenses / monthlyBudget) * 100 : 0), [monthlyBudget, totalExpenses]);
 
   // --- Métricas Financeiras (Investimentos) ---
+  // ... (lógica existente - sem alteração)
   const totalInvestmentValue = useMemo(() => 
     investments.reduce((sum, inv) => sum + parseFloat(inv.value || 0), 0), 
   [investments]);
@@ -142,6 +157,7 @@ export default function Dashboard() {
   }, [investments]);
 
   // --- Dados para Gráficos (Memoizados) ---
+  // ... (lógica existente - sem alteração)
   const filteredExpenses = useMemo(() => (
     expenses
       .filter(e => e.description.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -188,9 +204,7 @@ export default function Dashboard() {
   
   const investmentHistoryData = useMemo(() => {
     if (investments.length === 0) return [];
-    // Usa o valor total investido e o ganho/perda total para criar uma *projeção* linear
-    // NOTA: Isso ainda é uma simulação, não um histórico real de rentabilidade.
-    // Para um histórico real, seria necessário um backend que calculasse o valor da carteira diariamente.
+    // ... (lógica existente - sem alteração)
     const totalInvested = totalInvestmentValue;
     const totalChange = totalInvestmentChange;
     if (totalInvested === 0) return [];
@@ -213,6 +227,8 @@ export default function Dashboard() {
   }, [investments, totalInvestmentValue, totalInvestmentChange]);
 
   // --- Handlers (Adicionar/Remover) ---
+  // (Funções handleAdd e handleAddInvestment não mudam)
+
   const handleAdd = async (e) => {
     e.preventDefault();
     if (!form.description || !form.amount) return;
@@ -240,6 +256,7 @@ export default function Dashboard() {
     }
   };
   
+  // Esta função agora será chamada APENAS pelo modal
   const handleRemove = async (id) => {
     const token = localStorage.getItem('investiwise_token');
     setExpenseError(null);
@@ -281,6 +298,7 @@ export default function Dashboard() {
     }
   };
 
+  // Esta função agora será chamada APENAS pelo modal
   const handleRemoveInvestment = async (id) => {
     const token = localStorage.getItem('investiwise_token');
     setInvestmentError(null);
@@ -296,12 +314,46 @@ export default function Dashboard() {
     }
   };
 
+  // --- (NOVAS FUNÇÕES) ---
+  // Handlers para o Modal de Exclusão
+
+  // Abre o modal para excluir Gasto
+  const openExpenseDeleteModal = (id) => {
+    setModalConfig({ type: 'expense', id: id, title: 'Excluir Gasto' });
+    setIsModalOpen(true);
+  };
+  
+  // Abre o modal para excluir Investimento
+  const openInvestmentDeleteModal = (id) => {
+    setModalConfig({ type: 'investment', id: id, title: 'Excluir Investimento' });
+    setIsModalOpen(true);
+  };
+
+  // Fecha o modal (usado no 'Cancelar' e no 'X')
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    // Limpa a configuração por segurança
+    setModalConfig({ type: null, id: null, title: '' });
+  };
+  
+  // Confirma a exclusão (botão 'Excluir' do modal)
+  const handleConfirmDelete = async () => {
+    if (modalConfig.type === 'expense') {
+      await handleRemove(modalConfig.id); // Reutiliza a função de exclusão de gasto
+    } else if (modalConfig.type === 'investment') {
+      await handleRemoveInvestment(modalConfig.id); // Reutiliza a função de exclusão de investimento
+    }
+    handleCloseModal(); // Fecha o modal após a ação
+  };
+
+
   // --- Renderização ---
   if (loading && investmentsLoading) {
     return <div className={styles.contentLoading}>Carregando dados...</div>;
   }
   
   return (
+    // Adiciona o modal no final do 'mainContent'
     <div className={styles.mainContent}>
       <main className={styles.main}>
 
@@ -316,6 +368,7 @@ export default function Dashboard() {
           {investmentError && <ErrorBanner message={investmentError} />}
           
           <FormCard onSubmit={handleAddInvestment}>
+            {/* ... (inputs do formulário de investimento - sem alteração) */}
             <input type="text" placeholder="Nome do Ativo" value={investmentForm.name} onChange={e => setInvestmentForm({ ...investmentForm, name: e.target.value })} required />
             <input type="number" step="0.01" placeholder="Valor (R$)" value={investmentForm.value} onChange={e => setInvestmentForm({ ...investmentForm, value: e.target.value })} required />
             <select value={investmentForm.category} onChange={e => setInvestmentForm({ ...investmentForm, category: e.target.value })}>
@@ -327,6 +380,7 @@ export default function Dashboard() {
           
           {/* Cards de Métricas de Investimentos (Dinâmicos) */}
           <div className={styles.metricsGrid}>
+            {/* ... (cards de métricas - sem alteração) */}
             <div className={styles.metricCard}>
               <h3 className={styles.metricTitle}>Valor Total da Carteira</h3>
               <div className={styles.metricValueWrapper}>
@@ -387,7 +441,12 @@ export default function Dashboard() {
                         {inv.change >= 0 ? <FaArrowUp /> : <FaArrowDown />} R$ {Math.abs(inv.change || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
                     </div>
-                    <button onClick={() => handleRemoveInvestment(inv.id)} className={styles.deleteBtn}><FaTrash /></button>
+                    
+                    {/* --- (BOTÃO MODIFICADO) --- 
+                      Troca handleRemoveInvestment por openInvestmentDeleteModal
+                    */}
+                    <button onClick={() => openInvestmentDeleteModal(inv.id)} className={styles.deleteBtn}><FaTrash /></button>
+
                   </div>
                 ))) : (<div className={styles.emptyState}>Nenhum investimento encontrado.</div>)}
               </div>
@@ -413,6 +472,7 @@ export default function Dashboard() {
             {expenseError && <ErrorBanner message={expenseError} />}
 
             <FormCard onSubmit={handleAdd}>
+              {/* ... (inputs do formulário de gastos - sem alteração) */}
               <input value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Descrição do gasto..." required />
               <input type="number" step="0.01" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} placeholder="R$ 0,00" required />
               <select value={form.categoryId} onChange={e => setForm({ ...form, categoryId: e.target.value })}>{categories.map(c => (<option key={c.id} value={c.id}>{c.icon} {c.name}</option>))}</select>
@@ -422,6 +482,7 @@ export default function Dashboard() {
 
             {/* Cards de Métricas de Gastos (Dinâmicos) */}
             <section className={styles.metricsGrid}>
+              {/* ... (cards de métricas de gastos - sem alteração) */}
               <div className={styles.metricCard}>
                 <h3 className={styles.metricTitle}>Renda Mensal</h3>
                 <div className={styles.metricValueWrapper}>
@@ -456,6 +517,7 @@ export default function Dashboard() {
         {/* Grid de Gráficos e Transações */}
         <div className={styles.contentGrid}>
           <section className={styles.chartsArea}>
+            {/* ... (gráficos - sem alteração) */}
             <div className={`${styles.chartCard} ${styles.large}`}>
               <h3 className={styles.chartTitle}>Evolução Semanal</h3>
               <div className={styles.chartWrapper}>
@@ -498,11 +560,15 @@ export default function Dashboard() {
                           <span className={styles.transactionDesc}>{exp.description}</span>
                           <div className={styles.transactionMeta}>
                             <span className={styles.transactionDate}>{new Date(exp.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>
-                            {/* O span de status vazio foi removido */}
                           </div>
                         </div>
                         <span className={styles.transactionAmount}>- R$ {parseFloat(exp.amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                        <button onClick={() => handleRemove(exp.id)} className={styles.deleteBtn}><FaTrash /></button>
+                        
+                        {/* --- (BOTÃO MODIFICADO) --- 
+                          Troca handleRemove por openExpenseDeleteModal
+                        */}
+                        <button onClick={() => openExpenseDeleteModal(exp.id)} className={styles.deleteBtn}><FaTrash /></button>
+                      
                       </div>
                     );
                   })
@@ -514,6 +580,17 @@ export default function Dashboard() {
           </section>
         </div>
       </main>
+
+      {/* --- (MODAL ADICIONADO AQUI) ---
+        Este é o componente do modal. Ele só será visível quando 'isModalOpen' for true.
+      */}
+      <DeleteConfirmationModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmDelete}
+        title={modalConfig.title}
+      />
+      
     </div>
   );
 }
