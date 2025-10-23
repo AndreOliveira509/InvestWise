@@ -1000,6 +1000,7 @@ IMPORTANTE: NÃO USE MARKDOWN (* # -) NA RESPOSTA. Use formatação limpa e natu
 
   return (
     <div className={styles.aiQuestions}>
+         <div className={styles.fundoheader}></div>
       <Header />
       
       <div className={`${styles.sidebar} ${!sidebarOpen ? styles.sidebarCollapsed : ''}`}>
