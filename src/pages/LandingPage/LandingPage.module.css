@@ -148,7 +148,17 @@ body.darkMode .header {
   max-width: 1800px;
   margin: 0 auto;
 }
-
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  border-radius: 10px;
+}
+.logo img{
+  width: 50px;
+}
 .logoText h1{
   font-size: 1.5rem;
   font-weight: 700;

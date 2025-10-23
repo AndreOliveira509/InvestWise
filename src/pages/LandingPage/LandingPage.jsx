@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import styles from "./LandingPage.module.css";
 import Button from "../../components/Button/Button";
 import imagemHome from '../../assets/imagemhome.jpg';
+import logo from '../../assets/logoiw3.png';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -150,9 +151,11 @@ const LandingPage = () => {
     <div className={styles.landingPage}>
       {/* Header */}
       <header className={styles.header}>
+        
         <div className={styles.navbar}>
           <div className={styles.logo}>
-            <div className={styles.logoText}><h1>InvestWise</h1></div>
+            <img src={logo} alt="InvestWise" />
+          <div className={styles.logoText}><h1>InvestWise</h1></div>
           </div>
 
           <nav className={`${styles.nav} ${isMenuOpen ? styles.active : ''}`}>
