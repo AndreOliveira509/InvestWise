@@ -10,7 +10,7 @@ import { IoAnalytics } from 'react-icons/io5';
 import ProfileModal from "../ProfileModal/ProfileModal";
 import styles from './Header.module.css';
 import { useAuth } from '../../context/AuthContext';
-import Logo from '../../assets/logoiw.png';
+import Logo from '../../assets/logoiw3.png';
 
 
 export default function Header() {
