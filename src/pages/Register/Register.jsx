@@ -1,7 +1,6 @@
-// src/pages/Register/Register.js
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { FaEye, FaEyeSlash, FaUser, FaLock, FaEnvelope } from 'react-icons/fa';
+import {FaArrowLeft, FaEye, FaEyeSlash, FaUser, FaLock, FaEnvelope } from 'react-icons/fa';
 import styles from './Register.module.css';
 import Button from '../../components/Button/Button';
 import axios from 'axios';
@@ -67,8 +66,11 @@ const Register = () => {
   return (
     <div className={styles.registerPage}>
       <div className={styles.registerContainer}>
+          <button className={styles.backButton} onClick={() => navigate(-1)} disabled={loading}>
+            <FaArrowLeft /> Voltar
+          </button>
         <div className={styles.registerHeader}>
-          <div className={styles.logo}>InvestiWise</div>
+          <div className={styles.logo}>InvestWise</div>
           <h1>Crie sua conta</h1>
           <p>Comece sua jornada financeira agora</p>
         </div>
@@ -187,12 +189,6 @@ const Register = () => {
             <Link to="/login" className={styles.loginLink}>
               Fazer login
             </Link>
-          </p>
-        </div>
-
-        <div className={styles.demoInfo}>
-          <p>
-            <strong>Demo:</strong> Preencha os dados para testar o cadastro
           </p>
         </div>
       </div>

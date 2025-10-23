@@ -1,4 +1,3 @@
-// pages/LandingPage/LandingPage.jsx
 import { useNavigate } from "react-router-dom";
 import { 
   FaChartLine, FaPiggyBank, FaShieldAlt, FaMobileAlt, FaTimes, FaBars,

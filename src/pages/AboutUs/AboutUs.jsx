@@ -1,42 +1,41 @@
-// pages/AboutUs/AboutUs.jsx
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaLinkedin, FaGithub } from 'react-icons/fa';
 import Header from '../../components/Header/Header';
 import styles from './AboutUs.module.css';
 
-// Dados dos membros da equipe (você pode substituir com os dados reais)
+// Dados dos membros da equipe
 const teamMembers = [
   {
-    name: 'Nome do Membro 1',
+    name: 'André Luis',
     role: 'Desenvolvedor Full-Stack',
-    imageUrl: 'https://via.placeholder.com/150', // Substitua pela URL da imagem
-    linkedin: '#',
-    github: '#'
+    imageUrl: 'https://avatars.githubusercontent.com/u/131814071?v=4', 
+    linkedin: 'https://www.linkedin.com/in/andreoliveira509/',
+    github: 'https://github.com/AndreOliveira509'
   },
   {
-    name: 'Nome do Membro 2',
-    role: 'Designer UX/UI',
+    name: 'Isaac Amorim',
+    role: 'Desenvolvedor Full-Stack',
+    imageUrl: 'https://avatars.githubusercontent.com/u/163526904?v=4',
+    linkedin: 'https://www.linkedin.com/in/isaacamorim/',
+    github: 'https://github.com/isaacamorimm'
+  },
+  {
+    name: 'Ryan Santos',
+    role: 'Desenvolvedor Back-End',
     imageUrl: 'https://via.placeholder.com/150',
     linkedin: '#',
     github: '#'
   },
   {
-    name: 'Nome do Membro 3',
-    role: 'Engenheiro de Software',
-    imageUrl: 'https://via.placeholder.com/150',
-    linkedin: '#',
-    github: '#'
-  },
-  {
-    name: 'Nome do Membro 4',
+    name: 'Enrico Hidalgo',
     role: 'Gerente de Projetos',
-    imageUrl: 'https://via.placeholder.com/150',
+    imageUrl: 'https://avatars.githubusercontent.com/u/143716820?v=4',
     linkedin: '#',
     github: '#'
   },
   {
-    name: 'Nome do Membro 5',
-    role: 'Analista de QA',
+    name: 'Guilherme Caetano',
+    role: 'Prompt Manager',
     imageUrl: 'https://via.placeholder.com/150',
     linkedin: '#',
     github: '#'

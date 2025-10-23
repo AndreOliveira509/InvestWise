@@ -1,8 +1,7 @@
-// src/pages/Login/Login.jsx
 import { useState } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FaEye, FaEyeSlash, FaUser, FaLock } from 'react-icons/fa';
+import { FaEye, FaEyeSlash, FaUser, FaLock, FaArrowLeft } from 'react-icons/fa';
 import styles from './Login.module.css';
 import Button from '../../components/Button/Button';
 import axios from 'axios';
@@ -64,8 +63,13 @@ const Login = () => {
   };
 
   return (
+    
     <div className={styles.loginPage}>
+      
       <div className={styles.loginContainer}>
+<button className={styles.backButton} onClick={() => navigate(-1)} disabled={loading}>
+  <FaArrowLeft /> Voltar
+</button>
         <div className={styles.loginHeader}>
           <div className={styles.logo}>InvestWise</div>
           <h1>Bem-vindo de volta</h1>

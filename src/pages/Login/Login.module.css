@@ -10,6 +10,7 @@
 }
 
 .loginContainer {
+  position: relative; /* Adicionado para posicionar o botão */
   background: var(--bg-card);
   padding: 40px;
   border-radius: 20px;
@@ -21,9 +22,43 @@
   transform-origin: center;
 }
 
+/* --- NOVO ESTILO PARA O BOTÃO VOLTAR --- */
+.backButton {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s ease;
+  padding: 5px 10px;
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.backButton:hover:not(:disabled) {
+  color: var(--primary-color);
+  background-color: var(--bg-secondary);
+  transform: translateX(-3px);
+}
+
+.backButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+/* -------------------------------------- */
+
+
 .loginHeader {
   text-align: center;
   margin-bottom: 40px;
+  margin-top: 20px; /* Adicionado espaço para o botão voltar */
   animation: fadeIn 0.8s ease-in-out 0.2s both;
 }
 
@@ -132,8 +167,17 @@
   font-weight: 500;
   animation: shake 0.5s ease;
 }
-/* --------------------------- */
 
+.successMessage {
+  background-color: rgba(46, 204, 113, 0.1);
+  color: #2ecc71;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+/* --------------------------- */
 
 .passwordInput {
   position: relative;
@@ -273,6 +317,10 @@
 @media (max-width: 480px) {
   .loginContainer {
     padding: 30px 20px;
+  }
+  .backButton {
+    top: 15px;
+    left: 15px;
   }
   .loginHeader h1 {
     font-size: 1.75rem;

@@ -10,6 +10,7 @@
 }
 
 .registerContainer {
+  position: relative; /* Adicionado para posicionar o botão */
   background: var(--bg-card);
   padding: 40px;
   border-radius: 20px;
@@ -21,9 +22,41 @@
   transform-origin: center;
 }
 
+
+.backButton {
+  top: 25px;
+  left: 25px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s ease;
+  padding: 5px 10px;
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.backButton:hover:not(:disabled) {
+  color: var(--primary-color);
+  background-color: var(--bg-secondary);
+  transform: translateX(-3px);
+}
+
+.backButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+/* -------------------------------------- */
+
 .registerHeader {
   text-align: center;
   margin-bottom: 40px;
+  margin-top: 20px; /* Adicionado espaço para o botão voltar */
   animation: fadeIn 0.8s ease-in-out 0.2s both;
 }
 
@@ -273,6 +306,10 @@
 @media (max-width: 480px) {
   .registerContainer {
     padding: 30px 20px;
+  }
+  .backButton {
+    top: 15px;
+    left: 15px;
   }
   .registerHeader h1 {
     font-size: 1.75rem;
