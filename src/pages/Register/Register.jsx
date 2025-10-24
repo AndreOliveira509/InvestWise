@@ -66,7 +66,7 @@ const Register = () => {
   return (
     <div className={styles.registerPage}>
       <div className={styles.registerContainer}>
-          <button className={styles.backButton} onClick={() => navigate(-1)} disabled={loading}>
+          <button className={styles.backButton} onClick={() => navigate('/')}>
             <FaArrowLeft /> Voltar
           </button>
         <div className={styles.registerHeader}>
