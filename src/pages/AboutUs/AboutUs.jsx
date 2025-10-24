@@ -37,7 +37,7 @@ const teamMembers = [
     name: 'Guilherme Caetano',
     role: 'Prompt Manager',
     imageUrl: 'https://avatars.githubusercontent.com/u/131812809?v=4',
-    linkedin: '#',
+    linkedin: 'https://www.linkedin.com/in/guilherme-caetano-3591592bb?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app',
     github: 'https://github.com/guilhermecaetanosouza'
   },
 ];
