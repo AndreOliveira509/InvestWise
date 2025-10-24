@@ -1,4 +1,4 @@
-/* AIQuestions.module.css */
+/* AIQuestions.module.css (Corrigido e Funcional) */
 .aiQuestions {
   min-height: 100vh;
   background: var(--bg-primary);
@@ -9,10 +9,10 @@
   transition: all 0.4s ease;
   position: relative;
 }
+
 /* Sidebar Styles */
 .sidebar {
   position: fixed;
-  top: 12%;
   left: 0;
   height: calc(100vh - 70px); 
   width: 260px;
@@ -217,21 +217,21 @@
   flex: 2;
 }
 
-
+/* Resto do CSS original permanece igual */
 .main {
   flex: 1;
   display: flex;
   justify-content: center;
   background: var(--bg-primary);
-  margin-left: 260px; 
+  margin-left: 260px; /* Encolhido por padrão (desktop) */
   transition: margin-left 0.3s ease;
   
-
+  /* ADIÇÃO: Garante que o main controle o overflow */
   overflow: hidden; 
   height: 100vh;
 }
 .mainExpanded {
-  margin-left: 0; 
+  margin-left: 0; /* Expandido quando a sidebar fecha */
 }
 
 .container {
@@ -243,17 +243,13 @@
 }
 
 .aiHeader {
-  position: fixed;
-  top: 12%;
-  width: 100%;
   background: var(--bg-card);
   border-bottom: 1px solid var(--border-color);
   padding: 1rem 2rem;
   flex-shrink: 0;
-   z-index: 900;
-  display: flex;
-  flex-direction: column;
-  transition: left 0.3s ease;
+  position: relative;
+  
+  z-index: 10; /* Garante que o header fique sobre o chat */
 }
 
 .title {
@@ -286,13 +282,14 @@
   background: var(--bg-primary);
   margin: 0;
   padding: 0;
+  /* ADIÇÃO: Permite que o wrapper preencha o espaço e esconda overflow */
   overflow: hidden; 
 }
 
 .messagesContainer {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem 2rem 1rem; 
+  padding: 1rem 2rem 1rem; /* Reduzido padding inferior */
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
@@ -510,13 +507,23 @@
   transform: translateY(-1px);
 }
 
-
+/* * ========================================
+ * MUDANÇAS NO INPUT CONTAINER
+ * ========================================
+ */
 .inputContainer {
+  /* REMOVIDO: position: fixed, bottom, left, right, z-index */
+  
+  /* ADICIONADO: Define como item flex que não encolhe */
   flex-shrink: 0; 
   position: relative;
+
+  /* ADICIONADO: Centralização e largura */
   width: 95%;
   max-width: 900px;
-  margin: 0.5rem auto 1rem auto; 
+  margin: 0.5rem auto 1rem auto; /* (top, horizontal, bottom) */
+  
+  /* AJUSTADO: Padding e borda */
   padding: 0.75rem 1.5rem;
   border-radius: 28px;
   background: var(--bg-card);
@@ -532,6 +539,7 @@
   display: flex;
   gap: 1rem;
   width: 100%;
+  /* REMOVIDO: max-width: 800px; (O pai .inputContainer já controla isso) */
   align-items: center;
 }
 
@@ -617,21 +625,27 @@
   cursor: not-allowed;
 }
 
-
+/* Responsive */
 @media (max-width: 768px) {
   .sidebar {
     width: 280px;
+    /* CORREÇÃO: A linha 'transform' foi removida daqui para permitir que .sidebarCollapsed funcione */
   }
   
   .main {
-    margin-left: 0; 
-    height: 100vh; 
+    margin-left: 0; /* 'main' sempre ocupa 100% em telas móveis */
+    height: 100vh; /* Garante altura total em mobile */
   }
   
+  /* * ========================================
+   * MUDANÇAS RESPONSIVAS
+   * ========================================
+   */
   .inputContainer {
-    width: 95%; 
-    padding: 0.5rem 1rem; 
-    margin-bottom: 0.5rem; 
+    /* REMOVIDO: left: 0; */
+    width: 95%; /* Garante que ele fique centralizado e com respiro */
+    padding: 0.5rem 1rem; /* Padding menor */
+    margin-bottom: 0.5rem; /* Mais perto do fundo */
   }
 
   .aiHeader {
@@ -647,7 +661,7 @@
   }
 
   .messagesContainer {
-    padding: 0.8rem 1rem 0.5rem;
+    padding: 0.8rem 1rem 0.5rem; /* Padding menor em mobile */
   }
 
   .quickSuggestions {
@@ -684,7 +698,7 @@
 
 @media (max-width: 480px) {
   .inputWrapper {
-    gap: 0.5rem; 
+    gap: 0.5rem; /* Menos espaço entre botões e input */
   }
 
   .messageInput {
@@ -708,6 +722,10 @@
   }
 }
 
+/* * ========================================
+ * ADIÇÃO: CSS para o Overlay da Sidebar
+ * ========================================
+ */
 .sidebarOverlay {
   position: fixed;
   top: 0;
@@ -715,10 +733,11 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+  z-index: 999; /* Fica abaixo da sidebar (1000), mas acima do 'main' */
   cursor: pointer;
 }
 
+/* Esconde o overlay em telas de desktop */
 @media (min-width: 769px) {
   .sidebarOverlay {
     display: none;
