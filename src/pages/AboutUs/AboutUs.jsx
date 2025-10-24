@@ -22,23 +22,23 @@ const teamMembers = [
   {
     name: 'Ryan Santos',
     role: 'Desenvolvedor Back-End',
-    imageUrl: 'https://via.placeholder.com/150',
+    imageUrl: 'https://avatars.githubusercontent.com/u/166428589?v=4',
     linkedin: '#',
-    github: '#'
+    github: 'https://github.com/ryanfidelis'
   },
   {
     name: 'Enrico Hidalgo',
-    role: 'Gerente de Projetos',
+    role: 'Desenvolvedor Full-Stack',
     imageUrl: 'https://avatars.githubusercontent.com/u/143716820?v=4',
-    linkedin: '#',
-    github: '#'
+    linkedin: 'https://www.linkedin.com/in/enricohidalgo/',
+    github: 'https://github.com/EnricoHidalgo'
   },
   {
     name: 'Guilherme Caetano',
     role: 'Prompt Manager',
-    imageUrl: 'https://via.placeholder.com/150',
+    imageUrl: 'https://avatars.githubusercontent.com/u/131812809?v=4',
     linkedin: '#',
-    github: '#'
+    github: 'https://github.com/guilhermecaetanosouza'
   },
 ];
 
