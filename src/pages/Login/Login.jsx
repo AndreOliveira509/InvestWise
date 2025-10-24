@@ -67,9 +67,9 @@ const Login = () => {
     <div className={styles.loginPage}>
       
       <div className={styles.loginContainer}>
-<button className={styles.backButton} onClick={() => navigate(-1)} disabled={loading}>
-  <FaArrowLeft /> Voltar
-</button>
+      <button className={styles.backButton} onClick={() => navigate('/')}>
+        <FaArrowLeft /> Voltar
+      </button>
         <div className={styles.loginHeader}>
           <div className={styles.logo}>InvestWise</div>
           <h1>Bem-vindo de volta</h1>
