@@ -9,11 +9,10 @@
   transition: all 0.4s ease;
   position: relative;
 }
-
 /* Sidebar Styles */
 .sidebar {
   position: fixed;
-  top: 12.5%;
+  top: 12%;
   left: 0;
   height: calc(100vh - 70px); 
   width: 260px;
@@ -22,9 +21,11 @@
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  transform: translateX(0);
+  transform: translateX(0); /* Estado "aberto" por padrão */
   transition: transform 0.3s ease;
 }
+
+/* Estado "fechado" */
 .sidebarCollapsed {
   transform: translateX(-100%);
 }
@@ -32,7 +33,6 @@
 
 .sidebarHeader {
   padding: 1rem;
-  border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -217,16 +217,21 @@
   flex: 2;
 }
 
-/* Resto do CSS original permanece igual */
+
 .main {
   flex: 1;
   display: flex;
   justify-content: center;
   background: var(--bg-primary);
   margin-left: 260px; 
+  transition: margin-left 0.3s ease;
+  
+
+  overflow: hidden; 
+  height: 100vh;
 }
 .mainExpanded {
-  margin-left: 0;
+  margin-left: 0; 
 }
 
 .container {
@@ -238,10 +243,17 @@
 }
 
 .aiHeader {
+  position: fixed;
+  top: 12%;
+  width: 100%;
   background: var(--bg-card);
   border-bottom: 1px solid var(--border-color);
   padding: 1rem 2rem;
   flex-shrink: 0;
+   z-index: 900;
+  display: flex;
+  flex-direction: column;
+  transition: left 0.3s ease;
 }
 
 .title {
@@ -274,12 +286,13 @@
   background: var(--bg-primary);
   margin: 0;
   padding: 0;
+  overflow: hidden; 
 }
 
 .messagesContainer {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem 2rem 5rem; 
+  padding: 1rem 2rem 1rem; 
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
@@ -497,25 +510,28 @@
   transform: translateY(-1px);
 }
 
+
 .inputContainer {
-  position: fixed;
-  bottom: 0;
-  left: 25%; 
-  right: 25%;
-  padding: 1rem 2rem;
-  border-radius: 45px ;
+  flex-shrink: 0; 
+  position: relative;
+  width: 95%;
+  max-width: 900px;
+  margin: 0.5rem auto 1rem auto; 
+  padding: 0.75rem 1.5rem;
+  border-radius: 28px;
   background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  
   display: flex;
   justify-content: center;
-  z-index: 999;
-  margin: 0;
+  transition: width 0.3s ease, margin 0.3s ease;
 }
 
 .inputWrapper {
   display: flex;
   gap: 1rem;
   width: 100%;
-  max-width: 800px;
   align-items: center;
 }
 
@@ -601,19 +617,21 @@
   cursor: not-allowed;
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
   .sidebar {
     width: 280px;
-    transform: translateX(-100%);
   }
   
   .main {
-    margin-left: 0;
+    margin-left: 0; 
+    height: 100vh; 
   }
   
   .inputContainer {
-    left: 0;
+    width: 95%; 
+    padding: 0.5rem 1rem; 
+    margin-bottom: 0.5rem; 
   }
 
   .aiHeader {
@@ -629,7 +647,7 @@
   }
 
   .messagesContainer {
-    padding: 0.8rem 1rem 130px;
+    padding: 0.8rem 1rem 0.5rem;
   }
 
   .quickSuggestions {
@@ -640,11 +658,7 @@
     font-size: 0.75rem;
     padding: 0.4rem 0.8rem;
   }
-
-  .inputContainer {
-    padding: 1rem;
-  }
-
+  
   .messageContent {
     max-width: 85%;
   }
@@ -670,7 +684,7 @@
 
 @media (max-width: 480px) {
   .inputWrapper {
-    gap: 0.5rem;
+    gap: 0.5rem; 
   }
 
   .messageInput {
@@ -691,5 +705,22 @@
 
   .messageContent {
     max-width: 90%;
+  }
+}
+
+.sidebarOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  cursor: pointer;
+}
+
+@media (min-width: 769px) {
+  .sidebarOverlay {
+    display: none;
   }
 }
