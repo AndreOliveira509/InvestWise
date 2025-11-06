@@ -1,16 +1,63 @@
-# React + Vite
+Claro, entendi perfeitamente. Você quer um README mais limpo, focado no propósito do projeto e que dê os devidos créditos.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aqui está uma versão mais enxuta e apresentável:
 
-Currently, two official plugins are available:
+-----
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# InvestWise
 
-## React Compiler
+InvestWise é uma plataforma completa de gerenciamento de finanças pessoais, projetada para ajudar os usuários a obter controle total sobre suas receitas, despesas e investimentos.
 
-The React Compiler is not enabled on this template. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+A aplicação é construída com uma arquitetura moderna, separando o frontend (React) do backend (NestJS) para melhor manutenibilidade e escalabilidade.
 
-## Expanding the ESLint configuration
+## Principais Funcionalidades
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+  * **Autenticação Segura:** Sistema de login e registro de usuários usando JWT e criptografia de senhas.
+  * **Gerenciamento de Transações:** Permite ao usuário cadastrar, editar e excluir suas receitas e despesas.
+  * **Categorização:** Classifique suas transações e investimentos com categorias e cores personalizadas para fácil visualização.
+  * **Acompanhamento de Investimentos:** Uma seção dedicada para monitorar o crescimento do seu portfólio de investimentos.
+  * **Dashboard Visual:** Gráficos interativos (criados com `Chart.js` e `Recharts`) que fornecem uma visão clara da sua saúde financeira.
+  * **Assistente com IA:** Integração com o Google Generative AI para responder dúvidas financeiras e oferecer insights.
+  * **Exportação de Relatórios:** Exporte seus dados financeiros para formatos PDF (`jspdf`) e Excel (`xlsx`).
+
+## Tecnologias Utilizadas
+
+Este projeto é um monorepo que utiliza as seguintes tecnologias principais:
+
+  * **Frontend (Cliente):**
+
+      * React
+      * Vite
+      * Tailwind CSS
+      * React Router
+      * Axios
+
+  * **Backend (API):**
+
+      * NestJS
+      * Prisma (ORM)
+      * PostgreSQL (Banco de Dados)
+      * Passport (Autenticação JWT)
+
+## Como Executar o Projeto
+
+Para rodar o projeto localmente, você precisará de um banco de dados PostgreSQL.
+
+1.  **Backend (Pasta `/api`)**
+
+      * Instale as dependências: `npm install`
+      * Configure seu arquivo `.env` com a URL do banco de dados (`DATABASE_URL`).
+      * Execute as migrações do banco: `npx prisma migrate deploy`
+      * Inicie o servidor: `npm run start:dev`
+
+2.  **Frontend (Pasta Raiz `/`)**
+
+      * Instale as dependências: `npm install`
+      * Inicie a aplicação: `npm run dev`
+
+## Autores
+
+Este projeto foi desenvolvido por:
+
+  * **[Andre Oliveira](https://github.com/andreoliveira509)**
+  * **[Isaac Amorim](https://github.com/isaacamorimm)**
