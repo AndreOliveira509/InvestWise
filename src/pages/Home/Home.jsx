@@ -58,20 +58,7 @@ export default function Home() {
   };
 
   // APENAS DASHBOARD E SIMULAÇÃO DE INVESTIMENTOS
-  const features = [
-    {
-      icon: <FaChartLine />,
-      title: "Dashboard Inteligente",
-      description: "Visualize toda sua situação financeira com gráficos interativos e métricas em tempo real",
-      action: () => navigate('/dashboard')
-    },
-    {
-      icon: <FaMoneyBillWave />,
-      title: "Simulação de Investimentos",
-      description: "Projete seu crescimento financeiro com diferentes cenários de investimento",
-      action: () => navigate('/simulation')
-    }
-  ];
+
 
   const handleGoToDashboard = () => {
     navigate('/dashboard');
@@ -80,6 +67,10 @@ export default function Home() {
   const handleGoToSimulation = () => {
     navigate('/simulation');
   };
+
+  const handleGoToAIQuestions = () => {
+    navigate('/aiquestions');
+  }
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -153,6 +144,13 @@ export default function Home() {
                   onClick={handleGoToSimulation}
                 >
                   <span>Simular Investimentos</span>
+                  <FaChartLine />
+                </button>
+                  <button 
+                  className={styles.secondaryButton}
+                  onClick={handleGoToAIQuestions}
+                >
+                  <span>Assistente Financeiro</span>
                   <FaChartLine />
                 </button>
               </div>
@@ -232,59 +230,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FEATURES SECTION - APENAS 2 CARDS */}
-        <section className={styles.features}>
-          <div className={styles.container}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Ferramentas Poderosas</h2>
-              <p className={styles.sectionSubtitle}>
-                Tudo que você precisa para tomar decisões financeiras inteligentes
-              </p>
-            </div>
-            
-          </div>
-        </section>
-
-        {/* CTA SECTION */}
-        <section className={styles.ctaSection}>
-          <div className={styles.container}>
-            <div className={styles.ctaCard}>
-              <div className={styles.ctaContent}>
-                <h2>Pronto para otimizar seus investimentos?</h2>
-                <p>
-                  Acesse ferramentas avançadas de simulação, análise de mercado e 
-                  acompanhamento em tempo real para maximizar seus retornos.
-                </p>
-                <div className={styles.ctaActions}>
-                  <button 
-                    className={styles.ctaPrimary}
-                    onClick={handleGoToSimulation}
-                  >
-                    <FaChartLine />
-                    <span>Simular Investimentos</span>
-                  </button>
-                  <button 
-                    className={styles.ctaSecondary}
-                    onClick={handleGoToDashboard}
-                  >
-                    <span>Ver Dashboard Completo</span>
-                    <FaArrowRight />
-                  </button>
-                </div>
-              </div>
-              <div className={styles.ctaVisual}>
-                <div className={styles.visualGraph}>
-                  <div className={styles.graphLine} style={{height: '60%'}}></div>
-                  <div className={styles.graphLine} style={{height: '80%'}}></div>
-                  <div className={styles.graphLine} style={{height: '45%'}}></div>
-                  <div className={styles.graphLine} style={{height: '90%'}}></div>
-                  <div className={styles.graphLine} style={{height: '70%'}}></div>
-                  <div className={styles.graphLine} style={{height: '85%'}}></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
       </div>
     </div>
   );
