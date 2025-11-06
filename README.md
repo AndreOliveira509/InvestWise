@@ -1,9 +1,3 @@
-Claro, entendi perfeitamente. Você quer um README mais limpo, focado no propósito do projeto e que dê os devidos créditos.
-
-Aqui está uma versão mais enxuta e apresentável:
-
------
-
 # InvestWise
 
 InvestWise é uma plataforma completa de gerenciamento de finanças pessoais, projetada para ajudar os usuários a obter controle total sobre suas receitas, despesas e investimentos.
@@ -28,7 +22,6 @@ Este projeto é um monorepo que utiliza as seguintes tecnologias principais:
 
       * React
       * Vite
-      * Tailwind CSS
       * React Router
       * Axios
 
@@ -60,4 +53,7 @@ Para rodar o projeto localmente, você precisará de um banco de dados PostgreSQ
 Este projeto foi desenvolvido por:
 
   * **[Andre Oliveira](https://github.com/andreoliveira509)**
+  * **[Enrico Hidalgo](https://github.com/enricohidalgo)**
+  * **[Guilherme Caetano](https://github.com/guilhermecaetano)**
   * **[Isaac Amorim](https://github.com/isaacamorimm)**
+  * **[Ryan Fidelis](https://github.com/ryanfidelis)**
