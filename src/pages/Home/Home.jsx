@@ -242,26 +242,6 @@ export default function Home() {
               </p>
             </div>
             
-            <div className={styles.featuresGrid}>
-              {features.map((feature, index) => (
-                <div key={index} className={styles.featureCard}>
-                  <div className={styles.featureIconWrapper}>
-                    <div className={styles.featureIcon}>
-                      {feature.icon}
-                    </div>
-                  </div>
-                  <h3 className={styles.featureTitle}>{feature.title}</h3>
-                  <p className={styles.featureDescription}>{feature.description}</p>
-                  <button 
-                    className={styles.featureButton}
-                    onClick={feature.action}
-                  >
-                    Explorar
-                    <FaArrowRight />
-                  </button>
-                </div>
-              ))}
-            </div>
           </div>
         </section>
 
