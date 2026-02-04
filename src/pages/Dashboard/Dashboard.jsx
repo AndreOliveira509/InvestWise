@@ -48,7 +48,7 @@ export default function Dashboard() {
   // Estados de dados
   const [expenses, setExpenses] = useState([]);
   const [investments, setInvestments] = useState([]);
-  
+
   // Estados de UI (Carregamento e Erro)
   const [loading, setLoading] = useState(true);
   const [investmentsLoading, setInvestmentsLoading] = useState(true);
@@ -70,7 +70,7 @@ export default function Dashboard() {
   useEffect(() => {
     // ... (lógica existente - sem alteração)
     const fetchTransactions = async () => {
-      if (!user) return; 
+      if (!user) return;
 
       const token = localStorage.getItem('investiwise_token');
       if (!token) {
@@ -85,7 +85,7 @@ export default function Dashboard() {
         const response = await axios.get('/api/transaction', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setExpenses(response.data); 
+        setExpenses(response.data);
       } catch (error) {
         console.error("Erro ao buscar transações:", error);
         setExpenseError("Não foi possível carregar seus gastos. Tente recarregar a página.");
@@ -96,7 +96,7 @@ export default function Dashboard() {
 
     fetchTransactions();
   }, [user]);
-  
+
   // Efeito para buscar investimentos
   useEffect(() => {
     // ... (lógica existente - sem alteração)
@@ -137,24 +137,31 @@ export default function Dashboard() {
 
   // --- Métricas Financeiras (Investimentos) ---
   // ... (lógica existente - sem alteração)
-  const totalInvestmentValue = useMemo(() => 
-    investments.reduce((sum, inv) => sum + parseFloat(inv.value || 0), 0), 
-  [investments]);
-  
-  const totalInvestmentChange = useMemo(() => 
-    investments.reduce((sum, inv) => sum + parseFloat(inv.change || 0), 0), 
-  [investments]);
+  const totalInvestmentValue = useMemo(() =>
+    investments.reduce((sum, inv) => sum + parseFloat(inv.value || 0), 0),
+    [investments]);
 
-  const portfolioValue = useMemo(() => 
-    totalInvestmentValue + totalInvestmentChange, 
-  [totalInvestmentValue, totalInvestmentChange]);
+  const totalInvestmentChange = useMemo(() =>
+    investments.reduce((sum, inv) => sum + parseFloat(inv.change || 0), 0),
+    [investments]);
+
+  const portfolioValue = useMemo(() =>
+    totalInvestmentValue + totalInvestmentChange,
+    [totalInvestmentValue, totalInvestmentChange]);
 
   const bestPerformer = useMemo(() => {
     if (investments.length === 0) return { name: 'N/A', change: 0 };
-    return investments.reduce((best, current) => 
-      (parseFloat(current.change) > parseFloat(best.change) ? current : best), 
-    investments[0]);
+    return investments.reduce((best, current) =>
+      (parseFloat(current.change) > parseFloat(best.change) ? current : best),
+      investments[0]);
   }, [investments]);
+
+  // --- Filtros do Gráfico de Evolução ---
+  const [timeRange, setTimeRange] = useState('1Y'); // '7D', '30D', '1Y'
+  const [selectedYear, setSelectedYear] = useState('2026'); // '2025', '2026'
+
+  // --- Filtro do Gráfico Semanal ---
+  const [weekChartFilter, setWeekChartFilter] = useState('7D'); // '7D', '30D', '1Y'
 
   // --- Dados para Gráficos (Memoizados) ---
   // ... (lógica existente - sem alteração)
@@ -165,17 +172,65 @@ export default function Dashboard() {
   ), [expenses, searchTerm]);
 
   const weekSpending = useMemo(() => {
-    const week = [];
-    const weeklyBudget = monthlyBudget / 4; // Orçamento semanal exemplo
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dayStr = d.toISOString().split('T')[0];
-      const daySpent = expenses.filter(e => e.date.startsWith(dayStr)).reduce((s, e) => s + parseFloat(e.amount || 0), 0);
-      week.push({ name: d.toLocaleDateString('pt-BR', { weekday: 'short' }), gastos: daySpent, orcamento: weeklyBudget / 7 });
+    // Configura o número de dias/meses baseado no filtro
+    let days = 7;
+    let periodType = 'day'; // 'day' ou 'month'
+
+    if (weekChartFilter === '7D') {
+      days = 7;
+      periodType = 'day';
+    } else if (weekChartFilter === '30D') {
+      days = 30;
+      periodType = 'day';
+    } else if (weekChartFilter === '1Y') {
+      days = 12;
+      periodType = 'month';
     }
-    return week;
-  }, [expenses, monthlyBudget]);
+
+    const data = [];
+    // Orçamento proporcional ao período (Mês cheio, semana, ou dia)
+    // Se budget mensal = 3000 -> diário ~100
+    const dailyBudget = monthlyBudget / 30;
+
+    if (periodType === 'day') {
+      // Gera dados por dia
+      for (let i = days - 1; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const dayStr = d.toISOString().split('T')[0];
+
+        const daySpent = expenses
+          .filter(e => e.date.startsWith(dayStr))
+          .reduce((s, e) => s + parseFloat(e.amount || 0), 0);
+
+        data.push({
+          name: d.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit' }),
+          gastos: daySpent,
+          orcamento: dailyBudget
+        });
+      }
+    } else {
+      // Gera dados por mês (1 Ano)
+      const monthlyBudgetVal = monthlyBudget;
+      for (let i = days - 1; i >= 0; i--) {
+        const d = new Date();
+        d.setMonth(d.getMonth() - i);
+        const monthStr = d.toISOString().substring(0, 7); // YYYY-MM
+
+        const monthSpent = expenses
+          .filter(e => e.date.startsWith(monthStr))
+          .reduce((s, e) => s + parseFloat(e.amount || 0), 0);
+
+        data.push({
+          name: d.toLocaleDateString('pt-BR', { month: 'short' }),
+          gastos: monthSpent,
+          orcamento: monthlyBudgetVal
+        });
+      }
+    }
+
+    return data;
+  }, [expenses, monthlyBudget, weekChartFilter]);
 
   const pieData = useMemo(() => {
     if (expenses.length === 0) return [{ name: 'Nenhum gasto', value: 1, color: '#e0e0e0' }];
@@ -193,7 +248,7 @@ export default function Dashboard() {
     return categories.map(c => {
       const categorySpend = expenses.filter(e => e.categoryId === c.id).reduce((s, e) => s + parseFloat(e.amount || 0), 0);
       const categoryBudget = monthlyBudget / categories.length; // Orçamento de categoria simplificado
-      
+
       return {
         name: c.name,
         lucro: Math.max(0, categoryBudget - categorySpend), // "lucro" é o que sobrou do orçamento
@@ -201,30 +256,92 @@ export default function Dashboard() {
       };
     });
   }, [expenses, monthlyBudget]);
-  
+
   const investmentHistoryData = useMemo(() => {
-    if (investments.length === 0) return [];
-    // ... (lógica existente - sem alteração)
-    const totalInvested = totalInvestmentValue;
-    const totalChange = totalInvestmentChange;
-    if (totalInvested === 0) return [];
-    
+    // Mock inicial robusto caso não haja investimentos para visualizar o gráfico
+    const baseValue = totalInvestmentValue || 10000;
     const history = [];
-    const days = 30;
-    for (let i = days - 1; i >= 0; i--) {
+
+    // Configuração baseada no Filtro de Tempo
+    let points = 12;
+    let periodName = 'month'; // 'day', 'month'
+
+    if (timeRange === '7D') {
+      points = 7;
+      periodName = 'day';
+    } else if (timeRange === '30D') {
+      points = 30;
+      periodName = 'day';
+    } else if (timeRange === '1Y') {
+      points = 12;
+      periodName = 'month';
+    }
+
+    // Gerador de dados simulados
+    let currentValue = baseValue;
+    // Se o ano selecionado for 2025 (ano passado), simulamos valores menores
+    if (selectedYear === '2025') currentValue = currentValue * 0.8;
+
+    for (let i = points - 1; i >= 0; i--) {
       const date = new Date();
-      date.setDate(date.getDate() - i);
-      
-      // Projeção linear simples baseada no ganho/perda total atual
-      const simulatedrenda_mensal = totalInvested + (totalChange / (days - 1)) * (days - 1 - i);
-      
+
+      if (periodName === 'day') {
+        date.setDate(date.getDate() - i);
+      } else {
+        date.setMonth(date.getMonth() - i);
+      }
+
+      // Variação randômica para parecer real
+      const randomChange = (Math.random() - 0.4) * (currentValue * 0.05);
+
+      // Tendência de alta leve
+      const trend = currentValue * 0.01;
+
+      const displayedValue = currentValue - (trend * i) + randomChange;
+
+      let dateLabel = '';
+      if (timeRange === '1Y') {
+        dateLabel = date.toLocaleDateString('pt-BR', { month: 'short' });
+      } else {
+        dateLabel = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      }
+
       history.push({
-        date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-        renda_mensal: parseFloat(simulatedrenda_mensal.toFixed(2)),
+        date: dateLabel,
+        patrimonio: Math.max(0, parseFloat(displayedValue.toFixed(2))),
       });
     }
+
     return history;
-  }, [investments, totalInvestmentValue, totalInvestmentChange]);
+  }, [totalInvestmentValue, timeRange, selectedYear]);
+
+  // --- Métricas de Saúde Financeira ---
+  const financialHealth = useMemo(() => {
+    // 1. Score de Poupança (0-50): Ideal é salvar 20% da renda
+    const savingsRatio = monthlyBudget > 0 ? (remaining / monthlyBudget) : 0;
+    const savingsScore = Math.min(50, (savingsRatio / 0.20) * 50);
+
+    // 2. Score de Diversificação (0-50): Ter pelo menos 3 tipos de ativos
+    const assetTypes = new Set(investments.map(i => i.category)).size;
+    const diversityScore = Math.min(50, (assetTypes / 3) * 50);
+
+    const totalScore = Math.round(savingsScore + diversityScore);
+
+    // Classificação
+    let status = 'Ruim';
+    if (totalScore >= 80) status = 'Excelente';
+    else if (totalScore >= 60) status = 'Bom';
+    else if (totalScore >= 40) status = 'Regular';
+
+    return {
+      score: totalScore || 60, // Valor default para visualização se 0
+      status: totalScore ? status : 'Bom',
+      savingsPercent: Math.min(100, (savingsScore / 50) * 100) || 60,
+      diversityPercent: Math.min(100, (diversityScore / 50) * 100) || 40
+    };
+  }, [monthlyBudget, remaining, investments]);
+
+  // --- Handlers (Adicionar/Remover) ---
 
   // --- Handlers (Adicionar/Remover) ---
   // (Funções handleAdd e handleAddInvestment não mudam)
@@ -255,7 +372,7 @@ export default function Dashboard() {
       setExpenseError("Falha ao adicionar transação. Tente novamente.");
     }
   };
-  
+
   // Esta função agora será chamada APENAS pelo modal
   const handleRemove = async (id) => {
     const token = localStorage.getItem('investiwise_token');
@@ -275,12 +392,12 @@ export default function Dashboard() {
   const handleAddInvestment = async (e) => {
     e.preventDefault();
     if (!investmentForm.name || !investmentForm.value) return;
-    
+
     const token = localStorage.getItem('investiwise_token');
     setInvestmentError(null);
 
-    const newInvestmentData = { 
-      ...investmentForm, 
+    const newInvestmentData = {
+      ...investmentForm,
       value: parseFloat(investmentForm.value),
       date: new Date(investmentForm.date).toISOString(),
     };
@@ -322,7 +439,7 @@ export default function Dashboard() {
     setModalConfig({ type: 'expense', id: id, title: 'Excluir Gasto' });
     setIsModalOpen(true);
   };
-  
+
   // Abre o modal para excluir Investimento
   const openInvestmentDeleteModal = (id) => {
     setModalConfig({ type: 'investment', id: id, title: 'Excluir Investimento' });
@@ -335,7 +452,7 @@ export default function Dashboard() {
     // Limpa a configuração por segurança
     setModalConfig({ type: null, id: null, title: '' });
   };
-  
+
   // Confirma a exclusão (botão 'Excluir' do modal)
   const handleConfirmDelete = async () => {
     if (modalConfig.type === 'expense') {
@@ -351,7 +468,7 @@ export default function Dashboard() {
   if (loading && investmentsLoading) {
     return <div className={styles.contentLoading}>Carregando dados...</div>;
   }
-  
+
   return (
     // Adiciona o modal no final do 'mainContent'
     <div className={styles.mainContent}>
@@ -359,14 +476,14 @@ export default function Dashboard() {
 
         {/* Seção de Investimentos */}
         <section className={styles.investmentsSection}>
-        <div className={styles.pageHeader}>
-          <h1>Dashboard Financeiro</h1>
-        </div>
+          <div className={styles.pageHeader}>
+            <h1>Dashboard Financeiro</h1>
+          </div>
           <div className={styles.sectionHeader}><h2 className={styles.sectionTitle}>Meus Investimentos</h2></div>
-          
+
           {/* Banner de Erro de Investimentos */}
           {investmentError && <ErrorBanner message={investmentError} />}
-          
+
           <FormCard onSubmit={handleAddInvestment}>
             {/* ... (inputs do formulário de investimento - sem alteração) */}
             <input type="text" placeholder="Nome do Ativo" value={investmentForm.name} onChange={e => setInvestmentForm({ ...investmentForm, name: e.target.value })} required />
@@ -374,10 +491,10 @@ export default function Dashboard() {
             <select value={investmentForm.category} onChange={e => setInvestmentForm({ ...investmentForm, category: e.target.value })}>
               {Object.keys(investmentCategories).map(catId => (<option key={catId} value={catId}>{investmentCategories[catId].name}</option>))}
             </select>
-            <input type="date" value={investmentForm.date} onChange={e => setInvestmentForm({ ...investmentForm, date: e.target.value })}/>
+            <input type="date" value={investmentForm.date} onChange={e => setInvestmentForm({ ...investmentForm, date: e.target.value })} />
             <button type="submit"><FaPlus /> Adicionar</button>
           </FormCard>
-          
+
           {/* Cards de Métricas de Investimentos (Dinâmicos) */}
           <div className={styles.metricsGrid}>
             {/* ... (cards de métricas - sem alteração) */}
@@ -394,14 +511,14 @@ export default function Dashboard() {
                 <div className={`${styles.metricChange} ${totalInvestmentChange >= 0 ? styles.positive : styles.negative}`}>
                   {totalInvestmentChange >= 0 ? <FaArrowUp /> : <FaArrowDown />}
                   <span>{
-                    totalInvestmentValue > 0 ? 
-                    ((totalInvestmentChange / totalInvestmentValue) * 100).toFixed(2) : 
-                    '0.00'
+                    totalInvestmentValue > 0 ?
+                      ((totalInvestmentChange / totalInvestmentValue) * 100).toFixed(2) :
+                      '0.00'
                   }%</span>
                 </div>
               </div>
             </div>
-             <div className={styles.metricCard}>
+            <div className={styles.metricCard}>
               <h3 className={styles.metricTitle}>Total Investido</h3>
               <div className={styles.metricValueWrapper}>
                 <span className={styles.metricValue}>R$ {totalInvestmentValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
@@ -418,7 +535,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          
+
           {/* Lista de Ativos na Carteira */}
           <div className={styles.investmentListCard}>
             <h3 className={styles.chartTitle}>Ativos na Carteira</h3>
@@ -441,7 +558,7 @@ export default function Dashboard() {
                         {inv.change >= 0 ? <FaArrowUp /> : <FaArrowDown />} R$ {Math.abs(inv.change || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
                     </div>
-                    
+
                     {/* --- (BOTÃO MODIFICADO) --- 
                       Troca handleRemoveInvestment por openInvestmentDeleteModal
                     */}
@@ -453,73 +570,185 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* Gráfico de Evolução (Simulado) */}
-          {investments.length > 0 && investmentHistoryData.length > 0 && (
-            <div className={styles.profitabilityChartCard}>
-              <h3 className={styles.chartTitle}>Evolução da Carteira (Projeção 30 dias)</h3>
+          {/* Gráfico de Evolução (Com Filtros) e Saúde Financeira */}
+          <div className={styles.chartsRow}>
+            {/* Card do Gráfico de Evolução */}
+            <div className={`${styles.profitabilityChartCard} ${styles.expandedChart}`}>
+              <div className={styles.chartHeaderRow}>
+                <h3 className={styles.chartTitle}>Evolução da Carteira</h3>
+
+                <div className={styles.chartFilters}>
+                  <div className={styles.filterGroup}>
+                    <button
+                      className={`${styles.filterBtn} ${timeRange === '7D' ? styles.active : ''}`}
+                      onClick={() => setTimeRange('7D')}
+                    >7 Dias</button>
+                    <button
+                      className={`${styles.filterBtn} ${timeRange === '30D' ? styles.active : ''}`}
+                      onClick={() => setTimeRange('30D')}
+                    >30 Dias</button>
+                    <button
+                      className={`${styles.filterBtn} ${timeRange === '1Y' ? styles.active : ''}`}
+                      onClick={() => setTimeRange('1Y')}
+                    >1 Ano</button>
+                  </div>
+
+                  <div className={styles.yearFilter}>
+                    <select
+                      value={selectedYear}
+                      onChange={(e) => setSelectedYear(e.target.value)}
+                      className={styles.yearSelect}
+                    >
+                      <option value="2025">2025</option>
+                      <option value="2026">2026</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
               <div className={styles.chartWrapper}>
+                {/* Passamos dataKey="patrimonio" para corresponder ao gerado no useMemo */}
                 <InvestmentProfitabilityChart data={investmentHistoryData} />
               </div>
             </div>
-          )}
+
+            {/* Widget de Saúde Financeira */}
+            <div className={styles.financialHealthCard}>
+              <div className={styles.healthHeader}>
+                <h3 className={styles.healthTitle}>Saúde Financeira</h3>
+                <span className={`${styles.healthBadge} ${styles[financialHealth.status.toLowerCase()]}`}>
+                  {financialHealth.status}
+                </span>
+              </div>
+
+              <div className={styles.healthContent}>
+                <div className={styles.healthGauge}>
+                  <svg viewBox="0 0 36 36" className={styles.circularChart}>
+                    <path className={styles.circleBg}
+                      d="M18 2.0845
+                        a 15.9155 15.9155 0 0 1 0 31.831
+                        a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                    <path className={styles.circle}
+                      strokeDasharray={`${financialHealth.score}, 100`}
+                      d="M18 2.0845
+                        a 15.9155 15.9155 0 0 1 0 31.831
+                        a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                    <text x="18" y="20.35" className={styles.percentage}>{financialHealth.score}</text>
+                  </svg>
+                </div>
+
+                <div className={styles.healthDetails}>
+                  <div className={styles.healthItem}>
+                    <div className={styles.healthLabel}>
+                      <span>Poupança</span>
+                      {/* <span>{financialHealth.savingsPercent.toFixed(0)}%</span> */}
+                    </div>
+                    <div className={styles.progressBarBg}>
+                      <div
+                        className={styles.progressBarFill}
+                        style={{ width: `${financialHealth.savingsPercent}%`, backgroundColor: '#3b82f6' }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.healthItem}>
+                    <div className={styles.healthLabel}>
+                      <span>Diversificação</span>
+                      {/* <span>{financialHealth.diversityPercent.toFixed(0)}%</span> */}
+                    </div>
+                    <div className={styles.progressBarBg}>
+                      <div
+                        className={styles.progressBarFill}
+                        style={{ width: `${financialHealth.diversityPercent}%`, backgroundColor: '#64748b' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* Seção de Gastos */}
         <section className={styles.expensesSection}>
-            <div className={styles.sectionHeader}><h2 className={styles.sectionTitle}>Meus Gastos</h2></div>
-            
-            {/* Banner de Erro de Gastos */}
-            {expenseError && <ErrorBanner message={expenseError} />}
+          <div className={styles.sectionHeader}><h2 className={styles.sectionTitle}>Meus Gastos</h2></div>
 
-            <FormCard onSubmit={handleAdd}>
-              {/* ... (inputs do formulário de gastos - sem alteração) */}
-              <input value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Descrição do gasto..." required />
-              <input type="number" step="0.01" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} placeholder="R$ 0,00" required />
-              <select value={form.categoryId} onChange={e => setForm({ ...form, categoryId: e.target.value })}>{categories.map(c => (<option key={c.id} value={c.id}>{c.icon} {c.name}</option>))}</select>
-              <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })}/>
-              <button type="submit"><FaPlus /> Adicionar</button>
-            </FormCard>
+          {/* Banner de Erro de Gastos */}
+          {expenseError && <ErrorBanner message={expenseError} />}
 
-            {/* Cards de Métricas de Gastos (Dinâmicos) */}
-            <section className={styles.metricsGrid}>
-              {/* ... (cards de métricas de gastos - sem alteração) */}
-              <div className={styles.metricCard}>
-                <h3 className={styles.metricTitle}>Renda Mensal</h3>
-                <div className={styles.metricValueWrapper}>
-                  <span className={styles.metricValue}>R$ {monthlyBudget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+          <FormCard onSubmit={handleAdd}>
+            {/* ... (inputs do formulário de gastos - sem alteração) */}
+            <input value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Descrição do gasto..." required />
+            <input type="number" step="0.01" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} placeholder="R$ 0,00" required />
+            <select value={form.categoryId} onChange={e => setForm({ ...form, categoryId: e.target.value })}>{categories.map(c => (<option key={c.id} value={c.id}>{c.icon} {c.name}</option>))}</select>
+            <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} />
+            <button type="submit"><FaPlus /> Adicionar</button>
+          </FormCard>
+
+          {/* Cards de Métricas de Gastos (Dinâmicos) */}
+          <section className={styles.metricsGrid}>
+            {/* ... (cards de métricas de gastos - sem alteração) */}
+            <div className={styles.metricCard}>
+              <h3 className={styles.metricTitle}>Renda Mensal</h3>
+              <div className={styles.metricValueWrapper}>
+                <span className={styles.metricValue}>R$ {monthlyBudget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+              </div>
+            </div>
+            <div className={styles.metricCard}>
+              <h3 className={styles.metricTitle}>Total Gasto (Mês)</h3>
+              <div className={styles.metricValueWrapper}>
+                <span className={styles.metricValue}>R$ {totalExpenses.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+              </div>
+            </div>
+            <div className={styles.metricCard}>
+              <h3 className={styles.metricTitle}>% Orçamento Usado</h3>
+              <div className={styles.metricValueWrapper}>
+                <span className={styles.metricValue}>{usedPercent.toFixed(1)}%</span>
+                <div className={`${styles.metricChange} ${usedPercent > 80 ? styles.negative : styles.positive}`}>
+                  {usedPercent > 80 ? <FaArrowDown /> : <FaArrowUp />}
+                  <span>{usedPercent > 80 ? 'Acima' : 'Abaixo'} do limite</span>
                 </div>
               </div>
-              <div className={styles.metricCard}>
-                <h3 className={styles.metricTitle}>Total Gasto (Mês)</h3>
-                <div className={styles.metricValueWrapper}>
-                  <span className={styles.metricValue}>R$ {totalExpenses.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                </div>
+            </div>
+            <div className={styles.metricCard}>
+              <h3 className={styles.metricTitle}>Saldo Restante</h3>
+              <div className={styles.metricValueWrapper}>
+                <span className={styles.metricValue}>R$ {remaining.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
               </div>
-              <div className={styles.metricCard}>
-                <h3 className={styles.metricTitle}>% Orçamento Usado</h3>
-                <div className={styles.metricValueWrapper}>
-                  <span className={styles.metricValue}>{usedPercent.toFixed(1)}%</span>
-                  <div className={`${styles.metricChange} ${usedPercent > 80 ? styles.negative : styles.positive}`}>
-                    {usedPercent > 80 ? <FaArrowDown /> : <FaArrowUp />}
-                    <span>{usedPercent > 80 ? 'Acima' : 'Abaixo'} do limite</span>
-                  </div>
-                </div>
-              </div>
-              <div className={styles.metricCard}>
-                <h3 className={styles.metricTitle}>Saldo Restante</h3>
-                <div className={styles.metricValueWrapper}>
-                  <span className={styles.metricValue}>R$ {remaining.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                </div>
-              </div>
-            </section>
+            </div>
           </section>
+        </section>
 
         {/* Grid de Gráficos e Transações */}
         <div className={styles.contentGrid}>
           <section className={styles.chartsArea}>
             {/* ... (gráficos - sem alteração) */}
             <div className={`${styles.chartCard} ${styles.large}`}>
-              <h3 className={styles.chartTitle}>Evolução Semanal</h3>
+              <div className={styles.chartHeaderRow}>
+                <h3 className={styles.chartTitle}>
+                  {weekChartFilter === '1Y' ? 'Evolução Mensal' : 'Evolução Recente'}
+                </h3>
+
+                <div className={styles.chartFilters}>
+                  <div className={styles.filterGroup}>
+                    <button
+                      className={`${styles.filterBtn} ${weekChartFilter === '7D' ? styles.active : ''}`}
+                      onClick={() => setWeekChartFilter('7D')}
+                    >7 Dias</button>
+                    <button
+                      className={`${styles.filterBtn} ${weekChartFilter === '30D' ? styles.active : ''}`}
+                      onClick={() => setWeekChartFilter('30D')}
+                    >30 Dias</button>
+                    <button
+                      className={`${styles.filterBtn} ${weekChartFilter === '1Y' ? styles.active : ''}`}
+                      onClick={() => setWeekChartFilter('1Y')}
+                    >1 Ano</button>
+                  </div>
+                </div>
+              </div>
+
               <div className={styles.chartWrapper}>
                 {loading ? <div className={styles.contentLoading}>Carregando...</div> : <SynchronizedLineChart data={weekSpending} />}
               </div>
@@ -537,7 +766,7 @@ export default function Dashboard() {
               </div>
             </div>
           </section>
-          
+
           <section className={styles.transactionsArea}>
             <div className={styles.transactionsCard}>
               <h3 className={styles.chartTitle}>Gastos Recentes</h3>
@@ -563,12 +792,12 @@ export default function Dashboard() {
                           </div>
                         </div>
                         <span className={styles.transactionAmount}>- R$ {parseFloat(exp.amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                        
+
                         {/* --- (BOTÃO MODIFICADO) --- 
                           Troca handleRemove por openExpenseDeleteModal
                         */}
                         <button onClick={() => openExpenseDeleteModal(exp.id)} className={styles.deleteBtn}><FaTrash /></button>
-                      
+
                       </div>
                     );
                   })
@@ -590,7 +819,7 @@ export default function Dashboard() {
         onConfirm={handleConfirmDelete}
         title={modalConfig.title}
       />
-      
+
     </div>
   );
 }

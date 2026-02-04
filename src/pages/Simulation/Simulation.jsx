@@ -9,7 +9,7 @@ import {
   FaChevronDown
 } from 'react-icons/fa';
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, 
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   Legend, ResponsiveContainer
 } from 'recharts';
 
@@ -17,42 +17,42 @@ import styles from './Simulation.module.css';
 import Header from '../../components/Header/Header';
 
 const investmentTypes = [
-  { 
-    id: 'renda-fixa', 
-    name: 'Renda Fixa', 
-    color: '#FF6B6B', 
+  {
+    id: 'renda-fixa',
+    name: 'Renda Fixa',
+    color: '#FF6B6B',
     icon: FaUniversity,
     description: 'CDB, LCIs, Tesouro Direto',
     defaultReturn: '0.8'
   },
-  { 
-    id: 'acoes', 
-    name: 'Ações', 
-    color: '#4ECDC4', 
+  {
+    id: 'acoes',
+    name: 'Ações',
+    color: '#4ECDC4',
     icon: FaChartLine,
     description: 'Bolsa de Valores',
     defaultReturn: '1.2'
   },
-  { 
-    id: 'fii', 
-    name: 'FIIs', 
-    color: '#45B7D1', 
+  {
+    id: 'fii',
+    name: 'FIIs',
+    color: '#45B7D1',
     icon: FaBuilding,
     description: 'Fundos Imobiliários',
     defaultReturn: '0.9'
   },
-  { 
-    id: 'cripto', 
-    name: 'Cripto', 
-    color: '#FFA07A', 
+  {
+    id: 'cripto',
+    name: 'Cripto',
+    color: '#FFA07A',
     icon: FaGlobeAmericas,
     description: 'Criptomoedas',
     defaultReturn: '2.5'
   },
-  { 
-    id: 'previdencia', 
-    name: 'Previdência', 
-    color: '#BB8FCE', 
+  {
+    id: 'previdencia',
+    name: 'Previdência',
+    color: '#BB8FCE',
     icon: FaPiggyBank,
     description: 'Previdência Privada',
     defaultReturn: '0.7'
@@ -61,28 +61,28 @@ const investmentTypes = [
 
 // Configuração das criptomoedas com imagens
 const cryptocurrencies = [
-  { 
-    symbol: 'BTC', 
+  {
+    symbol: 'BTC',
     name: 'Bitcoin',
     image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/bitcoin.png'
   },
-  { 
-    symbol: 'ETH', 
+  {
+    symbol: 'ETH',
     name: 'Ethereum',
     image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/ethereum.png'
   },
-  { 
-    symbol: 'BNB', 
+  {
+    symbol: 'BNB',
     name: 'Binance Coin',
     image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/binance-coin.png'
   },
-  { 
-    symbol: 'SOL', 
+  {
+    symbol: 'SOL',
     name: 'Solana',
     image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/solana.png'
   },
-  { 
-    symbol: 'XRP', 
+  {
+    symbol: 'XRP',
     name: 'Ripple',
     image: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/ripple.png'
   }
@@ -113,7 +113,7 @@ export default function Simulation() {
     setLoading(true);
     try {
       const prices = {};
-      
+
       for (const crypto of cryptocurrencies) {
         try {
           const response = await fetch(`https://economia.awesomeapi.com.br/json/last/${crypto.symbol}-BRL`);
@@ -134,7 +134,7 @@ export default function Simulation() {
           };
         }
       }
-      
+
       setCryptoPrices(prices);
     } catch (err) {
       console.error('Error fetching crypto prices:', err);
@@ -232,9 +232,9 @@ export default function Simulation() {
           <p className={styles.tooltipLabel}>{label}</p>
           {payload.map((entry, index) => (
             <p key={index} className={styles.tooltipValue} style={{ color: entry.color }}>
-              {entry.name}: R$ {entry.value.toLocaleString('pt-BR', { 
-                minimumFractionDigits: 2, 
-                maximumFractionDigits: 2 
+              {entry.name}: R$ {entry.value.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
               })}
             </p>
           ))}
@@ -253,22 +253,22 @@ export default function Simulation() {
               <FaDatabase className={styles.cryptoTitleIcon} />
               <span>Cotações em Tempo Real</span>
             </div>
-            <button 
-              onClick={fetchCryptoPrices} 
+            <button
+              onClick={fetchCryptoPrices}
               className={styles.refreshBtn}
               disabled={loading}
             >
               <FaSync className={loading ? styles.spinning : ''} />
               Atualizar
             </button>
-            <button 
+            <button
               onClick={() => setShowCryptoQuotes(!showCryptoQuotes)}
               className={`${styles.toggleBtn} ${showCryptoQuotes ? styles.rotated : ''}`}
             >
               <FaChevronDown />
             </button>
           </div>
-          
+
           <div className={`${styles.cryptoContent} ${showCryptoQuotes ? styles.show : ''}`}>
             <div className={styles.cryptoGridHorizontal}>
               {cryptocurrencies.map(crypto => {
@@ -276,8 +276,8 @@ export default function Simulation() {
                 return (
                   <div key={crypto.symbol} className={styles.cryptoItemHorizontal}>
                     <div className={styles.cryptoIconHorizontal}>
-                      <img 
-                        src={crypto.image} 
+                      <img
+                        src={crypto.image}
                         alt={crypto.name}
                         className={styles.cryptoImage}
                       />
@@ -382,9 +382,8 @@ export default function Simulation() {
                         <button
                           key={type.id}
                           type="button"
-                          className={`${styles.investmentCard} ${
-                            simulationForm.investmentType === type.id ? styles.active : ''
-                          }`}
+                          className={`${styles.investmentCard} ${simulationForm.investmentType === type.id ? styles.active : ''
+                            }`}
                           onClick={() => handleInvestmentTypeChange(type.id)}
                           style={{
                             '--accent-color': type.color
@@ -477,9 +476,9 @@ export default function Simulation() {
                     <div className={styles.metricContent}>
                       <span className={styles.metricLabel}>Valor Final</span>
                       <span className={styles.metricValue}>
-                        R$ {simulationResults.finalAmount.toLocaleString('pt-BR', { 
-                          minimumFractionDigits: 2, 
-                          maximumFractionDigits: 2 
+                        R$ {simulationResults.finalAmount.toLocaleString('pt-BR', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
                         })}
                       </span>
                       <div className={`${styles.metricChange} ${simulationResults.roi >= 0 ? styles.positive : styles.negative}`}>
@@ -496,9 +495,9 @@ export default function Simulation() {
                     <div className={styles.metricContent}>
                       <span className={styles.metricLabel}>Total Investido</span>
                       <span className={styles.metricValue}>
-                        R$ {simulationResults.totalContributions.toLocaleString('pt-BR', { 
-                          minimumFractionDigits: 2, 
-                          maximumFractionDigits: 2 
+                        R$ {simulationResults.totalContributions.toLocaleString('pt-BR', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
                         })}
                       </span>
                     </div>
@@ -511,9 +510,9 @@ export default function Simulation() {
                     <div className={styles.metricContent}>
                       <span className={styles.metricLabel}>Ganhos Líquidos</span>
                       <span className={styles.metricValue}>
-                        R$ {simulationResults.totalEarnings.toLocaleString('pt-BR', { 
-                          minimumFractionDigits: 2, 
-                          maximumFractionDigits: 2 
+                        R$ {simulationResults.totalEarnings.toLocaleString('pt-BR', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
                         })}
                       </span>
                       <div className={`${styles.metricChange} ${simulationResults.totalEarnings >= 0 ? styles.positive : styles.negative}`}>
@@ -532,36 +531,36 @@ export default function Simulation() {
                   </div>
                   <div className={styles.chartContainer}>
                     <ResponsiveContainer width="100%" height={300}>
-                      <LineChart 
-                        data={simulationResults.simulationData} 
+                      <LineChart
+                        data={simulationResults.simulationData}
                         margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                       >
                         <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
-                        <XAxis 
-                          dataKey="name" 
+                        <XAxis
+                          dataKey="name"
                           stroke="var(--text-secondary)"
                           fontSize={12}
                         />
-                        <YAxis 
+                        <YAxis
                           stroke="var(--text-secondary)"
                           fontSize={12}
-                          tickFormatter={(value) => `R$ ${(value/1000).toFixed(0)}k`}
+                          tickFormatter={(value) => `R$ ${(value / 1000).toFixed(0)}k`}
                         />
                         <Tooltip content={<CustomTooltip />} />
                         <Legend />
-                        <Line 
-                          type="monotone" 
-                          dataKey="acumulado" 
-                          stroke="#FFC107" 
+                        <Line
+                          type="monotone"
+                          dataKey="acumulado"
+                          stroke="#FFC107"
                           strokeWidth={3}
                           dot={{ fill: '#FFC107', strokeWidth: 2, r: 4 }}
                           activeDot={{ r: 6, fill: '#FFA000' }}
                           name="Valor Acumulado"
                         />
-                        <Line 
-                          type="monotone" 
-                          dataKey="investido" 
-                          stroke="#4ECDC4" 
+                        <Line
+                          type="monotone"
+                          dataKey="investido"
+                          stroke="#4ECDC4"
                           strokeWidth={2}
                           dot={{ fill: '#4ECDC4', strokeWidth: 2, r: 3 }}
                           name="Total Investido"
@@ -579,27 +578,27 @@ export default function Simulation() {
                   </div>
                   <div className={styles.chartContainer}>
                     <ResponsiveContainer width="100%" height={250}>
-                      <LineChart 
-                        data={simulationResults.simulationData} 
+                      <LineChart
+                        data={simulationResults.simulationData}
                         margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                       >
                         <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
-                        <XAxis 
-                          dataKey="name" 
+                        <XAxis
+                          dataKey="name"
                           stroke="var(--text-secondary)"
                           fontSize={12}
                         />
-                        <YAxis 
+                        <YAxis
                           stroke="var(--text-secondary)"
                           fontSize={12}
-                          tickFormatter={(value) => `R$ ${(value/1000).toFixed(0)}k`}
+                          tickFormatter={(value) => `R$ ${(value / 1000).toFixed(0)}k`}
                         />
                         <Tooltip content={<CustomTooltip />} />
                         <Legend />
-                        <Line 
-                          type="monotone" 
-                          dataKey="ganhos" 
-                          stroke="#FF6B6B" 
+                        <Line
+                          type="monotone"
+                          dataKey="ganhos"
+                          stroke="#FF6B6B"
                           strokeWidth={3}
                           dot={{ fill: '#FF6B6B', strokeWidth: 2, r: 4 }}
                           activeDot={{ r: 6, fill: '#FF4757' }}
