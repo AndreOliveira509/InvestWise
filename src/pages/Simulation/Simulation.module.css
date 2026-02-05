@@ -493,6 +493,138 @@
   color: var(--text-primary);
 }
 
+/* TOGGLE & GOAL STYLES */
+.toggleGroup {
+  margin-top: 0.5rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.toggleHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toggleLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toggleSwitch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.toggleSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--border-color);
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggleSwitch input:checked+.slider {
+  background-color: #FFC107;
+}
+
+.toggleSwitch input:focus+.slider {
+  box-shadow: 0 0 1px #FFC107;
+}
+
+.toggleSwitch input:checked+.slider:before {
+  transform: translateX(20px);
+}
+
+.goalInput {
+  margin-top: 1rem;
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* COMPARE BUTTONS */
+.compareButtons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.compareBtn {
+  flex: 1;
+  padding: 0.6rem;
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.compareBtn:hover {
+  border-color: #FFC107;
+  color: #FFC107;
+  background: rgba(255, 193, 7, 0.05);
+}
+
+.compareBtn.active {
+  background: color-mix(in srgb, #FFC107 15%, transparent);
+  border-color: #FFC107;
+  color: var(--text-primary);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.15);
+}
+
+
 /* MAIN CONTENT */
 .mainContent {
   min-height: 600px;
@@ -617,6 +749,65 @@
 .metricChange.negative {
   background: rgba(239, 68, 68, 0.15);
   color: #ef4444;
+}
+
+
+/* SIMULATION MODE TOGGLE (SEGMENTED CONTROL) */
+.modeToggle {
+  display: flex;
+  background: var(--bg-primary);
+  padding: 0.25rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.modeOption {
+  flex: 1;
+  padding: 0.75rem;
+  text-align: center;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+  border: none;
+  background: transparent;
+}
+
+.modeOption:hover {
+  color: var(--text-primary);
+}
+
+.modeOption.active {
+  background: var(--bg-card);
+  color: #FFC107;
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+/* PDF BUTTON */
+.pdfBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.pdfBtn:hover {
+  background: #ef4444;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
 }
 
 /* CHART CARDS */
