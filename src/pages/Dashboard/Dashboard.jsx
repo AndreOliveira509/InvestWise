@@ -257,6 +257,7 @@ export default function Dashboard() {
     });
   }, [expenses, monthlyBudget]);
 
+
   const investmentHistoryData = useMemo(() => {
     // Mock inicial robusto caso não haja investimentos para visualizar o gráfico
     const baseValue = totalInvestmentValue || 10000;

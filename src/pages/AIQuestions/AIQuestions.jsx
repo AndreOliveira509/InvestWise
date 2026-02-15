@@ -22,6 +22,7 @@ import {
   FaPlus,
   FaTrash
 } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
 import styles from "./AIQuestions.module.css";
 import Header from '../../components/Header/Header';
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -65,60 +66,60 @@ const AIQuestions = () => {
   const recognitionRef = useRef(null);
   const speechSynthesisRef = useRef(null);
 
- const { user, token } = useAuth();
+  const { user, token } = useAuth();
   const [userFinancialData, setUserFinancialData] = useState(null);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
   const [pendingChartRequest, setPendingChartRequest] = useState(null);
 
-useEffect(() => {
+  useEffect(() => {
     const fetchFinancialData = async () => {
-        if (!token) {
-            // Se não houver token, define dados padrão ou de "não logado"
-            setUserFinancialData({ 
-                monthlyIncome: 5000, 
-                monthlyExpenses: 3500, 
-                savings: 15000, 
-                debts: 5000, 
-                financialGoals: 'Comprar um apartamento',
-                recentTransactions: [] // Adicionado para consistência
-            });
-            setIsLoadingData(false);
-            return;
+      if (!token) {
+        // Se não houver token, define dados padrão ou de "não logado"
+        setUserFinancialData({
+          monthlyIncome: 5000,
+          monthlyExpenses: 3500,
+          savings: 15000,
+          debts: 5000,
+          financialGoals: 'Comprar um apartamento',
+          recentTransactions: [] // Adicionado para consistência
+        });
+        setIsLoadingData(false);
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/users/financial-summary', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Falha ao buscar dados financeiros');
         }
 
-        try {
-            const response = await fetch('/api/users/financial-summary', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+        const data = await response.json();
+        setUserFinancialData(data);
 
-            if (!response.ok) {
-                throw new Error('Falha ao buscar dados financeiros');
-            }
-
-            const data = await response.json();
-            setUserFinancialData(data); 
-
-        } catch (error) {
-            console.error("Erro ao carregar dados financeiros:", error);
-            // Define dados padrão em caso de erro
-            setUserFinancialData({ 
-                monthlyIncome: 0, 
-                monthlyExpenses: 0, 
-                savings: 0, 
-                debts: 0, 
-                financialGoals: '',
-                recentTransactions: []
-            });
-        } finally {
-            setIsLoadingData(false);
-        }
+      } catch (error) {
+        console.error("Erro ao carregar dados financeiros:", error);
+        // Define dados padrão em caso de erro
+        setUserFinancialData({
+          monthlyIncome: 0,
+          monthlyExpenses: 0,
+          savings: 0,
+          debts: 0,
+          financialGoals: '',
+          recentTransactions: []
+        });
+      } finally {
+        setIsLoadingData(false);
+      }
     };
 
-    fetchFinancialData(); 
-}, [token]);
+    fetchFinancialData();
+  }, [token]);
 
   // Carrega o histórico de conversas
   useEffect(() => {
@@ -131,7 +132,7 @@ useEffect(() => {
       if (savedHistory) {
         const history = JSON.parse(savedHistory);
         setChatHistory(history);
-        
+
         if (!currentChatId && history.length > 0) {
           setCurrentChatId(history[0].id);
         }
@@ -147,7 +148,7 @@ useEffect(() => {
     const chatId = currentChatId || Date.now().toString();
     const firstUserMessage = messages.find(msg => msg.sender === 'user');
     const chatTitle = firstUserMessage ? firstUserMessage.text.slice(0, 30) + (firstUserMessage.text.length > 30 ? '...' : '') : title;
-    
+
     const chatData = {
       id: chatId,
       title: chatTitle,
@@ -158,8 +159,8 @@ useEffect(() => {
 
     setChatHistory(prev => {
       const filtered = prev.filter(chat => chat.id !== chatId);
-      const updated = [chatData, ...filtered].slice(0, 20); 
-      
+      const updated = [chatData, ...filtered].slice(0, 20);
+
       localStorage.setItem('aiChatHistoryList', JSON.stringify(updated));
       return updated;
     });
@@ -171,11 +172,11 @@ useEffect(() => {
     if (messages.length > 0) {
       saveChatToHistory(messages);
     }
-    
+
     setMessages([]);
     setCurrentChatId(null);
     localStorage.removeItem('aiChatHistory');
-    
+
     if (window.innerWidth <= 768) {
       setSidebarOpen(false);
     }
@@ -190,7 +191,7 @@ useEffect(() => {
       })));
       setCurrentChatId(chatId);
       localStorage.setItem('aiChatHistory', JSON.stringify(chat.messages));
-      
+
       if (window.innerWidth <= 768) {
         setSidebarOpen(false);
       }
@@ -202,7 +203,7 @@ useEffect(() => {
     const updatedHistory = chatHistory.filter(chat => chat.id !== chatId);
     setChatHistory(updatedHistory);
     localStorage.setItem('aiChatHistoryList', JSON.stringify(updatedHistory));
-    
+
     if (currentChatId === chatId) {
       startNewChat();
     }
@@ -290,8 +291,8 @@ useEffect(() => {
   useEffect(() => {
     try {
       localStorage.setItem('aiChatHistory', JSON.stringify(messages));
-      
-      if (messages.length > 2) { 
+
+      if (messages.length > 2) {
         saveChatToHistory(messages);
       }
     } catch (err) {
@@ -358,25 +359,25 @@ useEffect(() => {
 
   const cleanMarkdown = (text) => {
     if (typeof text !== 'string') return text;
-    
+
     return text
-      .replace(/\*\*(.*?)\*\*/g, '$1') 
-      .replace(/\*(.*?)\*/g, '$1')     
-      .replace(/_(.*?)_/g, '$1')       
-      .replace(/~~(.*?)~~/g, '$1')     
-      .replace(/`(.*?)`/g, '$1')       
-      .replace(/```[\s\S]*?```/g, '')  
-      .replace(/#{1,6}\s?/g, '')       
-      .replace(/\-\s/g, '• ')          
-      .replace(/\*\s/g, '• ')          
-      .replace(/\+\s/g, '• ')          
-      .replace(/\n{3,}/g, '\n\n')      
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/\*(.*?)\*/g, '$1')
+      .replace(/_(.*?)_/g, '$1')
+      .replace(/~~(.*?)~~/g, '$1')
+      .replace(/`(.*?)`/g, '$1')
+      .replace(/```[\s\S]*?```/g, '')
+      .replace(/#{1,6}\s?/g, '')
+      .replace(/\-\s/g, '• ')
+      .replace(/\*\s/g, '• ')
+      .replace(/\+\s/g, '• ')
+      .replace(/\n{3,}/g, '\n\n')
       .trim();
   };
 
   const cleanAllMarkdownFromResponse = (text) => {
     if (typeof text !== 'string') return text;
-    
+
     return text
       .replace(/\*\*(.*?)\*\*/g, '$1')
       .replace(/\*(.*?)\*/g, '$1')
@@ -403,8 +404,8 @@ useEffect(() => {
 
     // Lógica de transações (corrigida, movida de bloco inacessível)
     const transactionsListForPrompt = userFinancialData.recentTransactions && userFinancialData.recentTransactions.length > 0
-        ? userFinancialData.recentTransactions.map(t => `- ${t.description}: R$ ${t.amount.toFixed(2)} em ${t.date}`).join('\n')
-        : 'Nenhuma transação recente encontrada.';
+      ? userFinancialData.recentTransactions.map(t => `- ${t.description}: R$ ${t.amount.toFixed(2)} em ${t.date}`).join('\n')
+      : 'Nenhuma transação recente encontrada.';
 
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
@@ -491,9 +492,9 @@ useEffect(() => {
       if (fileRequest.detected && fileRequest.type === 'image') {
         // Verifica se a resposta foi uma recusa
         if (responseText.toLowerCase().includes("desculpe, como assistente")) {
-           return { text: responseText, fileRequest: null }; // Retorna como chat normal
+          return { text: responseText, fileRequest: null }; // Retorna como chat normal
         }
-        
+
         try {
           const jsonStart = responseText.indexOf('{');
           if (jsonStart !== -1) {
@@ -506,16 +507,16 @@ useEffect(() => {
           return { text: "Não consegui gerar os dados para o gráfico. Tente especificar melhor o que você precisa.", fileRequest: 'image' };
         }
       }
-      
+
       // Verifica se a resposta foi uma recusa (para arquivos ou chat)
       if (responseText.toLowerCase().includes("desculpe, como assistente")) {
-         return { text: responseText, fileRequest: null }; // Retorna como chat normal
+        return { text: responseText, fileRequest: null }; // Retorna como chat normal
       }
 
       // Retorno padrão para arquivos (PDF, DOC, etc.) ou chat
-      return { 
-        text: responseText, 
-        fileRequest: fileRequest.detected ? fileRequest.type : null 
+      return {
+        text: responseText,
+        fileRequest: fileRequest.detected ? fileRequest.type : null
       };
 
     } catch (error) {
@@ -577,7 +578,7 @@ useEffect(() => {
           }
         };
         setMessages(prev => [...prev, aiMessage]);
-        
+
       } catch (err) {
         console.error('Erro criando gráfico:', err);
         const aiMessage = {
@@ -927,7 +928,7 @@ useEffect(() => {
       const data = `• Renda Mensal: R$ ${userFinancialData.monthlyIncome}\n• Despesas Mensais: R$ ${userFinancialData.monthlyExpenses}\n• Economias: R$ ${userFinancialData.savings}\n• Dívidas: R$ ${userFinancialData.debts}\n• Meta: ${userFinancialData.financialGoals}\n\n`;
       const body = typeof content === 'object' ? JSON.stringify(content, null, 2) : String(content);
       const footer = `\n\n${'='.repeat(50)}\nGerado pela InvestWise - Confidencial`;
-      
+
       const fullContent = header + info + financialSummary + data + body + footer;
       const blob = new Blob([fullContent], { type: 'text/plain;charset=utf-8' });
       downloadBlob(blob, `${filename}.txt`, 'text/plain');
@@ -945,7 +946,7 @@ useEffect(() => {
       const data = `Renda Mensal: R$ ${userFinancialData.monthlyIncome}\nDespesas Mensais: R$ ${userFinancialData.monthlyExpenses}\nEconomias: R$ ${userFinancialData.savings}\nDívidas: R$ ${userFinancialData.debts}\nMeta: ${userFinancialData.financialGoals}\n\n`;
       const body = typeof content === 'object' ? JSON.stringify(content, null, 2) : String(content);
       const footer = `\n\nGerado pela InvestWise - Confidencial`;
-      
+
       const fullContent = header + info + financialSummary + data + body + footer;
       const blob = new Blob([fullContent], { type: 'application/msword' });
       downloadBlob(blob, `${filename}.doc`, 'application/msword');
@@ -958,7 +959,7 @@ useEffect(() => {
   const generateXLSX = (content, filename = 'planilha-financeira', userRequest = '') => {
     try {
       const wb = XLSX.utils.book_new();
-      
+
       const summaryData = [
         ['RELATÓRIO FINANCEIRO'],
         ['Solicitação:', userRequest],
@@ -986,14 +987,14 @@ useEffect(() => {
       }
 
       const ws = XLSX.utils.aoa_to_sheet(summaryData);
-      
+
       const range = XLSX.utils.decode_range(ws['!ref']);
       for (let R = range.s.r; R <= range.e.r; R++) {
         for (let C = range.s.c; C <= range.e.c; C++) {
           const cell_address = { c: C, r: R };
           const cell_ref = XLSX.utils.encode_cell(cell_address);
           if (!ws[cell_ref]) continue;
-          
+
           if (R === 0) {
             ws[cell_ref].s = { font: { bold: true, sz: 14 } };
           } else if (R >= 5 && R <= 10) {
@@ -1012,7 +1013,7 @@ useEffect(() => {
 
   const handleDownload = (message) => {
     console.log('Download clicked:', message.fileData);
-    
+
     if (message.fileData) {
       const { type, content, userRequest, filename } = message.fileData;
 
@@ -1087,69 +1088,90 @@ useEffect(() => {
 
   return (
     <div className={styles.aiQuestions}>
-      <div className={`${styles.sidebar} ${!sidebarOpen ? styles.sidebarCollapsed : ''}`}>
-        <div className={styles.sidebarHeader}>
-          <button className={styles.newChatButton} onClick={startNewChat}>
-            <FaPlus /> Novo chat
-          </button>
-          <button 
-            className={styles.closeSidebarButton}
-            onClick={() => setSidebarOpen(false)}
-          >
-            ×
-          </button>
-        </div>
-        
-        <div className={styles.chatHistory}>
-          {Object.entries(groupChatsByDate()).map(([date, chats]) => (
-            <div key={date} className={styles.dateGroup}>
-              <div className={styles.dateLabel}>{date}</div>
-              {chats.map(chat => (
-                <div
-                  key={chat.id}
-                  className={`${styles.chatItem} ${currentChatId === chat.id ? styles.activeChat : ''}`}
-                  onClick={() => loadChat(chat.id)}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className={styles.sidebarOverlay}
+              onClick={() => setSidebarOpen(false)}
+            />
+            <motion.div
+              className={styles.sidebar}
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <div className={styles.sidebarHeader}>
+                <button className={styles.newChatButton} onClick={startNewChat}>
+                  <FaPlus /> Novo chat
+                </button>
+                <button
+                  className={styles.closeSidebarButton}
+                  onClick={() => setSidebarOpen(false)}
                 >
-                  <span className={styles.chatIcon}></span>
-                  <span className={styles.chatTitle}>{chat.title}</span>
-                  <button
-                    className={styles.deleteChatButton}
-                    onClick={(e) => deleteChat(chat.id, e)}
-                    title="Excluir conversa"
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-              ))}
-            </div>
-          ))}
-          
-          {chatHistory.length === 0 && (
-            <div className={styles.emptyHistory}>
-              <p>Nenhuma conversa anterior</p>
-            </div>
-          )}
-        </div>
-      </div>
+                  ×
+                </button>
+              </div>
 
-      {sidebarOpen && (
-        <div 
-          className={styles.sidebarOverlay}
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+              <div className={styles.chatHistory}>
+                {Object.entries(groupChatsByDate()).map(([date, chats]) => (
+                  <div key={date} className={styles.dateGroup}>
+                    <div className={styles.dateLabel}>{date}</div>
+                    {chats.map(chat => (
+                      <div
+                        key={chat.id}
+                        className={`${styles.chatItem} ${currentChatId === chat.id ? styles.activeChat : ''}`}
+                        onClick={() => loadChat(chat.id)}
+                      >
+                        <span className={styles.chatIcon}></span>
+                        <span className={styles.chatTitle}>{chat.title}</span>
+                        <button
+                          className={styles.deleteChatButton}
+                          onClick={(e) => deleteChat(chat.id, e)}
+                          title="Excluir conversa"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+
+                {chatHistory.length === 0 && (
+                  <div className={styles.emptyHistory}>
+                    <p>Nenhuma conversa anterior</p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+
 
       <main className={`${styles.main} ${!sidebarOpen ? styles.mainExpanded : ''}`}>
         <div className={styles.container}>
           <section className={styles.aiHeader}>
             <div className={styles.headerContent}>
               <div className={styles.headerLeft}>
-                <button 
-                  className={styles.menuButton}
-                  onClick={() => setSidebarOpen(!sidebarOpen)}
-                >
-                  <FaBars />
-                </button>
+                <AnimatePresence>
+                  {!sidebarOpen && (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      className={styles.menuButton}
+                      onClick={() => setSidebarOpen(true)}
+                    >
+                      <FaBars />
+                    </motion.button>
+                  )}
+                </AnimatePresence>
               </div>
               <div className={styles.titleSection}>
                 <h1 className={styles.title}>
@@ -1164,54 +1186,63 @@ useEffect(() => {
 
           <div className={styles.chatWrapper}>
             <div className={styles.messagesContainer}>
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`${styles.message} ${message.sender === 'user' ? styles.userMessage : styles.aiMessage}`}
-                >
-                  <div className={styles.messageAvatar}>
-                    {message.sender === 'user' ? <FaUser /> : <FaRobot />}
-                  </div>
-                  <div classNameclassName={styles.messageContent}>
-                    <div className={styles.messageText}>
-                      {String(message.text).split('\n').map((line, idx) => <p key={idx}>{line}</p>)}
-                      {message.fileData && (
-                        <div className={styles.fileReady}>
-                          <div className={styles.fileInfo}>
-                            {getFileIcon(message.fileData.type)}
-                            <span>Arquivo {message.fileData.type.toUpperCase()} pronto para download</span>
+              <AnimatePresence>
+                {messages.map((message) => (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className={`${styles.message} ${message.sender === 'user' ? styles.userMessage : styles.aiMessage}`}
+                  >
+                    <div className={styles.messageAvatar}>
+                      {message.sender === 'user' ? <FaUser /> : <FaRobot />}
+                    </div>
+                    <div className={styles.messageContent}>
+                      <div className={styles.messageText}>
+                        {String(message.text).split('\n').map((line, idx) => <p key={idx}>{line}</p>)}
+                        {message.fileData && (
+                          <div className={styles.fileReady}>
+                            <div className={styles.fileInfo}>
+                              {getFileIcon(message.fileData.type)}
+                              <span>Arquivo {message.fileData.type.toUpperCase()} pronto para download</span>
+                            </div>
+                            <button
+                              className={styles.downloadFileButton}
+                              onClick={() => handleDownload(message)}
+                            >
+                              <FaDownload /> Baixar {message.fileData.type.toUpperCase()}
+                            </button>
                           </div>
-                          <button
-                            className={styles.downloadFileButton}
-                            onClick={() => handleDownload(message)}
-                          >
-                            <FaDownload /> Baixar {message.fileData.type.toUpperCase()}
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                    <div className={styles.messageActions}>
-                      <div className={styles.messageTime}>
-                        {message.timestamp.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                        )}
                       </div>
-                      {message.sender === 'ai' && (
-                        <div className={styles.actionButtons}>
-                          <button
-                            className={`${styles.actionButton} ${isSpeaking ? styles.speaking : ''}`}
-                            onClick={() => speakText(message.text)}
-                            title={isSpeaking ? "Parar áudio" : "Ouvir resposta"}
-                          >
-                            {isSpeaking ? <FaVolumeMute /> : <FaVolumeUp />}
-                          </button>
+                      <div className={styles.messageActions}>
+                        <div className={styles.messageTime}>
+                          {message.timestamp.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                         </div>
-                      )}
+                        {message.sender === 'ai' && (
+                          <div className={styles.actionButtons}>
+                            <button
+                              className={`${styles.actionButton} ${isSpeaking ? styles.speaking : ''}`}
+                              onClick={() => speakText(message.text)}
+                              title={isSpeaking ? "Parar áudio" : "Ouvir resposta"}
+                            >
+                              {isSpeaking ? <FaVolumeMute /> : <FaVolumeUp />}
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
 
               {isLoading && (
-                <div className={styles.message}>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className={styles.message}
+                >
                   <div className={styles.messageAvatar}>
                     <FaRobot />
                   </div>
@@ -1220,7 +1251,7 @@ useEffect(() => {
                       <span></span><span></span><span></span>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               )}
 
               <div ref={messagesEndRef} />
