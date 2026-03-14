@@ -30,7 +30,7 @@ Chart.register(...registerables);
 import { jsPDF } from 'jspdf';
 import * as XLSX from 'xlsx';
 
-const GEMINI_API_KEY = 'AIzaSyAllQYJ1cbB7Q6eZTIfgD1Mc7MRxOITF-Q';
+const GEMINI_API_KEY = 'AIzaSyB8g1_sdxuZy2GyqZ_A6XU3SXmPv-c5tpk';
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 const AIQuestions = () => {
