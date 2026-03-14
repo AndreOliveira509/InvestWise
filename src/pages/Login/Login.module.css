@@ -4,31 +4,68 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: var(--bg-primary);
   padding: 20px;
   animation: fadeIn 0.8s ease-in-out;
 }
 
 .loginContainer {
-  background: white;
+  position: relative; /* Adicionado para posicionar o botão */
+  background: var(--bg-card);
   padding: 40px;
   border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px var(--shadow-color);
+  border: 1px solid var(--border-color);
   width: 100%;
   max-width: 500px;
   animation: slideUp 0.6s ease-out;
   transform-origin: center;
 }
 
+/* --- NOVO ESTILO PARA O BOTÃO VOLTAR --- */
+.backButton {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s ease;
+  padding: 5px 10px;
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.backButton:hover:not(:disabled) {
+  color: var(--primary-color);
+  background-color: var(--bg-secondary);
+  transform: translateX(-3px);
+}
+
+.backButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+/* -------------------------------------- */
+
+
 .loginHeader {
   text-align: center;
   margin-bottom: 40px;
+  margin-top: 20px; /* Adicionado espaço para o botão voltar */
   animation: fadeIn 0.8s ease-in-out 0.2s both;
 }
 
 .logo {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--secondary-color);
+  color: var(--text-primary);
   margin-bottom: 20px;
   animation: bounceIn 1s ease-out;
 }
@@ -80,26 +117,67 @@
 
 .inputGroup:focus-within .inputIcon {
   transform: scale(1.1) rotate(5deg);
-  color: var(--secondary-color);
+  color: var(--primary-color-hover);
 }
 
 .inputGroup input {
   width: 100%;
   padding: 15px;
-  border: 2px solid #858585;
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background: var(--background-color);
-  transform: translateX(0);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  box-sizing: border-box; /* Garante que o padding não afete a largura */
 }
 
 .inputGroup input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
-  transform: translateX(5px);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
 }
+
+/* --- ESTADOS DE VALIDAÇÃO --- */
+.inputGroup.inputError input {
+  border-color: #e74c3c; /* Vermelho para erro */
+  background-color: rgba(231, 76, 60, 0.05);
+}
+
+.inputGroup.inputError input:focus {
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
+}
+
+.inputGroup.inputSuccess input {
+  border-color: #2ecc71; /* Verde para sucesso */
+  background-color: rgba(46, 204, 113, 0.05);
+}
+
+.inputGroup.inputSuccess input:focus {
+  box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.2);
+}
+
+.errorMessage {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 500;
+  animation: shake 0.5s ease;
+}
+
+.successMessage {
+  background-color: rgba(46, 204, 113, 0.1);
+  color: #2ecc71;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+/* --------------------------- */
 
 .passwordInput {
   position: relative;
@@ -129,6 +207,8 @@
   align-items: center;
   font-size: 0.9rem;
   animation: fadeInUp 0.6s ease-out 0.8s both;
+  flex-wrap: wrap; /* Permite quebrar a linha em telas menores */
+  gap: 10px;
 }
 
 .rememberMe {
@@ -137,6 +217,7 @@
   gap: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
+  color: var(--text-secondary);
 }
 
 .rememberMe:hover {
@@ -180,39 +261,13 @@
   width: 100%;
 }
 
-.loginButton {
-  width: 100%;
-  padding: 15px;
-  font-size: 1.1rem;
-  margin-top: 10px;
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  animation: pulse 2s infinite;
-}
-
-.loginButton:hover {
-  background: var(--secondary-color);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  animation: none;
-}
-
-.loginButton:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
 .loginFooter {
   text-align: center;
   margin-top: 30px;
   padding-top: 20px;
   border-top: 1px solid var(--border-color);
   animation: fadeIn 0.8s ease-in-out 0.9s both;
+  color: var(--text-secondary);
 }
 
 .signupLink {
@@ -243,110 +298,55 @@
   width: 100%;
 }
 
-.demoInfo {
-  margin-top: 20px;
-  padding: 15px;
-  background: rgba(255, 215, 0, 0.1);
-  border-radius: 10px;
-  text-align: center;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  animation: fadeInUp 0.6s ease-out 1s both;
+/* Keyframes */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideInFromLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideInFromRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3); } 50% { opacity: 1; transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes shake {
+  10%, 90% { transform: translateX(-5px); }
+  20%, 80% { transform: translateX(5px); }
+  30%, 50%, 70% { transform: translateX(-3px); }
+  40%, 60% { transform: translateX(3px); }
 }
 
-/* Animações Keyframes (as mesmas do Register) */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInFromLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideInFromRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes bounceIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.3);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  70% {
-    transform: scale(0.9);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(255, 215, 0, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
-  }
-}
-
+/* ---------- RESPONSIVO ---------- */
 @media (max-width: 480px) {
   .loginContainer {
     padding: 30px 20px;
-    animation: slideUp 0.5s ease-out;
   }
-  
+  .backButton {
+    top: 15px;
+    left: 15px;
+  }
+  .loginHeader h1 {
+    font-size: 1.75rem;
+  }
+  .loginHeader p {
+    font-size: 1rem;
+  }
   .formOptions {
     flex-direction: column;
     gap: 15px;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 360px) {
+  .loginContainer {
+    padding: 20px 15px;
+  }
+  .loginHeader {
+    margin-bottom: 30px;
+  }
+  .logo {
+    font-size: 1.75rem;
+    margin-bottom: 15px;
+  }
+  .loginHeader h1 {
+    font-size: 1.5rem;
   }
 }

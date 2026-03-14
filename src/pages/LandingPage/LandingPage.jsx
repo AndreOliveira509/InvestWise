@@ -1,14 +1,29 @@
-// pages/LandingPage/LandingPage.js
 import { useNavigate } from "react-router-dom";
-import { FaChartLine, FaPiggyBank, FaShieldAlt, FaMobileAlt, FaTimes, FaBars, FaDollarSign, FaChartPie, FaLightbulb, FaBullseye, FaBrain, FaChevronDown } from "react-icons/fa";
-import { useState } from "react";
+import { 
+  FaChartLine, FaPiggyBank, FaShieldAlt, FaMobileAlt, FaTimes, FaBars,
+  FaDollarSign, FaChartPie, FaLightbulb, FaBullseye, FaBrain, FaChevronDown,
+  FaMoon, FaSun
+} from "react-icons/fa";
+import { useState, useEffect } from "react";
 import styles from "./LandingPage.module.css";
 import Button from "../../components/Button/Button";
-import imagemHome from '../../assets/imagemhome.jpg'
+import imagemHome from '../../assets/imagemhome.jpg';
+import logo from '../../assets/logoiw3.png';
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [openFaqIndex, setOpenFaqIndex] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Alternar modo escuro
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
+  useEffect(() => {
+    document.body.classList.toggle(styles.darkMode, isDarkMode);
+  }, [isDarkMode]);
 
   const features = [
     {
@@ -20,11 +35,6 @@ const LandingPage = () => {
       icon: <FaPiggyBank />,
       title: "Simulação de Investimentos",
       description: "Projete seu patrimônio com diferentes estratégias de aplicação"
-    },
-    {
-      icon: <FaShieldAlt />,
-      title: "Segurança em Primeiro Lugar",
-      description: "Seus dados financeiros protegidos com criptografia de ponta a ponta"
     },
     {
       icon: <FaMobileAlt />,
@@ -82,23 +92,18 @@ const LandingPage = () => {
     {
       name: "Ana Silva",
       role: "Estudante de Economia",
-      text: "O InvestiWise me mostrou como pequenos ajustes no orçamento podem gerar grandes resultados no longo prazo!"
+      text: "O InvestWise me mostrou como pequenos ajustes no orçamento podem gerar grandes resultados no longo prazo!"
     },
     {
       name: "Carlos Mendes",
       role: "Profissional Liberal",
       text: "Finalmente entendi para onde meu dinheiro estava indo. As projeções me ajudaram a planejar minha aposentadoria."
-    },
-    {
-      name: "Marina Costa",
-      role: "Jovem Investidora",
-      text: "A interface intuitiva e os gráficos me ajudaram a visualizar meu crescimento patrimonial de forma clara."
     }
   ];
 
   const faqs = [
     {
-      question: "O InvestiWise é gratuito?",
+      question: "O InvestWise é gratuito?",
       answer: "Sim! Este é um projeto educacional desenvolvido para promover educação financeira e é 100% gratuito."
     },
     {
@@ -138,14 +143,21 @@ const LandingPage = () => {
     setIsMenuOpen(false);
   };
 
+  const toggleFaq = (index) => {
+    setOpenFaqIndex(openFaqIndex === index ? null : index);
+  };
+
   return (
     <div className={styles.landingPage}>
       {/* Header */}
       <header className={styles.header}>
+        
         <div className={styles.navbar}>
           <div className={styles.logo}>
-            <div className={styles.logoText}>InvestiWise</div>
+            <img src={logo} alt="InvestWise" />
+          <div className={styles.logoText}><h1>InvestWise</h1></div>
           </div>
+
           <nav className={`${styles.nav} ${isMenuOpen ? styles.active : ''}`}>
             <a href="#features" onClick={(e) => { e.preventDefault(); scrollToSection('features'); }}>Recursos</a>
             <a href="#benefits" onClick={(e) => { e.preventDefault(); scrollToSection('benefits'); }}>Vantagens</a>
@@ -153,7 +165,11 @@ const LandingPage = () => {
             <a href="#testimonials" onClick={(e) => { e.preventDefault(); scrollToSection('testimonials'); }}>Depoimentos</a>
             <a href="#faq" onClick={(e) => { e.preventDefault(); scrollToSection('faq'); }}>FAQ</a>
           </nav>
+
           <div className={`${styles.authButtons} ${isMenuOpen ? styles.active : ''}`}>
+            {/* <button onClick={toggleDarkMode} className={styles.themeToggle}>
+              {isDarkMode ? <FaSun /> : <FaMoon />}
+            </button> */}
             <Button secondary onClick={handleLoginClick}>
               Entrar
             </Button>
@@ -161,6 +177,7 @@ const LandingPage = () => {
               Cadastrar
             </Button>
           </div>
+
           <button 
             className={styles.mobileMenuButton} 
             onClick={toggleMenu}
@@ -249,7 +266,7 @@ const LandingPage = () => {
       {/* How It Works Section */}
       <section id="how-it-works" className={styles.howItWorks}>
         <div className={styles.container}>
-          <h2>Como o InvestiWise Funciona</h2>
+          <h2>Como o InvestWise Funciona</h2>
           <p className={styles.sectionSubtitle}>4 passos simples para transformar sua vida financeira</p>
           <div className={styles.steps}>
             {steps.map((step, index) => (
@@ -292,14 +309,20 @@ const LandingPage = () => {
           <p className={styles.sectionSubtitle}>Tire suas dúvidas sobre a plataforma</p>
           <div className={styles.faqContainer}>
             {faqs.map((faq, index) => (
-              <div key={index} className={styles.faqItem}>
+              <div 
+                key={index} 
+                className={`${styles.faqItem} ${openFaqIndex === index ? styles.active : ''}`}
+                onClick={() => toggleFaq(index)}
+              >
                 <div className={styles.faqQuestion}>
                   {faq.question}
                   <FaChevronDown className={styles.faqIcon} />
                 </div>
-                <div className={styles.faqAnswer}>
-                  <p>{faq.answer}</p>
-                </div>
+                {openFaqIndex === index && (
+                  <div className={styles.faqAnswer}>
+                    <p>{faq.answer}</p>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -325,7 +348,7 @@ const LandingPage = () => {
           <div className={styles.footerContent}>
             <div className={styles.footerBrand}>
               <div className={styles.logo}>
-                <div className={styles.logoText}>InvestiWise</div>
+                <div className={styles.logoText}>InvestWise</div>
               </div>
               <p>Transformando a maneira como você cuida do seu dinheiro</p>
             </div>
@@ -351,7 +374,7 @@ const LandingPage = () => {
             </div>
           </div>
           <div className={styles.footerBottom}>
-            <p>&copy; 2025 InvestiWise. Um projeto para educação financeira. Todos os direitos reservados.</p>
+            <p>&copy; 2025 InvestWise. Um projeto para educação financeira. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>

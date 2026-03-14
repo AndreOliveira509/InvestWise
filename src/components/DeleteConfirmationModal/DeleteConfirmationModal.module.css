@@ -1,0 +1,106 @@
+/* --- NOVOS KEYFRAMES PARA ANIMAÇÃO --- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+/* --- FIM DOS KEYFRAMES --- */
+
+
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Fundo escurecido */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px); /* Efeito de vidro fosco, igual ao ProfileModal */
+
+  /* --- LINHA NOVA --- */
+  animation: fadeIn 0.2s ease-out; /* Animação de fade-in para o fundo */
+}
+
+.modalContent {
+  /* Obs: Troquei seu var(--bg-primary) de volta para var(--tertiary-color), 
+    que é a variável correta de background no seu index.css 
+  */
+  background-color: var(--bg-primary); /* Cor de fundo principal do site */
+  padding: 2rem;
+  border-radius: 10px;
+  border: 1px solid var(--secondary-color); /* Borda verde escura */
+  width: 90%;
+  max-width: 450px; /* Largura máxima */
+  position: relative;
+  color: var(--text-color); /* Texto branco */
+  text-align: center;
+
+  /* --- LINHA NOVA --- */
+  animation: popIn 0.25s ease-out; /* Animação de "pop" para o conteúdo */
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 2rem;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.3s ease;
+}
+
+.closeButton:hover {
+  color: var(--primary-color); /* Hover verde */
+}
+
+.modalContent h2 {
+  color: var(--primary-color); /* Título verde */
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.message {
+  font-size: 1.1rem;
+  margin-bottom: 2.5rem; /* Mais espaço antes dos botões */
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center; /* Centraliza os botões */
+  gap: 1.5rem; /* Espaçamento entre os botões */
+  flex-wrap: wrap; /* Garante que quebre em telas pequenas */
+}
+
+/* Este wrapper é o "truque" para mudar a cor do componente <Button>
+  sem precisar modificar o arquivo do componente original.
+  Ele seleciona o 'button' dentro dele e aplica o estilo de perigo.
+*/
+.confirmButtonWrapper button {
+  /* Usamos !important para garantir a sobrescrita, já que o estilo
+    original do Button é aplicado diretamente via CSS module.
+  */
+  background-color: var(--danger-color) !important; /* Cor de perigo (vermelho) */
+  color: var(--text-color) !important;
+}
+
+.confirmButtonWrapper button:hover {
+  background-color: #d13026 !important; /* Vermelho mais escuro no hover */
+}

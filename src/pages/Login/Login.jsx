@@ -1,13 +1,20 @@
-// src/pages/Login/Login.js
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { FaEye, FaEyeSlash, FaUser, FaLock } from 'react-icons/fa';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { FaEye, FaEyeSlash, FaUser, FaLock, FaArrowLeft } from 'react-icons/fa';
 import styles from './Login.module.css';
 import Button from '../../components/Button/Button';
+import axios from 'axios';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { setToken, setUser } = useAuth();
+  const [searchParams] = useSearchParams();
+  const successMessage = searchParams.get('success');
+
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -20,24 +27,63 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    // 1. Impede o recarregamento da página
     e.preventDefault();
-    // Simulação de login - em desenvolvimento
-    console.log('Login attempt:', formData);
-    alert('Funcionalidade em desenvolvimento! Redirecionando para Home...');
-    navigate('/');
+
+    setError('');
+    setLoading(true);
+
+    try { 
+      const response = await axios.post('/api/auth/login', {
+        email: formData.email,
+        password: formData.password,
+      });
+    
+      const { access_token } = response.data;
+      
+      if (access_token) {
+        setToken(access_token);
+        setUser(null);
+        navigate('/home');
+      } else {
+        setError('Token não recebido da API.');
+      }
+
+    } catch (apiError) {
+      console.error('Erro no login:', apiError);
+      if (apiError.response && apiError.response.data) {
+        setError(apiError.response.data.message || 'Credenciais inválidas.');
+      } else {
+        setError('Não foi possível conectar ao servidor.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
+    
     <div className={styles.loginPage}>
+      
       <div className={styles.loginContainer}>
+      <button className={styles.backButton} onClick={() => navigate('/')}>
+        <FaArrowLeft /> Voltar
+      </button>
         <div className={styles.loginHeader}>
-          <div className={styles.logo}>InvestiWise</div>
+          <div className={styles.logo}>InvestWise</div>
           <h1>Bem-vindo de volta</h1>
           <p>Entre na sua conta para continuar</p>
         </div>
+        
+        {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
+        {error && <p className={styles.errorMessage}>{error}</p>}
 
+        {/* 2. Certifique-se de que o onSubmit está aqui */}
         <form className={styles.loginForm} onSubmit={handleSubmit}>
+          
+          {/* ... o resto do seu formulário ... */}
+
           <div className={styles.inputGroup}>
             <label htmlFor="email">
               <FaUser className={styles.inputIcon} />
@@ -51,9 +97,9 @@ const Login = () => {
               onChange={handleChange}
               placeholder="seu@email.com"
               required
+              disabled={loading}
             />
           </div>
-
           <div className={styles.inputGroup}>
             <label htmlFor="password">
               <FaLock className={styles.inputIcon} />
@@ -68,29 +114,31 @@ const Login = () => {
                 onChange={handleChange}
                 placeholder="Sua senha"
                 required
+                disabled={loading}
               />
               <button
                 type="button"
                 className={styles.passwordToggle}
                 onClick={() => setShowPassword(!showPassword)}
+                disabled={loading}
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
           </div>
-
           <div className={styles.formOptions}>
             <label className={styles.rememberMe}>
-              <input type="checkbox" />
+              <input type="checkbox" disabled={loading} />
               Lembrar de mim
             </label>
             <a href="#" className={styles.forgotPassword}>
               Esqueci minha senha
             </a>
           </div>
-
-          <Button type="submit">
-            Entrar na conta
+          
+          {/* 3. Certifique-se de que o botão é do tipo "submit" */}
+          <Button type="submit" disabled={loading}>
+            {loading ? 'A entrar...' : 'Entrar na conta'}
           </Button>
         </form>
 
@@ -100,12 +148,6 @@ const Login = () => {
             <Link to="/register" className={styles.signupLink}>
               Cadastre-se
             </Link>
-          </p>
-        </div>
-
-        <div className={styles.demoInfo}>
-          <p>
-            <strong>Demo:</strong> Use qualquer e-mail e senha para testar
           </p>
         </div>
       </div>

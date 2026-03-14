@@ -5,31 +5,65 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: var(--background-color);
+  background: var(--bg-primary);
   animation: fadeIn 0.8s ease-in-out;
 }
 
 .registerContainer {
-  background: white;
+  position: relative; /* Adicionado para posicionar o botão */
+  background: var(--bg-card);
   padding: 40px;
   border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px var(--shadow-color);
+  border: 1px solid var(--border-color);
   width: 100%;
   max-width: 500px;
   animation: slideUp 0.6s ease-out;
   transform-origin: center;
 }
 
+
+.backButton {
+  top: 25px;
+  left: 25px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s ease;
+  padding: 5px 10px;
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.backButton:hover:not(:disabled) {
+  color: var(--primary-color);
+  background-color: var(--bg-secondary);
+  transform: translateX(-3px);
+}
+
+.backButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+/* -------------------------------------- */
+
 .registerHeader {
   text-align: center;
   margin-bottom: 40px;
+  margin-top: 20px; /* Adicionado espaço para o botão voltar */
   animation: fadeIn 0.8s ease-in-out 0.2s both;
 }
 
 .logo {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--secondary-color);
+  color: var(--text-primary);
   margin-bottom: 20px;
   animation: bounceIn 1s ease-out;
 }
@@ -64,6 +98,8 @@
 .inputGroup:nth-child(1) { animation-delay: 0.6s; }
 .inputGroup:nth-child(2) { animation-delay: 0.7s; }
 .inputGroup:nth-child(3) { animation-delay: 0.8s; }
+.inputGroup:nth-child(4) { animation-delay: 0.9s; }
+
 
 .inputGroup label {
   display: flex;
@@ -82,27 +118,58 @@
 
 .inputGroup:focus-within .inputIcon {
   transform: scale(1.1) rotate(5deg);
-  color: var(--secondary-color);
+  color: var(--primary-color-hover);
 }
 
 .inputGroup input {
   width: 100%;
   padding: 15px;
-  border: 2px solid #858585;
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background: var(--background-color);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   box-sizing: border-box;
-  transform: translateX(0);
 }
 
 .inputGroup input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
-  transform: translateX(5px);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
 }
+
+/* --- ESTADOS DE VALIDAÇÃO --- */
+.inputGroup.inputError input {
+  border-color: #e74c3c; /* Vermelho para erro */
+  background-color: rgba(231, 76, 60, 0.05);
+}
+
+.inputGroup.inputError input:focus {
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
+}
+
+.inputGroup.inputSuccess input {
+  border-color: #2ecc71; /* Verde para sucesso */
+  background-color: rgba(46, 204, 113, 0.05);
+}
+
+.inputGroup.inputSuccess input:focus {
+  box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.2);
+}
+
+.errorMessage {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 500;
+  animation: shake 0.5s ease;
+}
+/* --------------------------- */
+
 
 .passwordInput {
   position: relative;
@@ -134,7 +201,7 @@
 
 .terms {
   margin: 10px 0;
-  animation: fadeInUp 0.6s ease-out 0.9s both;
+  animation: fadeInUp 0.6s ease-out 1s both;
 }
 
 .termsLabel {
@@ -149,17 +216,11 @@
 }
 
 .termsLabel:hover {
-  transform: translateX(5px);
+  color: var(--text-primary);
 }
 
 .termsLabel input {
   margin-top: 2px;
-  width: auto;
-  transition: all 0.3s ease;
-}
-
-.termsLabel input:checked {
-  transform: scale(1.1);
 }
 
 .termsLink {
@@ -183,38 +244,10 @@
 
 .termsLink:hover {
   text-decoration: none;
-  transform: translateY(-2px);
 }
 
 .termsLink:hover::after {
   width: 100%;
-}
-
-.registerButton {
-  width: 100%;
-  padding: 15px;
-  font-size: 1.1rem;
-  margin-top: 10px;
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  animation: pulse 2s infinite;
-}
-
-.registerButton:hover {
-  background: var(--secondary-color);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  animation: none;
-}
-
-.registerButton:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .registerFooter {
@@ -223,7 +256,7 @@
   padding-top: 20px;
   border-top: 1px solid var(--border-color);
   color: var(--text-secondary);
-  animation: fadeIn 0.8s ease-in-out 1s both;
+  animation: fadeIn 0.8s ease-in-out 1.1s both;
 }
 
 .loginLink {
@@ -248,170 +281,43 @@
 
 .loginLink:hover {
   text-decoration: none;
-  transform: translateY(-2px);
 }
 
 .loginLink:hover::after {
   width: 100%;
 }
 
-.demoInfo {
-  margin-top: 20px;
-  padding: 15px;
-  background: rgba(255, 215, 0, 0.1);
-  border-radius: 10px;
-  text-align: center;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  border: 1px solid rgba(255, 215, 0, 0.2);
-  animation: fadeInUp 0.6s ease-out 1.1s both;
-}
-
-.demoInfo strong {
-  color: var(--primary-color);
-}
-
-.errorMessage {
-  color: #e74c3c;
-  font-size: 0.9rem;
-  margin-top: 5px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  animation: shake 0.5s ease-in-out;
-}
-
-.successMessage {
-  color: #27ae60;
-  font-size: 0.9rem;
-  margin-top: 5px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  animation: bounceIn 0.6s ease-out;
-}
-
-.loading {
-  opacity: 0.7;
-  pointer-events: none;
-  animation: pulse 1.5s infinite;
-}
-
-/* Animações Keyframes */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInFromLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideInFromRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes bounceIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.3);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  70% {
-    transform: scale(0.9);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(255, 215, 0, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
-  }
-}
-
+/* Keyframes */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideInFromLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideInFromRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3); } 50% { opacity: 1; transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
 @keyframes shake {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  10%, 30%, 50%, 70%, 90% {
-    transform: translateX(-5px);
-  }
-  20%, 40%, 60%, 80% {
-    transform: translateX(5px);
-  }
+  10%, 90% { transform: translateX(-5px); }
+  20%, 80% { transform: translateX(5px); }
+  30%, 50%, 70% { transform: translateX(-3px); }
+  40%, 60% { transform: translateX(3px); }
 }
 
+
+/* ---------- RESPONSIVO ---------- */
 @media (max-width: 480px) {
   .registerContainer {
     padding: 30px 20px;
-    animation: slideUp 0.5s ease-out;
   }
-  
+  .backButton {
+    top: 15px;
+    left: 15px;
+  }
   .registerHeader h1 {
     font-size: 1.75rem;
   }
-  
   .registerHeader p {
     font-size: 1rem;
   }
-  
   .inputGroup input {
-    padding: 12px;
-  }
-  
-  .registerButton {
     padding: 12px;
   }
 }
@@ -420,16 +326,13 @@
   .registerContainer {
     padding: 20px 15px;
   }
-  
   .registerHeader {
     margin-bottom: 30px;
   }
-  
   .logo {
     font-size: 1.75rem;
     margin-bottom: 15px;
   }
-  
   .registerHeader h1 {
     font-size: 1.5rem;
   }

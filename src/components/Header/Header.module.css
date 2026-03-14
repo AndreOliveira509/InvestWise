@@ -1,32 +1,299 @@
-.main-header {
-  background: var(--background-color);
-  padding: 20px 0;
-  border-bottom: 1px solid #eee;
+/* src/components/Header/Header.module.css */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  background-color: var(--bg-secondary-transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
   z-index: 1000;
-  backdrop-filter: blur(10px);
-  background-color: rgba(255, 255, 255, 0.8);
+  padding: 0 1rem;
 }
 
-.main-header .container {
+.headerContent {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: var(--text-primary);
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  gap: 1rem; /* Adiciona um espaço entre os elementos */
+}
+/* Adicione isso ao seu arquivo Header.module.css */
+
+.logoIcon img {
+  width: 100%;      /* Faz a imagem ocupar toda a largura do container */
+  height: 100%;     /* Faz a imagem ocupar toda a altura do container */
+  object-fit: cover; /* Garante que a imagem cubra o espaço sem distorcer */
+}
+/* Logo */
+.logo {
+  padding: 0.5rem;
+  border-radius: 10px;
+  background-color: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  border: 1px solid var(--border-color);
 }
 
-.logo {
-  font-size: 24px;
-  font-weight: 700;
+.logo:hover {
+  opacity: 0.8;
+}
+
+.logoIcon {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--secondary-color);
+  font-size: 1.2rem;
 }
-/* ... (estilos anteriores) ... */
-.main-header {
-  /* ... */
-  transition: all var(--transition-speed) ease;
+
+.logoText {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-color);
 }
-.main-header.scrolled {
-  box-shadow: var(--shadow-light);
-  background-color: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
+
+/* Navegação */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* centraliza o conteúdo horizontalmente */
+  gap: 0.5rem;
+  background: var(--bg-card);
+  padding: 0.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  transform: translateY(0);
+  transition: all 0.3s ease;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.navItem:hover {
+  background: rgba(255, 193, 7, 0.1);
+  color: var(--primary-color);
+  transform: translateY(-1px);
+}
+
+.navItem.active {
+  background: rgba(255, 193, 7, 0.15);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.2);
+}
+
+.navIcon {
+  font-size: 1rem;
+}
+
+.navLabel {
+  white-space: nowrap;
+}
+
+/* Dark Mode Toggle */
+.darkModeToggle {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.darkModeToggle:hover {
+  background: rgba(255, 193, 7, 0.1);
+  color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+/* Seção do Usuário */
+.userSection {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 193, 7, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid var(--primary-color);
+}
+
+.userInfo:hover {
+  background: rgba(255, 193, 7, 0.15);
+  border-color: rgba(255, 193, 7, 0.3);
+  transform: translateY(-1px);
+}
+
+.userAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-color-hover));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--secondary-color);
+  font-size: 0.9rem;
+  border: 2px solid var(--bg-card);
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.userName {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.userPlan {
+  font-size: 0.75rem;
+  color: var(--primary-color);
+  background: rgba(255, 193, 7, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  margin-top: 0.1rem;
+}
+
+/* Menu do Usuário */
+.userMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 0.5rem;
+  min-width: 200px;
+  box-shadow: 0 8px 32px var(--shadow-color);
+  z-index: 1001;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.userMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.userMenuItem:hover {
+  background: rgba(255, 193, 7, 0.1);
+  color: var(--primary-color);
+  transform: translateX(4px);
+}
+
+.userMenuIcon {
+  font-size: 0.9rem;
+  width: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.userMenuLabel {
+  flex: 1;
+}
+
+.logoutItem {
+  color: var(--negative-color);
+  border-top: 1px solid var(--border-color);
+  margin-top: 0.25rem;
+  padding-top: 0.875rem;
+}
+
+.logoutItem:hover {
+  color: var(--negative-color);
+  background: var(--negative-bg);
+}
+
+/* ---------- RESPONSIVO ---------- */
+@media (max-width: 1024px) {
+  .navLabel {
+    display: none; /* Oculta o texto dos itens de navegação */
+  }
+  .navItem {
+    padding: 0.75rem; /* Ajusta o padding para os ícones */
+  }
+}
+
+@media (max-width: 768px) {
+  /*
+    Para telas menores, não usamos 'flex-wrap'.
+    Em vez disso, ocultamos elementos para que tudo caiba na mesma linha.
+  */
+  .logoText {
+    display: none; /* Oculta o texto do logo */
+  }
+  .userDetails {
+    display: none; /* Oculta os detalhes do usuário */
+  }
+  .userInfo {
+    padding: 0.5rem; /* Ajusta o padding do avatar do usuário */
+  }
 }

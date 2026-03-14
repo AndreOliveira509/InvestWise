@@ -1,0 +1,198 @@
+/* src/components/ExpenseChart/ExpenseChart.module.css */
+.chartContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+/* Estado vazio */
+.chartEmptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #999;
+  padding: 2rem;
+  height: 200px;
+}
+
+.chartEmptyIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.chartEmptyState p {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #666;
+}
+
+.chartEmptyState small {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+/* Wrapper do gráfico de pizza */
+.pieChartWrapper {
+  height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tooltip customizado */
+.customTooltip {
+  background: rgba(26, 26, 26, 0.95);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+.tooltipHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  font-weight: 600;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.tooltipColor {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.tooltipContent {
+  color: #FFC107;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+/* Legenda customizada */
+.customLegend {
+  margin-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 1rem;
+}
+
+.legendTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.legendItems {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.legendItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: #f9f9f9;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.legendItem:hover {
+  background: #f0f0f0;
+}
+
+.legendItemMain {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.legendColor {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legendName {
+  font-size: 0.75rem;
+  color: #333;
+  font-weight: 500;
+  flex: 1;
+}
+
+.legendDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+}
+
+.legendAmount {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.legendPercentage {
+  font-size: 0.65rem;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Scrollbar personalizada para a legenda */
+.legendItems::-webkit-scrollbar {
+  width: 4px;
+}
+
+.legendItems::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.legendItems::-webkit-scrollbar-thumb {
+  background: #FFC107;
+  border-radius: 2px;
+}
+
+.legendItems::-webkit-scrollbar-thumb:hover {
+  background: #FFA000;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .pieChartWrapper {
+    height: 200px;
+  }
+  
+  .legendItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .legendDetails {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .legendItems {
+    max-height: 120px;
+  }
+}

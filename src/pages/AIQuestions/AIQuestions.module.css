@@ -1,0 +1,745 @@
+/* AIQuestions.module.css (Corrigido e Funcional) */
+.aiQuestions {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.4s ease;
+  position: relative;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  position: fixed;
+  left: 0;
+  height: calc(100vh - 70px); 
+  width: 260px;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border-color);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(0); /* Estado "aberto" por padrão */
+  transition: transform 0.3s ease;
+}
+
+/* Estado "fechado" */
+.sidebarCollapsed {
+  transform: translateX(-100%);
+}
+
+
+.sidebarHeader {
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-secondary);
+}
+
+.newChatButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: #FFC107;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  justify-content: center;
+}
+
+.newChatButton:hover {
+  background: #ffb300;
+  transform: translateY(-1px);
+}
+
+.closeSidebarButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.2rem;
+  margin-left: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.closeSidebarButton:hover {
+  background: var(--border-color);
+  color: var(--text-primary);
+}
+
+.chatHistory {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.chatHistory::-webkit-scrollbar {
+  width: 4px;
+}
+
+.chatHistory::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 2px;
+}
+
+.dateGroup {
+  margin-bottom: 1rem;
+}
+
+.dateLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 0.5rem 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.chatItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  margin-bottom: 0.25rem;
+}
+
+.chatItem:hover {
+  background: var(--bg-secondary);
+}
+
+.chatItem:hover .deleteChatButton {
+  opacity: 1;
+}
+
+.activeChat {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.chatIcon {
+  width: 12px;
+  height: 12px;
+  background: #ffc107;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.chatTitle {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deleteChatButton {
+  opacity: 0;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.deleteChatButton:hover {
+  color: #ff4444;
+  background: rgba(255, 68, 68, 0.1);
+}
+
+.emptyHistory {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* Header com botão de menu */
+.headerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  padding: 0;
+}
+
+.headerLeft {
+  flex: 1;
+}
+
+.headerRight {
+  flex: 1;
+}
+
+.menuButton {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menuButton:hover {
+  background: var(--bg-secondary);
+}
+
+.titleSection {
+  text-align: center;
+  margin-bottom: 0;
+  flex: 2;
+}
+
+/* Resto do CSS original permanece igual */
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  background: var(--bg-primary);
+  margin-left: 260px; /* Encolhido por padrão (desktop) */
+  transition: margin-left 0.3s ease;
+  
+  /* ADIÇÃO: Garante que o main controle o overflow */
+  overflow: hidden; 
+  height: 100vh;
+}
+.mainExpanded {
+  margin-left: 0; /* Expandido quando a sidebar fecha */
+}
+
+.container {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.aiHeader {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 2rem;
+  flex-shrink: 0;
+  position: relative;
+  
+  z-index: 10; /* Garante que o header fique sobre o chat */
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.titleIcon {
+  color: #FFC107;
+  font-size: 1.3rem;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0.3rem 0 0 0;
+  text-align: center;
+}
+
+.chatWrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+  background: var(--bg-primary);
+  margin: 0;
+  padding: 0;
+  /* ADIÇÃO: Permite que o wrapper preencha o espaço e esconda overflow */
+  overflow: hidden; 
+}
+
+.messagesContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 2rem 1rem; /* Reduzido padding inferior */
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  scroll-behavior: smooth;
+  margin: 0;
+}
+
+.messagesContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messagesContainer::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+.message {
+  display: flex;
+  gap: 1rem;
+  max-width: 100%;
+  animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+  0% {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.userMessage {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.aiMessage {
+  align-self: flex-start;
+}
+
+.messageAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.userMessage .messageAvatar {
+  background: #FFC107;
+  color: #1a1a1a;
+}
+
+.aiMessage .messageAvatar {
+  background: var(--border-color);
+  color: var(--text-secondary);
+}
+
+.messageContent {
+  max-width: 70%;
+}
+
+.messageText {
+  background: var(--bg-secondary);
+  padding: 1rem 1.2rem;
+  border-radius: 18px;
+  line-height: 1.5;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  word-wrap: break-word;
+}
+
+.userMessage .messageText {
+  background: #FFC107;
+  color: #1a1a1a;
+}
+
+.aiMessage .messageText {
+  color: var(--text-primary);
+}
+
+.fileReady {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(76, 175, 80, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  color: #4caf50;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.fileInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.downloadFileButton {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.3s ease;
+}
+
+.downloadFileButton:hover {
+  background: #45a049;
+}
+
+.messageActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.3rem;
+}
+
+.messageTime {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.actionButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actionButton {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0.2rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.actionButton:hover {
+  color: #FFC107;
+  background: rgba(255, 193, 7, 0.1);
+}
+
+.actionButton.speaking {
+  color: #ff4444;
+  background: rgba(255, 68, 68, 0.1);
+  animation: pulse 1.5s infinite;
+}
+
+.typingIndicator {
+  display: flex;
+  gap: 4px;
+  padding: 1rem;
+}
+
+.typingIndicator span {
+  height: 8px;
+  width: 8px;
+  background: var(--text-secondary);
+  border-radius: 50%;
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.typingIndicator span:nth-child(1) {
+  animation-delay: 0s;
+}
+.typingIndicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.typingIndicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-5px);
+  }
+}
+
+.suggestionsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.suggestionChip {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.suggestionChip:hover {
+  background: #FFC107;
+  color: #1a1a1a;
+  transform: translateY(-1px);
+}
+
+/* * ========================================
+ * MUDANÇAS NO INPUT CONTAINER
+ * ========================================
+ */
+.inputContainer {
+  /* REMOVIDO: position: fixed, bottom, left, right, z-index */
+  
+  /* ADICIONADO: Define como item flex que não encolhe */
+  flex-shrink: 0; 
+  position: relative;
+
+  /* ADICIONADO: Centralização e largura */
+  width: 95%;
+  max-width: 900px;
+  margin: 0.5rem auto 1rem auto; /* (top, horizontal, bottom) */
+  
+  /* AJUSTADO: Padding e borda */
+  padding: 0.75rem 1.5rem;
+  border-radius: 28px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  
+  display: flex;
+  justify-content: center;
+  transition: width 0.3s ease, margin 0.3s ease;
+}
+
+.inputWrapper {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  /* REMOVIDO: max-width: 800px; (O pai .inputContainer já controla isso) */
+  align-items: center;
+}
+
+.voiceButton {
+  width: 45px;
+  height: 45px;
+  border: none;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.voiceButton:hover:not(:disabled) {
+  background: #FFC107;
+  color: #1a1a1a;
+}
+
+.voiceButton.recording {
+  background: #ff4444;
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.messageInput {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 25px;
+  background: var(--bg-secondary);
+  font-size: 1rem;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.messageInput:focus {
+  border-color: #FFC107;
+  box-shadow: 0 0 6px rgba(255, 193, 7, 0.25);
+  outline: none;
+}
+
+.sendButton {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  background: #FFC107;
+  color: #1a1a1a;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.sendButton:hover:not(:disabled) {
+  transform: scale(1.05);
+  background: #ffb300;
+}
+
+.sendButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 280px;
+    /* CORREÇÃO: A linha 'transform' foi removida daqui para permitir que .sidebarCollapsed funcione */
+  }
+  
+  .main {
+    margin-left: 0; /* 'main' sempre ocupa 100% em telas móveis */
+    height: 100vh; /* Garante altura total em mobile */
+  }
+  
+  /* * ========================================
+   * MUDANÇAS RESPONSIVAS
+   * ========================================
+   */
+  .inputContainer {
+    /* REMOVIDO: left: 0; */
+    width: 95%; /* Garante que ele fique centralizado e com respiro */
+    padding: 0.5rem 1rem; /* Padding menor */
+    margin-bottom: 0.5rem; /* Mais perto do fundo */
+  }
+
+  .aiHeader {
+    padding: 0.8rem 1rem;
+  }
+
+  .title {
+    font-size: 1.2rem;
+  }
+
+  .subtitle {
+    font-size: 0.8rem;
+  }
+
+  .messagesContainer {
+    padding: 0.8rem 1rem 0.5rem; /* Padding menor em mobile */
+  }
+
+  .quickSuggestions {
+    padding: 0.8rem 1rem 0.3rem;
+  }
+
+  .suggestionChip {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .messageContent {
+    max-width: 85%;
+  }
+
+  .messageAvatar {
+    width: 35px;
+    height: 35px;
+  }
+
+  .messageText {
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .actionButtons {
+    gap: 0.3rem;
+  }
+
+  .actionButton {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .inputWrapper {
+    gap: 0.5rem; /* Menos espaço entre botões e input */
+  }
+
+  .messageInput {
+    padding: 0.8rem 1.2rem;
+    font-size: 0.9rem;
+  }
+
+  .sendButton {
+    width: 45px;
+    height: 45px;
+  }
+
+  .voiceButton {
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+
+  .messageContent {
+    max-width: 90%;
+  }
+}
+
+/* * ========================================
+ * ADIÇÃO: CSS para o Overlay da Sidebar
+ * ========================================
+ */
+.sidebarOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999; /* Fica abaixo da sidebar (1000), mas acima do 'main' */
+  cursor: pointer;
+}
+
+/* Esconde o overlay em telas de desktop */
+@media (min-width: 769px) {
+  .sidebarOverlay {
+    display: none;
+  }
+}

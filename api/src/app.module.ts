@@ -1,0 +1,17 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config'; 
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
+import { PrismaService } from './prisma/prisma.service';
+import { PrismaModule } from './prisma/prisma.module';
+import { TransactionModule } from './transaction/transaction.module';
+import { UsersModule } from './users/users.module';
+import { InvestmentsModule } from './investments/investments.module';
+
+@Module({
+  imports: [AuthModule, UsersModule, PrismaModule, TransactionModule, InvestmentsModule],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
