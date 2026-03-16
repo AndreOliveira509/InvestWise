@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "install": "cd api && npm install",
+    "postinstall": "cd api && npx prisma generate",
     "lint": "eslint .",
     "preview": "vite preview"
   },
