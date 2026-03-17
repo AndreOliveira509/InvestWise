@@ -9,18 +9,18 @@
       }
     },
     {
-      "src": "api/index.ts",
+      "src": "api/src/main.ts",
       "use": "@vercel/node"
     }
   ],
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/index.ts"
+      "destination": "/api/src/main.ts"
     },
     {
       "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
-}
+}
