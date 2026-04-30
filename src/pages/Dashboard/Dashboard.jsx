@@ -1,9 +1,7 @@
 // src/pages/Dashboard/Dashboard.jsx
-
-// (Importações existentes)
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { FaPlus, FaTrash, FaSearch, FaArrowUp, FaArrowDown, FaExclamationCircle } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaSearch, FaArrowUp, FaArrowDown, FaExclamationCircle, FaChartLine, FaWallet, FaPiggyBank, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import axios from 'axios';
 import styles from './Dashboard.module.css';
 import FormCard from '../../components/FormCard/FormCard';
@@ -59,6 +57,17 @@ export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [form, setForm] = useState({ description: '', amount: '', categoryId: 1, date: new Date().toISOString().split('T')[0] });
   const [investmentForm, setInvestmentForm] = useState({ name: '', value: '', category: 'fiis', date: new Date().toISOString().split('T')[0] });
+
+  // Estado de período do gráfico
+  const PERIODS = [
+    { key: 'thisWeek',   label: 'Esta Semana' },
+    { key: 'lastWeek',   label: 'Sem. Passada' },
+    { key: 'twoWeeks',  label: '2 Semanas' },
+    { key: 'thisMonth', label: 'Este Mês' },
+    { key: 'lastMonth', label: 'Mês Passado' },
+    { key: '3months',   label: '3 Meses' },
+  ];
+  const [chartPeriod, setChartPeriod] = useState('thisWeek');
 
   // --- (NOVOS ESTADOS) ---
   // Estados para controlar o modal de confirmação
@@ -164,18 +173,82 @@ export default function Dashboard() {
       .sort((a, b) => new Date(b.date) - new Date(a.date))
   ), [expenses, searchTerm]);
 
-  const weekSpending = useMemo(() => {
-    const week = [];
-    const weeklyBudget = monthlyBudget / 4; // Orçamento semanal exemplo
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dayStr = d.toISOString().split('T')[0];
-      const daySpent = expenses.filter(e => e.date.startsWith(dayStr)).reduce((s, e) => s + parseFloat(e.amount || 0), 0);
-      week.push({ name: d.toLocaleDateString('pt-BR', { weekday: 'short' }), gastos: daySpent, orcamento: weeklyBudget / 7 });
+  // Dados dinâmicos do gráfico baseado no período selecionado
+  const periodSpending = useMemo(() => {
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    let days = 7;
+    let startOffset = 0;
+    let groupBy = 'day';
+
+    if (chartPeriod === 'thisWeek')   { days = 7;  startOffset = 0;  groupBy = 'day'; }
+    if (chartPeriod === 'lastWeek')   { days = 7;  startOffset = 7;  groupBy = 'day'; }
+    if (chartPeriod === 'twoWeeks')   { days = 14; startOffset = 0;  groupBy = 'day'; }
+    if (chartPeriod === 'thisMonth')  { days = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate(); startOffset = today.getDate() - 1; groupBy = 'day'; }
+    if (chartPeriod === 'lastMonth')  { const lm = new Date(today.getFullYear(), today.getMonth(), 0); days = lm.getDate(); startOffset = today.getDate() + lm.getDate() - 1; groupBy = 'day'; }
+    if (chartPeriod === '3months')    { days = 90; startOffset = 0;  groupBy = 'week'; }
+
+    if (groupBy === 'day') {
+      const result = [];
+      const dailyBudget = monthlyBudget / 30;
+      for (let i = days - 1; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - startOffset - i);
+        const dayStr = d.toISOString().split('T')[0];
+        const daySpent = expenses.filter(e => e.date && e.date.startsWith(dayStr)).reduce((s, e) => s + parseFloat(e.amount || 0), 0);
+        const label = days <= 7
+          ? d.toLocaleDateString('pt-BR', { weekday: 'short' })
+          : d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+        result.push({ name: label, gastos: daySpent, orcamento: dailyBudget });
+      }
+      return result;
+    } else {
+      // agrupado por semana (3 meses)
+      const result = [];
+      for (let w = 11; w >= 0; w--) {
+        let weekTotal = 0;
+        const weekStart = new Date();
+        weekStart.setDate(weekStart.getDate() - w * 7 - 6);
+        for (let d = 0; d < 7; d++) {
+          const day = new Date(weekStart);
+          day.setDate(day.getDate() + d);
+          const dayStr = day.toISOString().split('T')[0];
+          weekTotal += expenses.filter(e => e.date && e.date.startsWith(dayStr)).reduce((s, e) => s + parseFloat(e.amount || 0), 0);
+        }
+        result.push({ name: weekStart.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }), gastos: weekTotal, orcamento: monthlyBudget / 4 });
+      }
+      return result;
     }
-    return week;
+  }, [expenses, monthlyBudget, chartPeriod]);
+
+  // Histórico mensal (últimos 6 meses)
+  const monthlyHistory = useMemo(() => {
+    const months = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      const y = d.getFullYear();
+      const m = d.getMonth();
+      const spent = expenses
+        .filter(e => { if (!e.date) return false; const ed = new Date(e.date); return ed.getFullYear() === y && ed.getMonth() === m; })
+        .reduce((s, e) => s + parseFloat(e.amount || 0), 0);
+      months.push({ name: d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }), gastos: spent, orcamento: monthlyBudget });
+    }
+    return months;
   }, [expenses, monthlyBudget]);
+
+  // Métricas financeiras globais
+  const availableBalance = useMemo(() => monthlyBudget - totalExpenses - totalInvestmentValue, [monthlyBudget, totalExpenses, totalInvestmentValue]);
+  const savingsRate = useMemo(() => monthlyBudget > 0 ? ((totalInvestmentValue / monthlyBudget) * 100) : 0, [totalInvestmentValue, monthlyBudget]);
+
+  // Comparação com mês anterior
+  const lastMonthExpenses = useMemo(() => {
+    const now = new Date();
+    const lastM = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+    const lastY = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+    return expenses.filter(e => { if (!e.date) return false; const d = new Date(e.date); return d.getMonth() === lastM && d.getFullYear() === lastY; }).reduce((s, e) => s + parseFloat(e.amount || 0), 0);
+  }, [expenses]);
+  const expenseTrend = useMemo(() => lastMonthExpenses > 0 ? (((totalExpenses - lastMonthExpenses) / lastMonthExpenses) * 100).toFixed(1) : null, [totalExpenses, lastMonthExpenses]);
 
   const pieData = useMemo(() => {
     if (expenses.length === 0) return [{ name: 'Nenhum gasto', value: 1, color: '#e0e0e0' }];
@@ -362,6 +435,54 @@ export default function Dashboard() {
         <div className={styles.pageHeader}>
           <h1>Dashboard Financeiro</h1>
         </div>
+
+        {/* Card de Resumo Financeiro Geral */}
+        <div className={styles.summaryBanner}>
+          <div className={styles.summaryItem}>
+            <div className={styles.summaryIcon} style={{ background: 'rgba(255,193,7,0.15)', color: '#FFC107' }}><FaWallet /></div>
+            <div>
+              <span className={styles.summaryLabel}>Saldo Disponível</span>
+              <span className={`${styles.summaryValue} ${availableBalance < 0 ? styles.negative : styles.positive}`}>
+                R$ {availableBalance.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </span>
+            </div>
+          </div>
+          <div className={styles.summaryDivider} />
+          <div className={styles.summaryItem}>
+            <div className={styles.summaryIcon} style={{ background: 'rgba(16,185,129,0.15)', color: '#10b981' }}><FaPiggyBank /></div>
+            <div>
+              <span className={styles.summaryLabel}>Taxa de Poupança</span>
+              <span className={`${styles.summaryValue} ${savingsRate >= 20 ? styles.positive : styles.neutral}`}>
+                {savingsRate.toFixed(1)}%
+              </span>
+            </div>
+          </div>
+          <div className={styles.summaryDivider} />
+          <div className={styles.summaryItem}>
+            <div className={styles.summaryIcon} style={{ background: 'rgba(99,102,241,0.15)', color: '#818cf8' }}><FaChartLine /></div>
+            <div>
+              <span className={styles.summaryLabel}>Total Investido</span>
+              <span className={styles.summaryValue} style={{ color: '#818cf8' }}>
+                R$ {totalInvestmentValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </span>
+            </div>
+          </div>
+          <div className={styles.summaryDivider} />
+          <div className={styles.summaryItem}>
+            <div className={styles.summaryIcon} style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444' }}><FaArrowDown /></div>
+            <div>
+              <span className={styles.summaryLabel}>Gastos no Mês</span>
+              <span className={styles.summaryValue} style={{ color: '#ef4444' }}>
+                R$ {totalExpenses.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                {expenseTrend !== null && (
+                  <small className={parseFloat(expenseTrend) > 0 ? styles.trendUp : styles.trendDown}>
+                    {parseFloat(expenseTrend) > 0 ? '▲' : '▼'} {Math.abs(expenseTrend)}% vs mês ant.
+                  </small>
+                )}
+              </span>
+            </div>
+          </div>
+        </div>
           <div className={styles.sectionHeader}><h2 className={styles.sectionTitle}>Meus Investimentos</h2></div>
           
           {/* Banner de Erro de Investimentos */}
@@ -441,14 +562,15 @@ export default function Dashboard() {
                         {inv.change >= 0 ? <FaArrowUp /> : <FaArrowDown />} R$ {Math.abs(inv.change || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
                     </div>
-                    
-                    {/* --- (BOTÃO MODIFICADO) --- 
-                      Troca handleRemoveInvestment por openInvestmentDeleteModal
-                    */}
                     <button onClick={() => openInvestmentDeleteModal(inv.id)} className={styles.deleteBtn}><FaTrash /></button>
-
                   </div>
-                ))) : (<div className={styles.emptyState}>Nenhum investimento encontrado.</div>)}
+                ))) : (
+                  <div className={styles.richEmptyState}>
+                    <span className={styles.emptyIcon}>📈</span>
+                    <h4>Nenhum ativo cadastrado</h4>
+                    <p>Adicione seu primeiro investimento acima e comece a acompanhar sua carteira.</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -517,17 +639,55 @@ export default function Dashboard() {
         {/* Grid de Gráficos e Transações */}
         <div className={styles.contentGrid}>
           <section className={styles.chartsArea}>
-            {/* ... (gráficos - sem alteração) */}
+            {/* Gráfico de Evolução com seletor de período */}
             <div className={`${styles.chartCard} ${styles.large}`}>
-              <h3 className={styles.chartTitle}>Evolução Semanal</h3>
+              <div className={styles.chartHeader}>
+                <h3 className={styles.chartTitle}>Evolução de Gastos</h3>
+                <div className={styles.periodSelector}>
+                  {PERIODS.map(p => (
+                    <button
+                      key={p.key}
+                      className={`${styles.periodBtn} ${chartPeriod === p.key ? styles.periodBtnActive : ''}`}
+                      onClick={() => setChartPeriod(p.key)}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div className={styles.chartWrapper}>
-                {loading ? <div className={styles.contentLoading}>Carregando...</div> : <SynchronizedLineChart data={weekSpending} />}
+                {loading
+                  ? <div className={styles.contentLoading}>Carregando...</div>
+                  : periodSpending.every(d => d.gastos === 0)
+                    ? <div className={styles.richEmptyState}><span className={styles.emptyIcon}>📊</span><h4>Sem gastos no período</h4><p>Adicione um gasto na seção abaixo para visualizar o gráfico.</p></div>
+                    : <SynchronizedLineChart data={periodSpending} />
+                }
               </div>
             </div>
+
+            {/* Histórico Mensal (6 meses) */}
+            <div className={`${styles.chartCard} ${styles.large}`}>
+              <div className={styles.chartHeader}>
+                <h3 className={styles.chartTitle}>Histórico de Gastos — Últimos 6 Meses</h3>
+              </div>
+              <div className={styles.chartWrapper}>
+                {loading
+                  ? <div className={styles.contentLoading}>Carregando...</div>
+                  : monthlyHistory.every(d => d.gastos === 0)
+                    ? <div className={styles.richEmptyState}><span className={styles.emptyIcon}>🗓️</span><h4>Ainda sem histórico</h4><p>Seus gastos dos últimos 6 meses aparecerão aqui automaticamente.</p></div>
+                    : <PositiveAndNegativeBarChart data={monthlyHistory.map(m => ({ name: m.name, lucro: Math.max(0, m.orcamento - m.gastos), prejuizo: m.gastos }))} />
+                }
+              </div>
+            </div>
+
             <div className={styles.chartCard}>
               <h3 className={styles.chartTitle}>Balanço por Categoria</h3>
               <div className={styles.chartWrapper}>
-                {loading ? <div className={styles.contentLoading}>Carregando...</div> : <PositiveAndNegativeBarChart data={barData} />}
+                {loading ? <div className={styles.contentLoading}>Carregando...</div>
+                  : barData.length === 0
+                    ? <div className={styles.richEmptyState}><span className={styles.emptyIcon}>🏷️</span><h4>Sem dados de categoria</h4><p>Configure sua renda mensal no perfil para ver o balanço por categoria.</p></div>
+                    : <PositiveAndNegativeBarChart data={barData} />
+                }
               </div>
             </div>
             <div className={styles.chartCard}>
@@ -563,17 +723,16 @@ export default function Dashboard() {
                           </div>
                         </div>
                         <span className={styles.transactionAmount}>- R$ {parseFloat(exp.amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                        
-                        {/* --- (BOTÃO MODIFICADO) --- 
-                          Troca handleRemove por openExpenseDeleteModal
-                        */}
                         <button onClick={() => openExpenseDeleteModal(exp.id)} className={styles.deleteBtn}><FaTrash /></button>
-                      
                       </div>
                     );
                   })
                 ) : (
-                  <div className={styles.emptyState}>Nenhum gasto encontrado.</div>
+                  <div className={styles.richEmptyState}>
+                    <span className={styles.emptyIcon}>💸</span>
+                    <h4>{searchTerm ? 'Nenhum resultado encontrado' : 'Sem gastos registrados'}</h4>
+                    <p>{searchTerm ? 'Tente outro termo de pesquisa.' : 'Adicione seu primeiro gasto acima para começar o controle financeiro.'}</p>
+                  </div>
                 )}
               </div>
             </div>
@@ -581,9 +740,6 @@ export default function Dashboard() {
         </div>
       </main>
 
-      {/* --- (MODAL ADICIONADO AQUI) ---
-        Este é o componente do modal. Ele só será visível quando 'isModalOpen' for true.
-      */}
       <DeleteConfirmationModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
