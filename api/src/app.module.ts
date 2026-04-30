@@ -10,7 +10,14 @@ import { UsersModule } from './users/users.module';
 import { InvestmentsModule } from './investments/investments.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, PrismaModule, TransactionModule, InvestmentsModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    AuthModule,
+    UsersModule,
+    PrismaModule,
+    TransactionModule,
+    InvestmentsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
